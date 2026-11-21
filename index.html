@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>보험금 심사하기</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;500;700&family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700;800;900&family=Nanum+Myeongjo:wght@800&display=swap" rel="stylesheet">
 <style>
 /* VOICE: 사무실 책상 위 실무 게임 — 차분하지만 손에 잡히는 서류 감각
    IDEA: 청구 서류 더미와 보험증권을 나란히 놓고 담보마다 도장을 찍는 심사 데스크
@@ -17,7 +17,7 @@
 @media(prefers-color-scheme:dark){:root:not([data-theme=light]){--desk:#1d1a17;--ink:#efe9e1;--sub:#b8ad9f;--bar:#34302b;--missb:#6d655c}}
 :root[data-theme=dark]{--desk:#1d1a17;--ink:#efe9e1;--sub:#b8ad9f;--bar:#34302b;--missb:#6d655c}:root[data-theme=dark]{color-scheme:dark}
 *{box-sizing:border-box;min-width:0}
-body{margin:0;background:var(--desk);color:var(--ink);font:16px/1.55 "IBM Plex Sans KR",system-ui,sans-serif;overflow-x:clip}
+body{margin:0;background:var(--desk);color:var(--ink);font:16px/1.55 "Noto Sans KR",system-ui,sans-serif;overflow-x:clip;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;word-break:keep-all;overflow-wrap:break-word}
 button{font:inherit;cursor:pointer}
 button:focus-visible,summary:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
 #ham{width:48px;height:48px;flex:none;image-rendering:pixelated;image-rendering:crisp-edges;cursor:pointer;margin-left:auto}
@@ -27,32 +27,56 @@ body.app header,body.startm header,body.ingame .cbar{padding-right:46px!importan
 .bld{display:inline-block;margin-left:8px;padding:1px 7px;border:1.5px solid currentColor;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.02em;vertical-align:middle;opacity:.75;font-family:ui-monospace,Menlo,monospace}
 header{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between;padding:18px max(4vw,16px) 10px;max-width:1280px;margin:auto}
 h1{font:400 clamp(28px,4vw,40px)/1.05 "Black Han Sans",sans-serif;margin:0;letter-spacing:.5px}
-h1 small{display:block;font:500 14px/1.4 "IBM Plex Sans KR";color:var(--sub);margin-top:6px;letter-spacing:0}
+h1 small{display:block;font:500 14px/1.4 "Noto Sans KR";color:var(--sub);margin-top:6px;letter-spacing:0}
 .stats{display:flex;gap:18px;flex-wrap:wrap;align-items:center}
 .home{min-height:44px;padding:0 14px;border:2px solid var(--ink);background:transparent;color:var(--ink);border-radius:8px;font-weight:700;font-size:14px;white-space:nowrap}
 .home:hover{background:var(--ink);color:var(--desk)}
-.cfm{width:min(400px,100%)}.cfb{padding:22px 20px 8px}.cfb b{font:400 22px "Black Han Sans"}.cfb p{margin:8px 0 0;font-size:15px;color:#5a5048}
+.cfm{width:min(400px,100%)}.cfb{padding:22px 20px 8px}.cfb b{font:800 22px "Noto Sans KR",sans-serif}.cfb p{margin:8px 0 0;font-size:15px;color:#5a5048}
 .cff{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px 20px 20px}
 .cff button{min-height:48px;border-radius:8px;font-weight:700;font-size:15px;border:2px solid #1d1a17;background:#fff;color:#1d1a17}
 .cff #cfy{background:#1d1a17;color:#fff}
-.stat{text-align:right}.stat b{display:block;font:400 26px/1 "Black Han Sans"}.stat span{font-size:13px;color:var(--sub)}
+.stat{text-align:right}.stat b{display:block;font:800 26px/1 "Noto Sans KR",sans-serif}.stat span{font-size:13px;color:var(--sub)}
 .bar{height:8px;background:var(--bar);border-radius:4px;overflow:hidden;max-width:1280px;margin:0 auto 4px;width:calc(100% - 2*max(4vw,16px))}
 .bar i{display:block;height:100%;background:var(--blue);transition:width .4s}
 main{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:24px;padding:16px max(4vw,16px) 48px;max-width:1280px;margin:auto;align-items:start}
 @media(max-width:860px){main{grid-template-columns:minmax(0,1fr)}}
+.dpane{display:none}
+@media(min-width:1000px){
+ body.ingame main{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);max-width:1600px;gap:20px;padding-top:10px}
+ body.ingame .folder{position:sticky;top:8px;height:calc(100vh - 86px);display:flex;flex-direction:column;margin-top:18px;padding:12px}
+ body.ingame .ftitle{margin-bottom:8px}
+ body.ingame .files{display:flex;flex-wrap:wrap;gap:6px}
+ body.ingame .file{flex:0 0 auto;min-height:34px;flex-direction:row;align-items:center;padding:4px 12px 4px 9px;gap:6px;border-radius:18px;border:1.5px solid #1d1a17;box-shadow:none}
+ body.ingame .file:hover{transform:none}body.ingame .dpane table{width:100%;table-layout:auto}
+ body.ingame .file svg{width:13px;height:15px}
+ body.ingame .file .lf{display:none}body.ingame .file .ls{display:inline}
+ body.ingame .file .fn{font-size:14px;line-height:1;white-space:nowrap}
+ body.ingame .file .fs{display:none}
+ body.ingame .file.seen .fn::after{content:' ✓';color:#1d4ed8}
+ body.ingame .file.pol.seen .fn::after{color:#fff}
+ body.ingame .file.miss .fn::after{content:' (미제출)';font-weight:500}
+ body.ingame .file[aria-expanded=true]{outline:3px solid #1d4ed8;outline-offset:1px}
+ body.ingame .dpane{display:block;flex:1;min-height:0;overflow:auto;margin-top:10px;border-radius:6px;background:#fffdf7;box-shadow:inset 0 0 0 2px #1d1a1722}
+ body.ingame .dpane .doc{transform:none!important;box-shadow:none;margin:0;padding:22px 26px;font-size:16.5px}
+ body.ingame .dpane .doc h3{font-size:21px}
+ body.ingame .dpane .doc dl{font-size:17px;grid-template-columns:8.5em minmax(0,1fr);gap:7px 14px}
+ body.ingame .dpane .doc table{font-size:15.5px}
+ body.ingame .dvw{display:none!important}body.ingame .ftitle small{display:none}
+ body.ingame .policy{position:static}
+}
 .paper{background:var(--paper);color:var(--pink);border-radius:3px;box-shadow:0 1px 0 #0001,0 10px 24px -12px #0007;padding:18px 20px;position:relative}
 .docs{display:grid;gap:16px}
-.doc h3{font:800 18px/1.2 "Nanum Myeongjo",serif;margin:0 0 10px;padding-bottom:8px;border-bottom:2px solid var(--pink);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
-.doc h3 em{font:500 12px "IBM Plex Sans KR";font-style:normal;color:#6b625a;align-self:end}
-.doc dl{display:grid;grid-template-columns:7.5em minmax(0,1fr);gap:4px 12px;margin:0;font-family:"Nanum Myeongjo",serif;font-size:15.5px}
+.doc h3{font:800 18px/1.2 "Noto Sans KR",sans-serif;margin:0 0 10px;padding-bottom:8px;border-bottom:2px solid var(--pink);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.doc h3 em{font:500 12px "Noto Sans KR";font-style:normal;color:#6b625a;align-self:end}
+.doc dl{display:grid;grid-template-columns:7.5em minmax(0,1fr);gap:4px 12px;margin:0;font-family:"Noto Sans KR",sans-serif;font-size:15.5px}
 .doc dt{color:#6b625a}.doc dd{margin:0;font-weight:700}
 .doc:nth-child(odd){transform:rotate(-.4deg)}.doc:nth-child(even){transform:rotate(.35deg)}
 .checks{display:flex;flex-wrap:wrap;gap:6px 14px}
 .missing{border:2px dashed var(--missb);border-radius:4px;padding:12px 16px;font-size:14px;color:var(--sub)}
 .folder{background:#e2b65e;border-radius:0 10px 10px 10px;padding:16px;position:relative;margin-top:18px;box-shadow:0 10px 24px -12px #0008;color:#1d1a17}
 .folder::before{content:'';position:absolute;top:-17px;left:0;width:150px;height:18px;background:#e2b65e;border-radius:8px 8px 0 0}
-.ftitle{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:12px;font:800 17px/1.2 "Nanum Myeongjo",serif}
-.ftitle small{font:500 13px "IBM Plex Sans KR";color:#5a4316}
+.ftitle{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:12px;font:800 17px/1.2 "Noto Sans KR",sans-serif}
+.ftitle small{font:500 13px "Noto Sans KR";color:#5a4316}
 .files{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:10px}
 .file{background:#fffdf7;border:0;border-radius:4px;min-height:100px;padding:12px 10px;display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left;color:#1d1a17;box-shadow:0 2px 0 #0003}
 .file:hover{transform:translateY(-2px)}
@@ -106,20 +130,20 @@ main{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:24px;p
 .gpl button{min-height:38px;border:1.5px solid #1d1a17;border-radius:8px;background:#fff;color:#1d1a17;font-weight:700;font-size:14px;padding:0 6px;white-space:nowrap}
 .gpl button[aria-selected="true"]{background:#1d4ed8;border-color:#1d4ed8;color:#fff}.gpl button[aria-selected="true"]::before{content:'✓ '}
 .selb{display:inline-flex;align-items:center;justify-content:space-between;gap:6px;text-align:left;cursor:pointer}.selb i{font-style:normal;font-size:12px}
-.silv{width:150px;min-height:44px;font:700 17px "IBM Plex Sans KR";text-align:right;border:2px solid var(--pink);border-radius:8px;padding:0 10px;background:#fff;color:var(--pink);cursor:pointer;font-variant-numeric:tabular-nums}.silv .ph{font-size:14px;opacity:.6}.silv:disabled{cursor:default}
+.silv{width:150px;min-height:44px;font:700 17px "Noto Sans KR";text-align:right;border:2px solid var(--pink);border-radius:8px;padding:0 10px;background:#fff;color:var(--pink);cursor:pointer;font-variant-numeric:tabular-nums}.silv .ph{font-size:14px;opacity:.6}.silv:disabled{cursor:default}
 .csum{padding:6px 10px;border-bottom:1px solid var(--line);font-size:12px;color:#5a5048}
 .cs2{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}.cs2 button{flex:1 1 auto;padding:2px 8px;min-height:34px;border:1.5px dashed #1d4ed8;background:#fff;color:#1d4ed8;border-radius:8px;font-weight:800;font-size:13px;font-variant-numeric:tabular-nums}
 .cdisp{padding:8px 12px 6px;text-align:right;border-bottom:1px solid var(--line);background:#f7f4ee}
 .cexp{font-size:13px;color:#5a5048;min-height:18px;word-break:break-all;font-variant-numeric:tabular-nums}
-.cres{font:400 24px/1.2 "Black Han Sans";font-variant-numeric:tabular-nums;word-break:break-all}
+.cres{font:800 24px/1.2 "Noto Sans KR",sans-serif;font-variant-numeric:tabular-nums;word-break:break-all}
 .ckeys{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:8px}
 .ckeys button{min-height:44px;border:1.5px solid #1d1a17;border-radius:8px;background:#fff;color:#1d1a17;font-size:18px;font-weight:700}
 .ckeys .op{background:#e8eefc;border-color:#1d4ed8;color:#1d4ed8}.ckeys .fn{background:#ece7dd}
 .ckeys .eq{grid-row:span 2;background:#1d4ed8;border-color:#1d4ed8;color:#fff}
 .cuse{display:block;width:calc(100% - 16px);margin:0 8px 8px;min-height:44px;border:0;border-radius:8px;background:#1d1a17;color:#fff;font-weight:800;font-size:14.5px}
-.form{font-family:"Nanum Myeongjo",serif;padding:14px 12px 16px!important;position:relative;overflow:hidden;color:#151515}
-.form .fsub{font:500 11px "IBM Plex Sans KR";color:#555;text-align:right}
-.form h3.ft{display:block;text-align:center;font:800 21px/1.2 "Nanum Myeongjo",serif;letter-spacing:5px;border:0;margin:4px 0 10px;padding:0}
+.form{font-family:"Noto Sans KR",sans-serif;padding:14px 12px 16px!important;position:relative;overflow:hidden;color:#151515}
+.form .fsub{font:500 11px "Noto Sans KR";color:#555;text-align:right}
+.form h3.ft{display:block;text-align:center;font:800 21px/1.2 "Noto Sans KR",sans-serif;letter-spacing:5px;border:0;margin:4px 0 10px;padding:0}
 .form table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:12.5px;line-height:1.45;background:#fff}
 .form table.mt{margin-top:-1px}
 .form th,.form td{border:1px solid #2b2b2b;padding:5px 6px;vertical-align:middle;text-align:left;word-break:keep-all;overflow-wrap:anywhere}
@@ -134,7 +158,7 @@ main{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:24px;p
 .form .stmt{text-align:center;margin:0 0 6px;font-weight:700}
 .seal{display:inline-grid;place-items:center;width:34px;height:34px;border:2px solid #b3362a;color:#b3362a;border-radius:50%;font:800 11px "Nanum Myeongjo",serif;transform:rotate(-8deg);margin-left:4px;vertical-align:middle;line-height:1.05;text-align:center}
 .seal.sq{border-radius:4px}
-.wm{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-20deg);font:800 24px "IBM Plex Sans KR";color:#1d1a1712;white-space:nowrap;pointer-events:none;z-index:1}
+.wm{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-20deg);font:800 24px "Noto Sans KR";color:#1d1a1712;white-space:nowrap;pointer-events:none;z-index:1}
 .dpop{width:min(560px,calc(100vw - 16px))!important}
 .dpop{width:min(400px,calc(100vw - 24px))}
 .dpop .pb{max-height:none;padding:0;overflow:hidden}
@@ -155,14 +179,14 @@ main{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:24px;p
 .callopt{display:flex;align-items:center;gap:12px;margin-top:12px;font-weight:700;font-size:14.5px;flex-wrap:wrap}.callopt .lvs{flex:1;min-width:220px}.lvs.two{grid-template-columns:1fr 1fr}
 .form.simple table{font-size:13.5px}.form.simple th{width:34%}.form.simple h3.ft{font-size:18px;letter-spacing:2px}.lvs.three{grid-template-columns:repeat(3,1fr)}.lvs button small{display:block;font-weight:500;font-size:11px;opacity:.8}
 .inbox{max-width:860px;margin:0 auto}
-.ibh{display:flex;justify-content:space-between;align-items:center;gap:12px}.ibh h2{font:400 clamp(26px,4vw,34px)/1.1 "Black Han Sans";margin:0}
+.ibh{display:flex;justify-content:space-between;align-items:center;gap:12px}.ibh h2{font:800 clamp(26px,4vw,34px)/1.1 "Noto Sans KR",sans-serif;margin:0}
 .clk{font:400 clamp(30px,6vw,44px)/1 "Black Han Sans";color:#1d4ed8;font-variant-numeric:tabular-nums}
 .ibm{font-size:14px;color:#5a5048;margin:6px 0 4px}
-.qh{font:400 17px "Black Han Sans";margin:18px 0 8px}
+.qh{font:800 17px "Noto Sans KR",sans-serif;margin:18px 0 8px}
 .ql{display:grid;gap:8px}
 .qi{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"n c s" "n t s";gap:2px 12px;align-items:center;text-align:left;border:2px solid #1d1a17;background:#fff;color:#1d1a17;border-radius:8px;padding:10px 12px;min-height:60px}
 .qi:hover{border-color:#1d4ed8}.qi.dn{border-style:dashed;background:#f6f3ec}
-.qn{grid-area:n;font:700 14px "IBM Plex Sans KR";background:#1d1a17;color:#fff;border-radius:4px;padding:4px 8px;font-variant-numeric:tabular-nums}
+.qn{grid-area:n;font:700 14px "Noto Sans KR";background:#1d1a17;color:#fff;border-radius:4px;padding:4px 8px;font-variant-numeric:tabular-nums}
 .qc{grid-area:c;font-weight:700;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.qt{grid-area:t;font-size:12.5px;color:#6b625a}
 .qs{grid-area:s;font-size:12.5px;font-weight:800;border-radius:12px;padding:3px 9px;background:#ece7dd;white-space:nowrap}
 .qs.new{background:#1d4ed8;color:#fff}.qs.soon{background:#e08a00;color:#1d1a17}.qs.late{background:#1d1a17;color:#ffd27a}.qs.ok{background:transparent;color:#1d4ed8}
@@ -273,7 +297,7 @@ main{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:24px;p
 .callm[hidden]{display:none}
 #copts[hidden],.cmb .res[hidden],#cend[hidden]{display:none}
 .cm{width:min(560px,100%);max-height:calc(100dvh - 20px);display:flex;flex-direction:column;background:#fff8e6;color:#1d1a17;border-radius:16px;padding:12px;box-shadow:0 -10px 30px -10px #0008}
-.cmh{display:flex;flex-direction:column;gap:2px;padding-bottom:8px;border-bottom:2px solid #1d1a17}.cmh span{font:400 18px "Black Han Sans"}.cmh small{font-size:12.5px;color:#5a4316;font-weight:700}
+.cmh{display:flex;flex-direction:column;gap:2px;padding-bottom:8px;border-bottom:2px solid #1d1a17}.cmh span{font:800 18px "Noto Sans KR",sans-serif}.cmh small{font-size:12.5px;color:#5a4316;font-weight:700}
 .cmb{flex:1;min-height:120px;overflow-y:auto;padding:4px 0}
 .cb.typing::after{content:'▍';animation:blink .8s infinite}@keyframes blink{50%{opacity:0}}
 .cm .go{margin-top:8px}
@@ -292,23 +316,23 @@ main{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:24px;p
 .ns.right{outline:3px solid #1d4ed8;outline-offset:1px}
 .notice .res,.call .res{margin-top:8px}
 .call{margin-top:16px;border:2px solid #1d1a17;border-radius:10px;padding:12px;background:#fff8e6}
-.call .ch{font:400 18px "Black Han Sans";display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}.call .ch small{font:700 13px "IBM Plex Sans KR";color:#5a4316}
+.call .ch{font:800 18px "Noto Sans KR",sans-serif;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}.call .ch small{font:700 13px "Noto Sans KR";color:#5a4316}
 .cb{margin:8px 0;padding:9px 12px;border-radius:12px;font-size:14.5px;line-height:1.5;max-width:92%}
-.cb.c{background:#fff;border:1.5px solid #1d1a17;border-top-left-radius:2px;font-family:"Nanum Myeongjo",serif;font-weight:700}
+.cb.c{background:#fff;border:1.5px solid #1d1a17;border-top-left-radius:2px;font-family:"Noto Sans KR",sans-serif;font-weight:700}
 .cb.c.now{border-width:2.5px}
 .cb.me{background:#1d4ed8;color:#fff;margin-left:auto;border-top-right-radius:2px}
-.cb.me.bad{background:#1d1a17;color:#ffd27a}.cq{font:700 16px/1.5 "Nanum Myeongjo",serif;margin:8px 0 10px}
+.cb.me.bad{background:#1d1a17;color:#ffd27a}.cq{font:700 16px/1.5 "Noto Sans KR",sans-serif;margin:8px 0 10px}
 .gh{margin-top:14px;padding:6px 10px;background:#1d1a17;color:#fff;border-radius:4px;font-size:14px;font-weight:700}
 .gh+.cov{border-top:0}
 .nog{margin:8px 0 4px;padding:10px 12px;border:2px dashed #b8ad9f;border-radius:8px;font-size:14px;color:#5a5048}
 .hint{font-size:13.5px;color:#5a5048;margin:0 0 4px}
-table.pol{border-collapse:collapse;width:100%;margin-top:12px;font-family:"Nanum Myeongjo",serif;font-size:15px}
+table.pol{border-collapse:collapse;width:100%;margin-top:12px;font-family:"Noto Sans KR",sans-serif;font-size:15px}
 table.pol th,table.pol td{border-bottom:1px solid var(--line);padding:7px 4px;text-align:left;vertical-align:top}
 table.pol th{border-bottom:2px solid #1d1a17;font-size:13px;color:#6b625a}
 table.pol th:last-child,table.pol td:last-child{text-align:right}table.pol td:last-child{font-weight:700;white-space:nowrap}
 .file.pol{background:#1d4ed8;color:#fff}.file.pol svg{color:#1d4ed8}.file.pol .fs{color:#dbe4ff;font-weight:700}
 @media(max-width:860px){.policy{position:static}}
-.policy h2{font:800 20px/1.2 "Nanum Myeongjo",serif;margin:0 0 4px}
+.policy h2{font:800 20px/1.2 "Noto Sans KR",sans-serif;margin:0 0 4px}
 .meta{font-size:14px;color:#5a5048;margin-bottom:12px;display:flex;flex-wrap:wrap;gap:2px 16px}
 .meta b{color:var(--pink)}
 .cov{border-top:1px solid var(--line);padding:12px 0;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 12px;align-items:center}
@@ -321,11 +345,11 @@ table.pol th:last-child,table.pol td:last-child{text-align:right}table.pol td:la
 .seg button[aria-pressed=true][data-v="2"]{background:var(--blue);color:#fff}
 @media(max-width:480px){.cov{grid-template-columns:minmax(0,1fr);padding:10px 0;gap:6px}.seg button{flex:1;padding:0 6px;font-size:13.5px}.sel,.silin input,.silv{flex:1;width:auto}.silin{width:100%}.policy{padding:14px}}
 .res{grid-column:1/-1;font-size:14px;display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border-radius:6px;background:#f3efe7}
-.res .mk{font:400 15px/1.3 "Black Han Sans";flex:none;padding:2px 8px;border-radius:4px;color:#fff}
+.res .mk{font:800 15px/1.3 "Noto Sans KR",sans-serif;flex:none;padding:2px 8px;border-radius:4px;color:#fff}
 .mk.ok{background:var(--blue)}.mk.bad{background:#1d1a17;color:#ffd27a}
 .total{display:flex;justify-content:space-between;align-items:baseline;border-top:2px solid var(--pink);padding-top:12px;margin-top:4px;gap:12px;flex-wrap:wrap}
-.total b{font:400 clamp(24px,3.4vw,32px)/1 "Black Han Sans";white-space:nowrap}
-.go{width:100%;margin-top:14px;min-height:52px;border:0;border-radius:8px;background:var(--pink);color:#fff;font:400 20px "Black Han Sans";letter-spacing:1px}
+.total b{font:800 clamp(24px,3.4vw,32px)/1 "Noto Sans KR",sans-serif;white-space:nowrap}
+.go{width:100%;margin-top:14px;min-height:52px;border:0;border-radius:8px;background:var(--pink);color:#fff;font:800 20px "Noto Sans KR",sans-serif;letter-spacing:1px}
 .go:hover{background:var(--blue)}
 .gorow{display:flex;gap:8px;align-items:stretch}.gorow .go{flex:1;min-width:0}.back2{flex:0 0 32%;margin-top:14px;min-height:52px;border:2px solid #1d1a17;border-radius:8px;background:#fff;color:#1d1a17;font:700 16px inherit;font-family:inherit;cursor:pointer}body.app .back2{margin-top:6px;min-height:46px;font-size:15px}.back2:active{background:#eee}
 .stamp{position:absolute;right:18px;top:40px;font:400 30px/1 "Black Han Sans";color:var(--blue);border:4px solid var(--blue);border-radius:10px;padding:8px 14px;transform:rotate(-14deg);opacity:.85;pointer-events:none;animation:st .35s ease-out}
@@ -339,14 +363,14 @@ table.sil{border-collapse:collapse;margin:8px 0;font-size:14px;width:100%}
 table.sil th,table.sil td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
 table.sil th{background:#f3efe7}
 .scroll{overflow-x:auto}
-.sel{min-height:44px;font:700 15px "IBM Plex Sans KR";border:2px solid var(--pink);border-radius:8px;padding:0 10px;background:#fff;color:var(--pink);min-width:150px}
+.sel{min-height:44px;font:700 15px "Noto Sans KR";border:2px solid var(--pink);border-radius:8px;padding:0 10px;background:#fff;color:var(--pink);min-width:150px}
 .sel:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
 .silin{display:flex;align-items:center;gap:6px}
-.silin input{width:150px;min-height:44px;font:700 17px "IBM Plex Sans KR";text-align:right;border:2px solid var(--pink);border-radius:8px;padding:0 10px;background:#fff;color:var(--pink)}
+.silin input{width:150px;min-height:44px;font:700 17px "Noto Sans KR";text-align:right;border:2px solid var(--pink);border-radius:8px;padding:0 10px;background:#fff;color:var(--pink)}
 .silin input:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
 .silin button{min-height:44px;border:2px solid var(--pink);background:#fff;color:var(--pink);border-radius:8px;font-weight:700;padding:0 10px;white-space:nowrap}
 .cdate{display:inline-flex;align-items:baseline;gap:8px;background:var(--pink);color:#fff;border-radius:6px;padding:6px 12px;margin:2px 0 10px}
-.cdate span{font-size:13px;opacity:.85}.cdate b{font:400 20px "Black Han Sans";letter-spacing:.5px}
+.cdate span{font-size:13px;opacity:.85}.cdate b{font:800 20px "Noto Sans KR",sans-serif;letter-spacing:.5px}
 .note{font-size:13px;color:#6b625a;margin:10px 0 0}
 .end{max-width:620px;width:calc(100% - 2*max(4vw,16px));margin:32px auto;text-align:center;padding:32px 24px}
 .end h2{font:400 clamp(32px,5vw,46px)/1.05 "Black Han Sans";margin:0 0 8px}
@@ -354,16 +378,16 @@ table.sil th{background:#f3efe7}
 .end p{margin:6px 0}
 .modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:20px}
 .mode{border:2px solid #1d1a17;background:#fff;color:#1d1a17;border-radius:10px;padding:18px 16px;min-height:120px;display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left}
-.mode b{font:400 24px/1.1 "Black Han Sans"}.mode span{font-size:14.5px;color:#5a5048}.mode em{font-style:normal;font-size:13px;color:var(--blue);font-weight:700;margin-top:auto}
+.mode b{font:800 24px/1.1 "Noto Sans KR",sans-serif}.mode span{font-size:14.5px;color:#5a5048}.mode em{font-style:normal;font-size:13px;color:var(--blue);font-weight:700;margin-top:auto}
 .mode[aria-pressed=true]{background:#1d4ed8;border-color:#1d4ed8;color:#fff;box-shadow:0 0 0 3px #1d4ed855}.mode[aria-pressed=true] span{color:#dbe4ff}.mode[aria-pressed=true] em{color:#fff}
-.mode b::before{content:'○ ';font-family:"IBM Plex Sans KR";font-weight:700}.mode[aria-pressed=true] b::before{content:'● '}
-.begin{width:100%;margin-top:20px;min-height:56px;border:0;border-radius:10px;background:#1d1a17;color:#fff;font:400 22px "Black Han Sans";letter-spacing:1px}
+.mode b::before{content:'○ ';font-family:"Noto Sans KR";font-weight:700}.mode[aria-pressed=true] b::before{content:'● '}
+.begin{width:100%;margin-top:20px;min-height:56px;border:0;border-radius:10px;background:#1d1a17;color:#fff;font:800 22px "Noto Sans KR",sans-serif;letter-spacing:1px}
 .begin small{display:block;font:500 13px 'IBM Plex Sans KR';letter-spacing:0;opacity:.8;margin-top:2px}.begin{padding:8px 12px}
-.begin:disabled{background:#cfc8bd;color:#5a5048;font:700 16px "IBM Plex Sans KR";letter-spacing:0;cursor:default}
+.begin:disabled{background:#cfc8bd;color:#5a5048;font:700 16px "Noto Sans KR";letter-spacing:0;cursor:default}
 .begin:not(:disabled):hover{background:#1d4ed8}
-.pickh{font:400 18px "Black Han Sans";margin:22px 0 0;text-align:left}.pickh+.modes{margin-top:8px}
+.pickh{font:800 18px "Noto Sans KR",sans-serif;margin:22px 0 0;text-align:left}.pickh+.modes{margin-top:8px}
 .mode:hover{transform:translateY(-2px)}
-.lvh{font:400 18px "Black Han Sans";margin:22px 0 8px;text-align:left}
+.lvh{font:800 18px "Noto Sans KR",sans-serif;margin:22px 0 8px;text-align:left}
 .lvs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border:2px solid #1d1a17;border-radius:8px;overflow:hidden}
 .lvs button{border:0;background:#fff;color:#1d1a17;min-height:48px;font-weight:700;font-size:14px;padding:4px;line-height:1.2;word-break:keep-all}
 .lvs button+button{border-left:2px solid #1d1a17}
@@ -372,7 +396,7 @@ table.sil th{background:#f3efe7}
 .tg{display:inline-block;margin-left:8px;font-size:12px;font-weight:700;padding:1px 7px;border-radius:10px;background:#1d4ed8;color:#fff;vertical-align:2px}
 .tg.no{background:#fff;color:#1d1a17;border:1.5px dashed #1d1a17}
 .timer{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:4px 10px;margin-bottom:10px}
-.timer span{font-size:13px;color:#5a5048}.timer b{font:400 22px "Black Han Sans";justify-self:end}
+.timer span{font-size:13px;color:#5a5048}.timer b{font:800 22px "Noto Sans KR",sans-serif;justify-self:end}
 .timer i{grid-column:1/-1;height:6px;background:#e6e0d6;border-radius:3px;overflow:hidden}.timer u{display:block;height:100%;background:#1d4ed8;transition:width 1s linear}
 .timer.low b{color:#c2410c}.timer.low u{background:#e08a00}
 .late{font-weight:700;margin:12px 0 0;padding:8px 10px;background:#fff1d6;border-radius:6px;font-size:14px}
@@ -382,7 +406,11 @@ table.sil th{background:#f3efe7}
 .rk{display:flex;align-items:center;gap:8px}.rkb{font-weight:800;font-size:14.5px;white-space:nowrap}.rk small{font-size:11.5px;white-space:nowrap;color:#5a5048}
 .xpb{flex:1;height:9px;border:1.5px solid #1d1a17;border-radius:6px;overflow:hidden;background:#fff;min-width:40px}.xpb i{display:block;height:100%;background:#1d4ed8}
 .sndb{border:0;background:none;font-size:18px;cursor:pointer;padding:0 2px;min-height:30px}
-.pbtns{display:grid;grid-template-columns:1fr 1.15fr .9fr 1fr;gap:5px;margin-top:6px}.pbtns button{min-height:34px;overflow:hidden;text-overflow:ellipsis;padding:0 2px!important;letter-spacing:-.3px;border:2px solid #1d1a17;border-radius:8px;background:#fff;font:700 13px inherit;font-family:inherit;cursor:pointer;color:#1d1a17;padding:0 4px;white-space:nowrap}
+.pbtns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin-top:6px}.pbtns .setbtn{background:#fff}
+.lastc{margin:14px 0 0;padding:8px 12px;border:1.5px dashed #b8ad9f;border-radius:8px;font-size:14px;color:#5a5048;text-align:center}
+.wz .wzh{display:block;margin:10px 0 2px;font:900 24px/1.2 "Noto Sans KR",sans-serif;text-align:left}.wzp{margin:0;font-size:14px;color:#5a5048;text-align:left}.wzl{display:grid;gap:8px;margin:14px 0 6px}.wzs{margin:16px 0 6px;font:800 16px "Noto Sans KR",sans-serif;text-align:left}.wz .lvd{margin:6px 0 0;text-align:left}.wz .begin{margin-top:18px}
+.wzo{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;align-items:center;text-align:left;min-height:60px;padding:10px 14px;border:2px solid #1d1a17;border-radius:12px;background:#fff;color:#1d1a17;font:inherit;cursor:pointer}.wzo b{font:800 19px/1.2 "Noto Sans KR",sans-serif}.wzo span{grid-column:1;font-size:13.5px;color:#5a5048;line-height:1.35}.wzo em{grid-column:2;grid-row:1/3;font-style:normal;font-size:12.5px;font-weight:700;color:#1d4ed8;white-space:nowrap}.wzo[aria-pressed=true]{border-color:#1d4ed8;box-shadow:inset 0 0 0 2px #1d4ed8;background:#1d4ed80d}.wzo[aria-pressed=true] b::after{content:' ✓';color:#1d4ed8}.wzo:active{transform:scale(.99)}
+.wzb{margin-top:6px;min-height:44px;padding:0 16px;border:2px solid #1d1a17;border-radius:10px;background:transparent;font:700 15px "Noto Sans KR",sans-serif;color:#1d1a17;cursor:pointer}.wzd{display:flex;gap:6px;justify-content:center}.wzd i{width:28px;height:6px;border-radius:3px;background:#d9d0c2}.wzd i.on{background:#1d4ed8}.wzd i.dn{background:#1d1a17}.pbtns button{min-height:34px;overflow:hidden;text-overflow:ellipsis;padding:0 2px!important;letter-spacing:-.3px;border:2px solid #1d1a17;border-radius:8px;background:#fff;font:700 13px inherit;font-family:inherit;cursor:pointer;color:#1d1a17;padding:0 4px;white-space:nowrap}
 .pbtns .chbtn{background:#1d4ed8;border-color:#1d4ed8;color:#fff}.pbtns .tutb2{background:#fff3d6}
 .flag{width:100%;margin-top:6px;min-height:36px;border:2px dashed #1d1a17;border-radius:8px;background:#fff;color:#1d1a17;font:600 13.5px inherit;font-family:inherit;cursor:pointer}.lbn2{display:flex;gap:6px;align-items:center;margin:4px 0 8px}.lbn2 label{flex:1;min-width:0;display:flex;gap:6px;align-items:center;font-size:13.5px;font-weight:700;white-space:nowrap}.lbn2 .tutbtn{width:auto;flex:none;margin:0;padding:7px 12px}.lbn2 input{flex:1;min-width:0;border:2px solid #1d1a17;border-radius:8px;padding:6px 8px;font:inherit;font-size:15px}.lbtab{margin-bottom:6px}.lbtab button[aria-pressed=true]{background:#1d1a17;color:#fff}.lbl{list-style:none;margin:0 0 8px;padding:0;border:2px solid #1d1a17;border-radius:10px;overflow:hidden}.lbl li{display:flex;gap:8px;align-items:center;padding:7px 10px;border-top:1px solid #e4dccd;font-size:14.5px}.lbl li:first-child{border-top:0}.lbl li.me{background:#1d4ed812;font-weight:800}.lbr{width:26px;text-align:center}.lbn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lbl small{color:#5a5048;border:1.5px solid #5a5048;border-radius:6px;padding:0 5px}#lbIn{width:100%;box-sizing:border-box;border:2px solid #1d1a17;border-radius:8px;padding:8px;font:inherit;font-size:14px;resize:vertical}
 .cgh{margin:5px 0 0;padding:1px 0 1px 8px;border-left:4px solid #e08a00;font-size:12px;font-weight:800;color:#5a5048;letter-spacing:.02em}.cgh:first-of-type{margin-top:2px}
@@ -419,7 +447,7 @@ table.sil th{background:#f3efe7}
 .acl{display:grid;grid-template-columns:1fr 1fr;gap:6px}.acl div{border:1.5px solid #1d1a17;border-radius:8px;padding:7px;display:flex;flex-direction:column;gap:1px;background:#fff}.acl .off{opacity:.55;border-style:dashed}.acl .on{border-color:#1d4ed8;background:#e8eefc}
 .acl .ai{font-size:22px}.acl b{font-size:13.5px}.acl small{font-size:11.5px;color:#5a5048}
 .rgl{display:grid;grid-template-columns:1fr 1fr;gap:5px}.rgl div{border:1.5px solid #1d1a17;border-radius:8px;padding:6px 8px;display:flex;flex-direction:column;background:#fff;font-size:13px}.rgl span{color:#1d4ed8;letter-spacing:1px}.rgl small{font-size:11px;color:#5a5048}
-@media(max-width:700px){body.startm .intro,body.startm .start>h2{display:none}body.startm .tutbtn{min-height:34px;font-size:14px}.pbtns button{font-size:12px}}
+@media(max-width:700px){body.startm .intro,body.startm .start>h2:not(.wzh){display:none}body.startm .tutbtn{min-height:34px;font-size:14px}.pbtns button{font-size:12px}}
 #tspot[hidden]{display:none}.tsp{position:fixed;z-index:92;border-radius:10px;box-shadow:0 0 0 3px #e08a00,0 0 0 9999px rgba(0,0,0,.6);pointer-events:none;transition:left .2s,top .2s,width .2s,height .2s,opacity .2s}
 #tspot.full .tsp{box-shadow:0 0 0 9999px rgba(0,0,0,.6)}.tbk{position:fixed;z-index:93;background:transparent;touch-action:none}
 @media(prefers-reduced-motion:reduce){.tsp{transition:none}}
@@ -475,7 +503,7 @@ body.app.ingame .msgc{bottom:74px}
 <body>
 <button id="mute" class="mute" aria-label="게임 소리 켜기/끄기" aria-pressed="true">🔊</button>
 <header>
-  <h1>보험금 심사하기<span class="bld" id="bld">build 87</span><small>서류와 증권을 대조해 담보별로 지급·부지급을 결정하세요</small></h1>
+  <h1>보험금 심사하기<span class="bld" id="bld">build 93</span><small>서류와 증권을 대조해 담보별로 지급·부지급을 결정하세요</small></h1>
   <div class="stats">
     <button class="home" id="home" aria-label="처음 화면으로">⌂ 처음 화면</button>
     <div class="stat"><b id="prog">0 / 0</b><span>처리 / 접수</span></div>
@@ -1189,7 +1217,9 @@ function setCur(j,mark=true){const it=items()[j];if(!it)return;cur=j;{const fb=d
   document.querySelectorAll('.file[aria-expanded=true]').forEach(x=>x.setAttribute('aria-expanded','false'));
   const tile=document.querySelector(`[data-f="${j}"]`);if(tile){tile.setAttribute('aria-expanded','true');if(mark)tile.classList.add('seen')}}
 function setFb(){const fo=document.querySelector('body.app .folder');document.documentElement.style.setProperty('--fb',fo?Math.max(0,innerHeight-fo.getBoundingClientRect().top)+'px':'0px')}
-const MOBQ=()=>matchMedia('(max-width:700px)').matches;
+const MOBQ=()=>matchMedia('(max-width:700px)').matches,DESKQ=()=>matchMedia('(min-width:1000px)').matches;
+function showPane(j,keep){const dp=document.getElementById('dpane'),its=items();if(!dp||!its[j])return;dp.innerHTML=its[j].outerHTML;const c=st.c;dp.scrollTop=keep&&c&&c._dvj===j?c._dpt||0:0;setCur(j);if(c){c._dvj=j;c._dpt=dp.scrollTop}if(!dp._sc){dp._sc=1;dp.addEventListener('scroll',()=>{if(st.c)st.c._dpt=dp.scrollTop},{passive:true})}}
+function paneInit(c){if(!DESKQ())return;const a=avail();if(!a.length)return;let j=c._dvj;if(j==null||!a.includes(j)){const its=items(),f=a.find(x=>/보험금 청구서/.test(its[x].textContent));j=f!=null?f:a[0];c._dv=1}showPane(j,true)}
 function dsCur(ds){if(!ds)return;const secs=[...ds.querySelectorAll('.dsec')];if(!secs.length)return;let j=+secs[0].dataset.j;const y=ds.scrollTop+ds.clientHeight/2;secs.forEach(s=>{if(s.offsetTop<=y)j=+s.dataset.j});
   const sl=document.getElementById('slides');if(sl&&sl.scrollLeft>(sl.clientWidth+12)/2)return;st.c.seen.add(j);cur=j;
   document.querySelectorAll('.file[aria-expanded=true]').forEach(x=>x.setAttribute('aria-expanded','false'));const fb=document.querySelector(`.file[data-f="${j}"]`);
@@ -1197,6 +1227,7 @@ function dsCur(ds){if(!ds)return;const secs=[...ds.querySelectorAll('.dsec')];if
 function dsTo(ds,sec,sm=true){const hd=(ds.querySelector('.dsh')||{}).offsetHeight||0,vh=ds.clientHeight-hd;let top=sec.offsetTop-hd-Math.max(0,(vh-sec.offsetHeight)/2);ds.scrollTo({top:Math.max(0,top),behavior:sm?'smooth':'auto'})}
 function dsStep(ds,d){const secs=[...ds.querySelectorAll('.dsec')];let k=secs.findIndex(s=>+s.dataset.j===cur);if(k<0)k=0;const n=secs[k+d];if(n){dsTo(ds,n);setTimeout(()=>dsCur(ds),450)}else if(d>0){ds.scrollTo({top:ds.scrollHeight,behavior:'smooth'})}}
 function openDoc(j){const its=items(),a=avail();if(!its[j]||a.indexOf(j)<0)return;
+  if(DESKQ()&&document.getElementById('dpane')){showPane(j);return}
   const sl=document.getElementById('slides'),ds=sl&&sl.querySelector('.dslide');
   if(ds&&MOBQ()){const sec=ds.querySelector(`.dsec[data-j="${j}"]`);sl.scrollTo({left:0,behavior:'smooth'});if(sec)dsTo(ds,sec);setTimeout(()=>dsCur(ds),450);return}
   setFb();
@@ -1213,7 +1244,7 @@ document.getElementById('mx').addEventListener('click',closeDoc);
 document.getElementById('mp').addEventListener('click',()=>step(-1));
 document.getElementById('mnx').addEventListener('click',()=>step(1));
 document.addEventListener('click',e=>{if(!ov.hidden&&!ov.contains(e.target)&&!e.target.closest('.file,#dvb')&&!e.target.closest('#coach'))closeDoc(false)});
-addEventListener('resize',()=>closeDoc(false));
+addEventListener('resize',()=>{closeDoc(false);if(st.scr==='game'&&st.c&&DESKQ()){const dp=document.getElementById('dpane');if(dp&&!dp.firstChild)paneInit(st.c)}});
 const cf=document.getElementById('cf');
 const MAG='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M15 15l6 6" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>';
 const mag=k=>`<button class="info" data-info="${k}" aria-label="${COV[k].n} 지급기준 보기">${MAG}</button>`;
@@ -1349,8 +1380,8 @@ function render(res){if(!inf.hidden)closeInfo(false);closeCalc();closeGp(false);
   document.body.classList.add('ingame');const c=st.c,os=document.getElementById('slides');if(c.resetSx){c.sx=null;c.resetSx=0}else if(os)c.sx=os.scrollLeft;document.body.classList.add('app');
   const keep=os&&!c._fresh,sTops=keep?[...os.children].map(e=>e.scrollTop):[],wy=scrollY;const fx=keep&&document.getElementById('files')?document.getElementById('files').scrollLeft:0;c._fresh=false;
   const it=st.queue[st.cur];
-  app.innerHTML=`<div class="cbar"><button class="back" id="back">← 일정창</button><span class="cid">접수 ${it.id}</span><span class="clk2" id="clk2"></span></div><main><section class="folder" aria-label="청구 서류 폴더"><div class="ftitle"><span>청구 서류 · ${c.who}</span><small>눌러서 열람</small></div><div class="files" id="files"></div></section>${policyHTML(c,res)}</main><div id="store" hidden>${c.docsH||(c.docsH=ndDocs(c,fraudDocs(c,docsHTML(c))))}</div>`;
-  tiles();hud();
+  app.innerHTML=`<div class="cbar"><button class="back" id="back">← 일정창</button><span class="cid">접수 ${it.id}</span><span class="clk2" id="clk2"></span></div><main><section class="folder" aria-label="청구 서류 폴더"><div class="ftitle"><span>청구 서류 · ${c.who}</span><small>눌러서 열람</small></div><div class="files" id="files"></div><div class="dpane" id="dpane" aria-label="서류 보기"></div></section>${policyHTML(c,res)}</main><div id="store" hidden>${c.docsH||(c.docsH=ndDocs(c,fraudDocs(c,docsHTML(c))))}</div>`;
+  tiles();hud();paneInit(c);
   const D=0;if(D){const s0=document.getElementById('slides'),its=items(),ds=document.createElement('div');ds.className='slide dslide';ds.setAttribute('aria-label','청구 서류');
     const ms=its.filter(e=>e.classList.contains('missing')).map(e=>e.dataset.t);
     ds.innerHTML=`<div class="dsh">📂 청구 서류 <small>위·아래 탭으로 넘기기 · 한 번 더 밀면 일정창</small></div>${avail().map(j=>`<section class="dsec" data-j="${j}"><div class="dst">${its[j].dataset.t}</div>${its[j].outerHTML}</section>`).join('')}${ms.length?`<p class="dmiss">미제출: <b>${ms.join(', ')}</b></p>`:''}<p class="dend">— 서류 끝 · 왼쪽으로 밀어 심사표로 —</p>`;
@@ -1565,11 +1596,13 @@ app.addEventListener('click',e=>{
   if(b.dataset.q!==undefined){openQ(+b.dataset.q);return}
   if(b.id==='quit'){quitAsk();return}
   if(b.id==='again'){start();return}
-  if(b.dataset.lv!==undefined){st.lv=+b.dataset.lv;start();document.querySelector(`[data-lv="${st.lv}"]`).focus();return}
-  if(b.dataset.mode!==undefined){st.pick=b.dataset.mode==='1';start();document.querySelector(`[data-mode="${b.dataset.mode}"]`).focus();return}
-  if(b.dataset.nb!==undefined){st.newbie=b.dataset.nb==='1';start();document.querySelector(`[data-nb="${b.dataset.nb}"]`).focus();return}
-  if(b.dataset.vol!==undefined){st.vol=+b.dataset.vol;start();document.querySelector(`[data-vol="${b.dataset.vol}"]`).focus();return}
-  if(b.id==='begin'&&st.pick!=null){st.chR=null;beginDay();return}
+  if(b.id==='wzBack'){st.wz=0;start();return}
+  if(b.dataset.lv!==undefined){st.lv=+b.dataset.lv;st.wz=1;start();return}
+  if(b.dataset.mode!==undefined){st.pick=b.dataset.mode==='1';st.wz=1;start();return}
+  if(b.dataset.vol!==undefined){st.vol=+b.dataset.vol;st.wz=1;start();return}
+  if(b.id==='goWork'){if(st.pick==null)st.pick=false;CR.last={lv:st.lv,pick:st.pick,vol:st.vol};saveCR();st.chR=null;beginDay();return}
+  if(b.id==='begin'){st.wz=1;start();return}
+  if(b.id==='setb'){openSet();return}
   if(b.id==='dvb'){const a=avail();if(!a.length)return;const c=st.c;if(!c._dv){c._dv=1;const its=items(),f=a.find(j=>/보험금 청구서/.test(its[j].textContent));openDoc(f!=null?f:a[0])}else openDoc(a.includes(cur)?cur:a[0]);return}
   if(b.id==='mbox'){openMbox();return}
   if(b.id==='cbox'){openCbox();return}
@@ -1608,10 +1641,10 @@ function tutStart(){const c=tutPrep();st.tut=true;st.callAll=true;st.notice=true
   const fileBy=w=>()=>[...document.querySelectorAll('.file')].find(f=>f.textContent.includes(w));
   TS=[
    {sel:'.qi',t:`📥 <b>일정창</b>이에요. 실제 게임에선 청구 건이 하루 동안 랜덤 시각에 계속 들어와요.<br>접수 건 <b>${c.regno}</b>을 눌러 열어 보세요.`,done:()=>st.scr==='game'},
-   {sel:'#dvb',t:`📂 심사 담보 아래 <b>[서류 보기]</b>를 눌러 고객이 낸 서류를 열어 보세요.`,done:()=>!ov.hidden},
+   ...(DESKQ()?[{sel:'.folder',t:`PC에서는 <b>왼쪽에 서류</b>가 크게 펼쳐져요. 위쪽 서류 탭(청구서·증권·진단서…)을 눌러 바꿔 보세요.<br>증권의 <b>계약일·가입 담보·금액</b>, 진단서의 <b>진단코드·진단일</b>을 확인해 보세요.`,btn:'다 봤어요'}]:[{sel:'#dvb',t:`📂 심사 담보 아래 <b>[서류 보기]</b>를 눌러 고객이 낸 서류를 열어 보세요.`,done:()=>!ov.hidden},
    {sel:'#ov',t:`서류를 <b>좌우로 밀면</b> 다음 서류로 넘어가요. 증권의 <b>계약일·가입 담보·금액</b>, 진단서의 <b>진단코드·진단일</b>을 확인해 보세요.`,btn:'다 봤어요'},
-   {sel:'#ov',t:`서류를 <b>짧게 톡</b> 터치하면 닫혀요.`,done:()=>ov.hidden},
-   {sel:row(t1),t:`아래 심사표에는 <b>가입한 담보만</b> 나와요. 이 건은 <b>${N(t1)}</b>, <b>${N(t0)}</b> 두 개예요.<br>${N(t1)} 옆 <b>🔍</b>를 눌러 지급기준을 보세요.`,done:()=>!inf.hidden},
+   {sel:'#ov',t:`서류를 <b>짧게 톡</b> 터치하면 닫혀요.`,done:()=>ov.hidden}]),
+   {sel:row(t1),t:`${DESKQ()?'오른쪽':'아래'} 심사표에는 <b>가입한 담보만</b> 나와요. 이 건은 <b>${N(t1)}</b>, <b>${N(t0)}</b> 두 개예요.<br>${N(t1)} 옆 <b>🔍</b>를 눌러 지급기준을 보세요.`,done:()=>!inf.hidden},
    {sel:'#inf',t:`담보마다 <b>지급 조건</b>이 있어요. 이 조건과 서류 내용을 대조하는 게 심사의 핵심이에요.`,btn:'확인'},
    {sel:()=>!gpop.hidden?gpop:row(t1)(),t:`<b>${N(t1)}</b>: ${c.ans[t1].w}<br>→ 조건을 충족하니 ${isDay(c.covs[t1])?`<b>[▾]</b>를 누르고 위아래로 굴려서 <b>${aDays(c,t1)}${dUnit(c.covs[t1])}</b>을 고른 뒤 [확인]을 눌러요.`:'<b>[지급]</b>을 눌러요.'}`,done:()=>gpop.hidden&&decOk(c,t1)},
    {sel:()=>!gpop.hidden?gpop:row(t0)(),t:`<b>${N(t0)}</b>: ${c.ans[t0].w}<br>→ 조건에 안 맞으니 <b>부지급</b>이 맞아요. ${c.pick[t0]===0?'기본값이 부지급이라 그대로 두면 돼요.':isDay(c.covs[t0])?'[▾]를 눌러 <b>0일</b>로 굴려요.':'[부지급]을 눌러요.'}`,done:()=>decOk(c,t0),btn:'알겠어요'},
@@ -1654,21 +1687,21 @@ function start(){document.body.classList.remove('ingame');st.msgs=null;st.mq=[];
   document.getElementById('prog').textContent='0 / 0';document.getElementById('score').textContent='0';
   document.getElementById('best').textContent='-';document.getElementById('barI').style.width='0';
   const bb=sil=>{const x=bests[mk(sil,st.lv,st.vol)];return x?x.score+'점':'기록 없음'},b1=bb(true),b0=bb(false),L=LV[st.lv];
-  app.innerHTML=`<section class="paper end start"><h2>오늘의 심사 시작</h2>${profHTML()}
+  const W=st.wz||0;st.wzCur=W;const back='<button class="wzb" id="wzBack">← 처음 화면</button>';
+  if(W===0)app.innerHTML=`<section class="paper end start"><h2>오늘의 심사 시작</h2>${profHTML()}
    <p class="intro">09:00 출근! 일정창에 접수 건이 계속 쌓여요. 접수번호를 열어 심사하고, 18:00 퇴근 전까지 최대한 처리하세요. (하루 = 실제 약 15분)</p>
-   <h3 class="lvh">난이도</h3>
+   <div class="lastc">지난 설정 · <b>${L.n}</b> · ${st.pick?'실손 포함':'실손 제외'} · 접수량 ${VOL[st.vol].n}</div>
+   <button class="begin" id="begin">심사 시작<small>다음 화면에서 난이도 · 실손 · 접수량을 골라요</small></button></section>`;
+  else app.innerHTML=`<section class="paper end start wz"><h2 class="wzh">심사 설정</h2><p class="wzp">고르고 아래 <b>출근하기</b>를 누르세요.</p>
+   <h3 class="wzs">난이도</h3>
    <div class="lvs" role="group" aria-label="난이도">${LV.map((x,j)=>`<button data-lv="${j}" aria-pressed="${j===st.lv}">${x.n}</button>`).join('')}</div>
    <p class="lvd"><b>${L.n}</b> · ${L.d} · 점수 ×${L.mul}</p>
-   <h3 class="pickh">실손 여부</h3>
-   <div class="modes" role="group" aria-label="실손 여부">
-    <button class="mode" data-mode="0" aria-pressed="${st.pick===false}"><b>실손 제외</b><span>정액 담보만 심사 · 입문용</span><em>최고 ${b0}</em></button>
-    <button class="mode" data-mode="1" aria-pressed="${st.pick===true}"><b>실손 포함</b><span>영수증으로 세대별 실손 지급액 계산</span><em>최고 ${b1}</em></button>
-   </div>
-   <h3 class="pickh">서류 형식</h3>
-   <div class="lvs two" role="group" aria-label="서류 형식"><button data-nb="0" aria-pressed="${!st.newbie}">실제 양식 <small>진짜 서류처럼</small></button><button data-nb="1" aria-pressed="${st.newbie}">간편 서류 <small>심사에 필요한 칸만</small></button></div>
-   <h3 class="pickh">접수량</h3>
-   <div class="lvs" role="group" aria-label="접수량">${VOL.map((v,j)=>`<button data-vol="${j}" aria-pressed="${st.vol===j}">${v.n} <small>하루 약 ${v.k+2}건</small></button>`).join('')}</div>
-   <button class="begin" id="begin" ${st.pick==null?'disabled':''}>${st.pick==null?'실손 여부를 선택하세요':`심사 시작<small>${L.n} · ${st.pick?'실손 포함':'실손 제외'} · 접수량 ${VOL[st.vol].n}${st.newbie?' · 간편 서류':''}</small>`}</button></section>`;
+   <h3 class="wzs">실손 여부</h3>
+   <div class="lvs two" role="group" aria-label="실손 여부"><button data-mode="0" aria-pressed="${st.pick===false}">실손 제외 <small>최고 ${b0}</small></button><button data-mode="1" aria-pressed="${st.pick===true}">실손 포함 <small>최고 ${b1}</small></button></div>
+   <h3 class="wzs">접수량</h3>
+   <div class="lvs" role="group" aria-label="접수량">${VOL.map((v,j)=>`<button data-vol="${j}" aria-pressed="${st.vol===j}">${v.n} <small>약 ${v.k+2}건</small></button>`).join('')}</div>
+   <button class="begin" id="goWork">출근하기<small>${L.n} · ${st.pick?'실손 포함':'실손 제외'} · 접수량 ${VOL[st.vol].n}</small></button>${back}</section>`;
+  window.scrollTo({top:0});st.wz=0;
 }
 /* ===== 쪽지 ===== */
 const MSGT=['보상지원팀','고객센터','장기보상1팀','보상기획파트','콜센터 2팀'],MSGR=['주임','대리','과장','선임'];
@@ -1862,38 +1895,26 @@ function sbRows(tab){if(!SBC)return[];const td=today(),W=weekDays(),M={};
   return Object.entries(M).map(([p,m])=>({p,...m,me:p===CR.pid})).sort((a,b)=>b.s-a.s)}
 function sbFill(tab){const box=document.getElementById('sbBox');if(!box)return;document.querySelectorAll('[data-sbt]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.sbt===tab));
   if(SBC===null){box.innerHTML='<p class="gmd">온라인 순위를 불러오는 중…</p>';return}
-  if(SBC===false){box.innerHTML='<p class="gmd">🌐 온라인 순위는 <b>웹사이트 버전</b>에서만 보여요. 여기서는 아래 심사코드로 친구와 비교해 주세요.</p>';return}
+  if(SBC===false){box.innerHTML='<p class="gmd">🌐 순위 서버에 연결되지 않았어요. 순위 기록과 공유는 <b>웹사이트 버전</b>(ctprox-netizen.github.io/claim-game)에서 할 수 있어요.</p>';return}
   const P=sbRows(tab);if(!P.length){box.innerHTML='<p class="gmd">아직 기록이 없어요. 첫 번째 주인공이 되어 보세요!</p>';return}
   box.innerHTML=`<ol class="lbl">${P.slice(0,30).map((p,i)=>`<li class="${p.me?'me':''}"><span class="lbr">${i<3?['🥇','🥈','🥉'][i]:i+1}</span><span class="lbn"></span><b>${f(p.s)}점</b>${p.gr?`<small>${p.gr}</small>`:tab?`<small>${p.n}일</small>`:''}</li>`).join('')}</ol>`;
   box.querySelectorAll('.lbn').forEach((e,i)=>{e.textContent=P[i].nick+(P[i].me?' (나)':'')})}
-async function sbOpen(){SBC=null;sbFill(st.sbTab||0);const r=await sbLoad();if(!r)SBC=false;sbFill(st.sbTab||0)}
-/* 친구 순위 (심사코드) */
-const ckH=t=>{let h=7;for(const ch of t)h=(h*31+ch.charCodeAt(0))%9973;return h};
-function chCode(d,c){const nk=(CR.nick||'익명').slice(0,10),body=[nk,d,c.score,c.gr,c.acc].join('|');try{return btoa(unescape(encodeURIComponent(body+'|'+ckH(body)))).replace(/=+$/,'')}catch(e){return''}}
-function chDecode(code){try{const t=decodeURIComponent(escape(atob(code)));const a=t.split('|');if(a.length!==6)return null;const body=a.slice(0,5).join('|');if(String(ckH(body))!==a[5])return null;return{nick:a[0],d:+a[1],s:+a[2],gr:a[3],acc:+a[4]}}catch(e){return null}}
+async function sbOpen(){SBC=null;sbFill(st.sbTab||0);const r=await sbLoad();if(!r)SBC=false;sbFill(st.sbTab||0);ONLINE=!!r}
+let ONLINE=false;
 const ymd=d=>d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate();
 function weekDays(){const d=new Date(),w=(d.getDay()+6)%7,L=[];for(let k=0;k<=w;k++){const x=new Date(d);x.setDate(d.getDate()-w+k);L.push(ymd(x))}return L}
-function lbRows(tab){const td=today(),W=weekDays(),F=CR.fr||{},P=[];const me=CR.nick||'나';
-  const sc=(days)=>tab===0?(days[td]?days[td].s:null):W.reduce((a,k)=>a+(days[k]?days[k].s:0),0)||null;
-  const mine={};Object.keys(CR.ch||{}).forEach(k=>{mine[k]={s:CR.ch[k].score,gr:CR.ch[k].gr}});
-  const ms=sc(mine);if(ms!=null)P.push({n:me,s:ms,me:1,gr:tab===0&&mine[td]?mine[td].gr:''});
-  Object.keys(F).forEach(n=>{if(n===me)return;const v=sc(F[n]);if(v!=null)P.push({n,s:v,gr:tab===0&&F[n][td]?F[n][td].gr:''})});
-  P.sort((a,b)=>b.s-a.s);return P}
-function lbHTML(tab){const P=lbRows(tab);return P.length?`<ol class="lbl">${P.map((p,i)=>`<li class="${p.me?'me':''}"><span class="lbr">${i<3?['🥇','🥈','🥉'][i]:i+1}</span><span class="lbn"></span><b>${f(p.s)}점</b>${p.gr?`<small>${p.gr}</small>`:''}</li>`).join('')}</ol>`:'<p class="gmd">아직 기록이 없어요. 챌린지를 하거나 친구 심사코드를 붙여 넣어 보세요.</p>'}
-function lbFill(tab){const box=document.getElementById('lbBox');if(!box)return;box.innerHTML=lbHTML(tab);const P=lbRows(tab);box.querySelectorAll('.lbn').forEach((e,i)=>{e.textContent=P[i].n+(P[i].me?' (나)':'')});document.querySelectorAll('[data-lbt]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.lbt===tab))}
-function lbAdd(){const t=(document.getElementById('lbIn')||{}).value||'';const M=[...t.matchAll(/심사코드\s*([A-Za-z0-9+/_-]{8,})/g)].map(m=>m[1]);let n=0,bad=0;CR.fr=CR.fr||{};
-  M.forEach(code=>{const r=chDecode(code);if(!r){bad++;return}if(r.nick===(CR.nick||'나'))return;const F=CR.fr[r.nick]=CR.fr[r.nick]||{};if(!F[r.d]||F[r.d].s<r.s){F[r.d]={s:r.s,gr:r.gr};n++}});
-  const lim=today()-100;Object.values(CR.fr).forEach(F=>Object.keys(F).forEach(k=>{if(+k<lim)delete F[k]}));saveCR();
-  toast(n?`🏆 친구 기록 ${n}개 추가!`:M.length?(bad?'⚠ 심사코드가 올바르지 않아요':'이미 있는 기록이에요'):'⚠ 붙여 넣은 글에서 심사코드를 못 찾았어요');const i=document.getElementById('lbIn');if(i&&n)i.value='';lbFill(st.lbTab||0)}
 function shareCh(){const c=st.lastCh;if(!c)return;const d=new Date();
-  const t=`📋 보험금 심사하기 · 오늘의 챌린지 ${d.getMonth()+1}/${d.getDate()}\n${CR.nick?CR.nick+' · ':''}등급 ${c.gr} · ${f(c.score)}점 · 정확도 ${c.acc}%\n처리 ${c.dn}/${c.n} · 최고 콤보 🔥${c.maxC}\n${c.row}\n🔑 심사코드 ${chCode(today(),c)}\n(게임 → 🗓 챌린지 → 친구 순위에 붙여 넣으면 순위에 들어가요)`;
+  const t=`📋 보험금 심사하기 · 오늘의 챌린지 ${d.getMonth()+1}/${d.getDate()}\n${CR.nick?CR.nick+' · ':''}등급 ${c.gr} · ${f(c.score)}점 · 정확도 ${c.acc}%\n처리 ${c.dn}/${c.n} · 최고 콤보 🔥${c.maxC}\n${c.row}\n👉 https://ctprox-netizen.github.io/claim-game/`;
   const ok=()=>toast('📋 복사했어요! 카톡에 붙여 넣으세요');
   if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(ok,()=>fb());else fb();
   function fb(){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');ok()}catch(e){prompt('아래 내용을 복사하세요',t)}a.remove()}}
 /* 시작 화면 프로필 & 모달 */
 function profHTML(){const r=rankOf(CR.xp),nx=RANKS[r+1],pc=nx?Math.round((CR.xp-RANKS[r][1])/(nx[1]-RANKS[r][1])*100):100,ms=missions(),md=ms.filter(m=>m.done).length,chd=CR.ch[today()];
   return`<div class="prof"><div class="rk"><span class="rkb">👔 ${RANKS[r][0]}</span><div class="xpb" aria-hidden="true"><i style="width:${pc}%"></i></div><small>${nx?`${nx[0]}까지 ${nx[1]-CR.xp} XP`:'최고 직급'}</small><button id="snd" class="sndb" aria-pressed="${CR.snd}" aria-label="효과음">${CR.snd?'🔊':'🔇'}</button></div>
-   <div class="pbtns"><button id="tutopen" class="tutb2" aria-label="튜토리얼">🎓 배우기</button><button id="msb">🎯 미션 <b>${md}/3</b></button><button id="acb" aria-label="업적">🏅 <b>${CR.ach.length}/${ACH.length}</b></button><button id="chb" class="chbtn">🗓 챌린지${chd?` <b>${chd.gr}</b>`:''}</button></div></div>`}
+   <div class="pbtns"><button id="tutopen" class="tutb2" aria-label="튜토리얼">🎓 배우기</button><button id="msb">🎯 미션 <b>${md}/3</b></button><button id="acb" aria-label="업적">🏅 <b>${CR.ach.length}/${ACH.length}</b></button><button id="chb" class="chbtn">🗓 챌린지${chd?` <b>${chd.gr}</b>`:''}</button><button id="setb" class="setbtn" aria-label="설정">⚙️ 설정</button></div></div>`}
+function openSet(){gOpen('⚙️ 설정',`<h4 class="gmh4">서류 형식</h4><div class="wzl"><button class="wzo" data-nb="0" aria-pressed="${!st.newbie}"><b>실제 양식</b><span>진짜 서류처럼 · 표와 도장까지</span></button><button class="wzo" data-nb="1" aria-pressed="${st.newbie}"><b>간편 서류</b><span>심사에 필요한 칸만 · 처음 할 때 추천</span></button></div>
+  <h4 class="gmh4">효과음</h4><div class="wzl"><button class="wzo" data-snd="1" aria-pressed="${CR.snd}"><b>🔊 켜기</b></button><button class="wzo" data-snd="0" aria-pressed="${!CR.snd}"><b>🔇 끄기</b></button></div>
+  <p class="gmd">화면 오른쪽 위 🔊 버튼으로도 소리를 끄고 켤 수 있어요.</p><button class="begin" id="gmx2s">닫기</button>`)}
 const gmo=document.getElementById('gmo');
 function gOpen(t,b){gmo.classList.remove('mini');const md=gmo.firstElementChild;md.style.top='';md.style.maxHeight='';document.getElementById('gmt').textContent=t;document.getElementById('gmb').innerHTML=b;gmo.hidden=false;document.getElementById('gmx').focus()}
 function gOpenM(t,b){const keep=!gmo.hidden&&gmo.classList.contains('mini');gOpen(t,b);gmo.classList.add('mini');const md=gmo.firstElementChild;if(keep)md.style.animation='none';else md.style.animation='';const a=document.querySelector('.mrow');let top=60;if(a&&st.scr==='inbox'){const r=a.getBoundingClientRect();if(r.height&&r.bottom>0&&r.bottom<innerHeight)top=r.bottom+6}top=Math.max(8,Math.min(top,innerHeight-320));md.style.top=top+'px';md.style.maxHeight=(innerHeight-top-10)+'px';document.getElementById('gmb').scrollTop=0}
@@ -1901,10 +1922,11 @@ function gClose(){gmo.hidden=true;if(st.scr==='inbox'&&st.msgAll)inbox(true)}
 gmo.addEventListener('click',e=>{if(e.target===gmo||e.target.closest('#gmx'))return gClose();const b=e.target.closest('button');if(!b)return;
   if(b.id==='chgo'){gClose();st.lv=2;st.pick=false;st.vol=1;st.chR=rng(today()*31+17);beginDay()}
   if(b.id==='share2'){st.lastCh=CR.ch[today()];shareCh()}
-  if(b.id==='lbAdd'){lbAdd();return}
+  if(b.dataset.nb!==undefined){st.newbie=b.dataset.nb==='1';CR.nb=st.newbie;saveCR();openSet();return}
+  if(b.dataset.snd!==undefined){if((b.dataset.snd==='1')!==CR.snd)togSnd();openSet();return}
+  if(b.id==='gmx2s'){gClose();if(st.scr==='start')start();return}
   if(b.dataset.sbt!==undefined){st.sbTab=+b.dataset.sbt;sbFill(st.sbTab);return}
-  if(b.dataset.lbt!==undefined){st.lbTab=+b.dataset.lbt;lbFill(st.lbTab);return}
-  if(b.id==='nickSave'){const v=(document.getElementById('nickIn').value||'').replace(/[|]/g,'').trim().slice(0,10);CR.nick=v;saveCR();toast(v?`닉네임 저장: ${v}`:'닉네임을 지웠어요');lbFill(st.lbTab||0);const td=CR.ch[today()];if(v&&td)sbSubmit(today(),td).then(ok=>{if(ok)sbOpen()});return}
+  if(b.id==='nickSave'){const v=(document.getElementById('nickIn').value||'').replace(/[|]/g,'').trim().slice(0,10);CR.nick=v;saveCR();toast(v?`닉네임 저장: ${v}`:'닉네임을 지웠어요');const td=CR.ch[today()];if(v&&td)sbSubmit(today(),td).then(ok=>{if(ok)sbOpen()});return}
   if(b.id==='gmx2'||b.id==='mback'){if(st.msgAll&&st.msgAll.length)openMbox();else gClose()}
   if(b.id==='cback'){openCbox()}
   if(b.id==='cbGo'){const k=st.curMsg&&st.curMsg.it.c.call;if(k&&k.state==='pending'){k.at=st.gm;gClose();ringCheck()}}
@@ -1927,15 +1949,10 @@ function openCh(){const d=new Date(),chd=CR.ch[today()];gOpen(`🗓 오늘의 �
   <h4 class="gmh4">🌐 전체 순위</h4>
   <div class="seg lbtab" role="group" aria-label="전체 순위 기간"><button data-sbt="0" aria-pressed="true">오늘</button><button data-sbt="1" aria-pressed="false">이번 주</button><button data-sbt="2" aria-pressed="false">누적</button></div>
   <div id="sbBox"></div>
-  <h4 class="gmh4">🔑 심사코드 순위</h4>
-  <div class="lbn2" hidden></div>
-  <div class="seg lbtab" role="group" aria-label="순위 기간"><button data-lbt="0" aria-pressed="true">오늘</button><button data-lbt="1" aria-pressed="false">이번 주 (월~오늘 합계)</button></div>
-  <div id="lbBox"></div>
-  <p class="gmd">친구가 카톡으로 보낸 챌린지 결과를 통째로 붙여 넣으면 <b>🔑 심사코드</b>를 읽어서 순위에 넣어요. 내 결과를 공유할 때도 코드가 같이 복사돼요.</p>
-  <textarea id="lbIn" rows="3" placeholder="친구 결과를 여기에 붙여 넣기"></textarea><button class="begin" id="lbAdd">순위에 추가</button>`);
-  const ni=document.getElementById('nickIn');if(ni)ni.value=CR.nick||'';st.lbTab=0;lbFill(0);st.sbTab=0;sbOpen()}
+`);
+  const ni=document.getElementById('nickIn');if(ni)ni.value=CR.nick||'';st.sbTab=0;sbOpen()}
 
-syncSnd();start();
+if(CR.nb!=null)st.newbie=!!CR.nb;if(CR.last){st.lv=CR.last.lv;st.pick=CR.last.pick;st.vol=CR.last.vol}syncSnd();start();
 }
 
 /* 도트 햄스터 */
