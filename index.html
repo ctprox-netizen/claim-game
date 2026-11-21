@@ -508,7 +508,7 @@ body.app.ingame .msgc{bottom:74px}
 <body>
 <button id="mute" class="mute" aria-label="게임 소리 켜기/끄기" aria-pressed="true">🔊</button>
 <header>
-  <h1>보험금 심사하기<span class="bld" id="bld">build 99</span><small>서류와 증권을 대조해 담보별로 지급·부지급을 결정하세요</small></h1>
+  <h1>보험금 심사하기<span class="bld" id="bld">build 101</span><small>서류와 증권을 대조해 담보별로 지급·부지급을 결정하세요</small></h1>
   <div class="stats">
     <button class="home" id="home" aria-label="처음 화면으로">⌂ 처음 화면</button>
     <div class="stat"><b id="prog">0 / 0</b><span>처리 / 접수</span></div>
@@ -607,7 +607,7 @@ const won=n=>n>=1e4?(n/1e4).toLocaleString('ko-KR')+'만원':n.toLocaleString('k
 const CG=[0,2e6,15e5,1e6,7e5,5e5,4e5,3e5,2e5,15e4,1e5,7e4,5e4,3e4,2e4],CGL=['부지급',...CG.slice(1).map((v,i)=>`${i+1}급 ${v>=1e4?(v/1e4)+'만':v}`)],GR=[0,1e5,2e5,5e5,1e6,2e6],GRL=['부지급','1종 10만','2종 20만','3종 50만','4종 100만','5종 200만'];
 const COV={shingles:{n:'대상포진진단비',amt:3e5,dx:1},gout:{n:'통풍진단비',amt:3e5,dx:1},infect:{n:'11대 특정감염병진단비',lv2:1,amt:2e5,dx:2},stone:{n:'요로결석진단비',amt:2e5,dx:1},elbow:{n:'엘보우(상과염)진단비',amt:1e5,dx:1},cpolyp:{n:'결장폴립진단비',amt:2e5,dx:1},gpolyp:{n:'위폴립진단비',amt:2e5,dx:1},wound:{n:'창상봉합술치료비',amt:1e5},flu:{n:'독감(인플루엔자) 치료비',amt:2e5},burn:{n:'화상진단비',amt:3e5},
   er:{n:'응급실내원비',opts:['부지급','비응급 2만','응급 10만'],vals:[0,2e4,1e5],am:'응급 10만원 · 비응급 2만원'},
-  outpt:{n:'통원일당',lv2:1,amt:2e4,am:'1일당 2만원 (1일 1회 · 입원 기간 제외)',fx:c=>2e4*visN(c).n},rehab:{n:'상해재활물리치료비',lv2:1,amt:1e4,am:'1회당 1만원 (1일 1회 · 최대 10회)',fx:c=>1e4*ptN(c).n},
+  dOutpt:{n:'질병통원일당',lv2:1,amt:2e4,am:'1일당 2만원 (질병 · 1일 1회 · 입원 기간 제외)',fx:c=>2e4*visN(c).n},iOutpt:{n:'상해통원일당',lv2:1,amt:2e4,am:'1일당 2만원 (상해 · 1일 1회 · 입원 기간 제외)',fx:c=>2e4*visN(c).n},rehab:{n:'상해재활물리치료비',lv2:1,amt:1e4,am:'1회당 1만원 (1일 1회 · 최대 10회)',fx:c=>1e4*ptN(c).n},
   dHosp:{n:'질병입원일당',amt:3e4,u:'1일당 '},hosp4:{n:'입원일당(4일 이상)',lv2:1,amt:2e4,am:'1일당 2만원 (4일 이상 입원 시 3일 초과 일수)',fx:c=>c.days>=4?2e4*(c.days-3):0},iHosp:{n:'상해입원일당',amt:3e4,u:'1일당 '},dHospG:{n:'질병입원일당(종합병원)',amt:2e4,u:'1일당 ',hl:1},dHospS:{n:'질병입원일당(상급종합병원)',amt:5e4,u:'1일당 ',hl:2},iHospG:{n:'상해입원일당(종합병원)',amt:2e4,u:'1일당 ',hl:1},
   nurse:{n:'간호간병통합서비스 입원일당',lv2:1,amt:2e4,am:'1일당 2만원 (통합서비스 병동 이용일수)',fx:c=>2e4*(c.nhs||0)},icu:{n:'중환자실 입원일당',amt:1e5,u:'1일당 ',rm:['중환자실']},iso:{n:'격리실 입원일당',amt:5e4,u:'1일당 ',rm:['격리실']},room1:{n:'1인실 입원일당',amt:5e4,u:'1일당 ',rm:['1인실'],cap:7,am:'1일당 5만원 (입원 1회당 최대 7일)'},room23:{n:'2~3인실 입원일당',amt:2e4,u:'1일당 ',rm:['2인실','3인실']},
   dSurg:{n:'질병수술비',amt:3e5},appx:{n:'충수염수술비',amt:3e5},hemo:{n:'치핵수술비',amt:2e5},iSurg:{n:'상해수술비',amt:3e5},dSurgS:{n:'질병수술비(상급종합병원)',amt:5e5,hl:2},
@@ -812,7 +812,8 @@ function judge(k,c){
     if(!c.docs.pt)return no('물리치료 확인서 미제출 — 서류가 없으면 지급 불가');
     const P=ptN(c);return{d:2,amt:1e4*P.n,w:`물리치료 ${P.raw}회${P.raw>P.u?` 중 같은 날 중복 ${P.raw-P.u}회 제외 → ${P.u}회`:''}${P.u>10?' → 최대 10회 한도':''} → ${P.n}회 × 1만원`};
   }
-  if(k==='outpt'){
+  if(k==='dOutpt'||k==='iOutpt'){
+    if(c.s.cause!==k[0])return no(`${c.s.cause==='d'?'질병':'상해'} 원인 통원 — ${N} 대상 아님`);
     if(!c.visits||!c.visits.length)return no('통원(외래) 진료 기록 없음');
     if(!c.docs.visit)return no('통원 진료 확인서 미제출 — 서류가 없으면 지급 불가');
     const V=visN(c);if(!V.n)return no('입원 기간 중 진료만 있음 — 통원일수 0일, 통원 기록 없음');
@@ -980,7 +981,7 @@ function genOnce(){
   if(dx.length)groups.push(['진단·치료비',dx]);
   if(c.car&&st.lv>=2)groups.push(['자동차보험 할증',['surch']]);
   if(er)groups.push(['응급실',['er']]);
-  if(c.visits)groups.push(['통원',['outpt']]);
+  if(c.visits)groups.push(['통원',['dOutpt','iOutpt']]);
   if(c.pt)groups.push(['물리치료',['rehab']]);
   const HL=st.lv>=2;c.rooms=null;
   if(days&&st.lv>=3){let left=days;const sg=[];
@@ -1267,7 +1268,8 @@ const INFO={
  surch:()=>['피보험자가 <b>운전 중</b> 자동차사고를 내서 <b>내 자동차보험으로 처리</b>하고 그 때문에 <b>보험료가 할증</b>된 경우 1사고당 20만원.','동승자·보행자로 다친 사고, 상대방 과실 100%라 내 보험 처리·할증이 없는 경우는 제외.','<b>자동차보험 할증 확인서</b>의 할증 여부를 확인하세요.'],
  hemo:()=>['<b>치핵(K64)</b>으로 <b>치핵 수술</b>(치핵 절제술 등)을 받은 경우 20만원.','좌욕·약물 등 보존적 치료만 받은 경우, 항문열창(치열, K60) 등 치핵이 아닌 항문 질환 수술은 제외.','수술확인서 필수.'],
  appx:()=>['<b>충수염(K35~K37)</b>으로 <b>충수절제술</b>을 받은 경우 30만원.','항생제 등 보존적 치료만 받은 경우, 충수염이 아닌 수술은 제외.','수술확인서 필수.'],
- outpt:()=>['질병·상해로 <b>외래(통원) 진료</b>를 받은 날 1일당 2만원.','<b>같은 날 여러 번 진료해도 1일</b>로 계산.','<b>입원 기간 중</b> 받은 외래 진료일은 제외.','통원 진료 확인서 필수 — 진료일을 직접 세어 보세요.'],
+ dOutpt:()=>['<b>질병</b>으로 <b>외래(통원) 진료</b>를 받은 날 1일당 2만원. 상해로 인한 통원은 제외.','<b>같은 날 여러 번 진료해도 1일</b>로 계산.','<b>입원 기간 중</b> 받은 외래 진료일은 제외.','통원 진료 확인서 필수 — 진료일을 직접 세어 보세요.'],
+ iOutpt:()=>['<b>상해</b>로 <b>외래(통원) 진료</b>를 받은 날 1일당 2만원. 질병으로 인한 통원은 제외.','<b>같은 날 여러 번 진료해도 1일</b>로 계산.','<b>입원 기간 중</b> 받은 외래 진료일은 제외.','통원 진료 확인서 필수 — 진료일을 직접 세어 보세요.'],
  rehab:()=>['<b>상해</b>로 <b>물리치료</b>를 받은 경우 1회당 1만원.','<b>1일 1회</b>만 인정(같은 날 2회는 1회), <b>최대 10회</b>.','질병(디스크·엘보 등)으로 받은 물리치료는 제외.','물리치료 확인서 필수.'],
  nurse:()=>['입원 중 <b>간호·간병통합서비스 병동</b>을 이용한 일수 × 1일당 2만원.','일반 병동 입원일은 제외. 입원확인서의 <b>간호·간병통합서비스</b> 항목을 확인하세요.','질병·상해 모두 해당. 입원확인서 필수.'],
  shingles:()=>['B02 <b>대상포진</b> 진단 확정 시 30만원.','계약일부터 <b>90일 이내</b> 진단은 면책(부지급).','질병 원인만 해당.'],
@@ -1381,6 +1383,18 @@ function payBlock(c){const i=c.covs.indexOf('pay');return i>=0&&sumPick(c)>0&&c.
 function payShown(c,res){return sumPick(c)>0}
 function sumPick(c){return c.covs.reduce((a,k,i)=>a+pv(c,i),0)}
 const app=document.getElementById('app');
+/* 화면 전환 스와이프 */
+function pgDrag(dx){app.style.transition='none';app.style.transform=`translateX(${dx*.9}px)`;app.style.opacity=String(Math.max(.55,1-Math.abs(dx)/innerWidth*.6))}
+function pgBack(){app.style.transition='transform .22s ease-out,opacity .22s';app.style.transform='';app.style.opacity='';setTimeout(()=>{app.style.transition=''},240)}
+function pgGo(dir,cb){const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;if(RM){app.style.transform='';app.style.opacity='';cb();return}
+  app.style.transition='transform .18s ease-in,opacity .18s';app.style.transform=`translateX(${dir*100}%)`;app.style.opacity='.4';
+  setTimeout(()=>{cb();app.style.transition='none';app.style.transform=`translateX(${-dir*35}%)`;app.style.opacity='.4';void app.offsetWidth;
+    app.style.transition='transform .26s cubic-bezier(.2,.8,.3,1),opacity .26s';app.style.transform='';app.style.opacity='';setTimeout(()=>{app.style.transition=''},280)},180)}
+{let t0=null;const ok=()=>st.scr==='inbox'&&MOBQ()&&!st.tut&&st.lastQ!=null&&st.queue&&st.queue[st.lastQ]&&!st.queue[st.lastQ].ai&&st.queue[st.lastQ].by!=='ai';
+  app.addEventListener('touchstart',e=>{t0=ok()&&e.touches.length===1&&!e.target.closest('.mrow')?{x:e.touches[0].clientX,y:e.touches[0].clientY,lk:0}:null},{passive:true});
+  app.addEventListener('touchmove',e=>{if(!t0)return;const t=e.touches[0],dx=t.clientX-t0.x,dy=t.clientY-t0.y;if(!t0.lk&&(Math.abs(dx)>10||Math.abs(dy)>10))t0.lk=dx<0&&Math.abs(dx)>Math.abs(dy)*1.3?1:-1;if(t0.lk===1)pgDrag(dx)},{passive:true});
+  app.addEventListener('touchend',e=>{if(!t0)return;const dx=e.changedTouches[0].clientX-t0.x,lk=t0.lk;t0=null;if(lk!==1)return;if(dx<-80&&ok())pgGo(-1,()=>openQ(st.lastQ));else pgBack()},{passive:true});
+  app.addEventListener('touchcancel',()=>{if(t0&&t0.lk===1)pgBack();t0=null},{passive:true})}
 function render(res){if(!inf.hidden)closeInfo(false);closeCalc();closeGp(false);
   document.body.classList.add('ingame');const c=st.c,os=document.getElementById('slides');if(c.resetSx){c.sx=null;c.resetSx=0}else if(os)c.sx=os.scrollLeft;document.body.classList.add('app');
   const keep=os&&!c._fresh,sTops=keep?[...os.children].map(e=>e.scrollTop):[],wy=scrollY;const fx=keep&&document.getElementById('files')?document.getElementById('files').scrollLeft:0;c._fresh=false;
@@ -1396,8 +1410,9 @@ function render(res){if(!inf.hidden)closeInfo(false);closeCalc();closeGp(false);
       const r=ds.getBoundingClientRect(),y=(e.clientY-r.top)/r.height;if(y<.35)dsStep(ds,-1);else if(y>.65)dsStep(ds,1)})}
   {const s1=document.getElementById('slides'),sls=[...s1.children].filter(x=>!x.classList.contains('dslide')),last=sls[sls.length-1];if(res)sls.slice(0,-1).forEach(x=>x.insertAdjacentHTML('beforeend','<div class="stw"><button class="go" data-goin="1">일정창으로 돌아가기 →</button></div>'));
     const pB=!res&&payBlock(c);if(last)last.insertAdjacentHTML('beforeend',`<div class="stw">${pB?'<p class="pbh">💳 지급 계좌 예금주 확인을 먼저 선택하세요</p>':''}<button class="go${pB?' blk':''}" id="go" ${pB?'aria-disabled="true"':''}>${res?'일정창으로 돌아가기 →':'심사 완료 · 도장 찍기'}</button></div>`)}
-  {const s2=document.getElementById('slides');if(MOBQ()&&s2){let t0=null;s2.addEventListener('touchstart',e=>{const t=e.touches[0];t0=s2.scrollLeft<=2&&e.touches.length===1?{x:t.clientX,y:t.clientY}:null},{passive:true});
-    s2.addEventListener('touchend',e=>{if(!t0||st.tut)return;const t=e.changedTouches[0],dx=t.clientX-t0.x,dy=t.clientY-t0.y;t0=null;if(dx>80&&Math.abs(dx)>Math.abs(dy)*1.5&&s2.scrollLeft<=2){closeInfo(false);inbox()}},{passive:true})}}
+  {const s2=document.getElementById('slides');if(MOBQ()&&s2){let t0=null;s2.addEventListener('touchstart',e=>{const t=e.touches[0];t0=s2.scrollLeft<=2&&e.touches.length===1&&!st.tut?{x:t.clientX,y:t.clientY,lk:0}:null},{passive:true});
+    s2.addEventListener('touchmove',e=>{if(!t0)return;const t=e.touches[0],dx=t.clientX-t0.x,dy=t.clientY-t0.y;if(!t0.lk&&(Math.abs(dx)>10||Math.abs(dy)>10))t0.lk=dx>0&&Math.abs(dx)>Math.abs(dy)*1.3?1:-1;if(t0.lk===1)pgDrag(dx)},{passive:true});
+    s2.addEventListener('touchend',e=>{if(!t0)return;const t=e.changedTouches[0],dx=t.clientX-t0.x,lk=t0.lk;t0=null;if(lk!==1)return;if(dx>80&&s2.scrollLeft<=2)pgGo(1,()=>{closeInfo(false);inbox()});else pgBack()},{passive:true});s2.addEventListener('touchcancel',()=>{if(t0&&t0.lk===1)pgBack();t0=null},{passive:true})}}
   if(MOBQ()){const ls=document.querySelector('.slide.list');if(ls){if(c.padTop==null){const K=[...ls.children].filter(x=>!x.classList.contains('stw'));if(K.length){const ch=K[K.length-1].getBoundingClientRect().bottom-K[0].getBoundingClientRect().top;c.padTop=Math.max(0,Math.round((ls.clientHeight-ch)/2)-8)}else c.padTop=0}ls.style.paddingTop=c.padTop+'px'}const ns=document.querySelector('.slide:not(.list)');if(ns){if(c.padTopN==null){const K=[...ns.children].filter(x=>!x.classList.contains('stw'));if(K.length){const ch=K[K.length-1].getBoundingClientRect().bottom-K[0].getBoundingClientRect().top;c.padTopN=Math.max(0,Math.round((ns.clientHeight-ch)/2)-8)}else c.padTopN=0}ns.style.paddingTop=c.padTopN+'px'}else c.padTopN=null}
   const sl=document.getElementById('slides');if(keep){scrollTo(0,wy);const fe=document.getElementById('files');if(fe&&fx)fe.scrollLeft=fx;if(sl)[...sl.children].forEach((e,i)=>{if(sTops[i])e.scrollTop=sTops[i]})}if(sl){sl.scrollLeft=c.sx==null?(sl.clientWidth+12)*D:c.sx;const upd=()=>{const W=sl.clientWidth+12,n=sl.children.length-D,raw=Math.min(n-1+D,Math.round(sl.scrollLeft/W)),i=Math.max(0,raw-D);
     document.getElementById('sn').textContent=raw<D?'📂 서류':`${i+1} / ${n}`;if(raw>=D)c.maxI=Math.max(c.maxI||0,i);if(raw<D&&!c.dsSeen){c.dsSeen=1;dsCur(sl.querySelector('.dslide'))}document.querySelector('.policy').classList.toggle('ondocs',raw<D);
@@ -1449,7 +1464,7 @@ function inboxTick(){const q=st.queue,B=document.getElementById('clkB');if(!B)re
   if(q.length>st.shown){const L=document.getElementById('qlw'),e=document.getElementById('qe');e&&e.remove();
     for(let i=st.shown;i<q.length;i++)L.insertAdjacentHTML('beforeend',st.rowHTML(q[i]));st.shown=q.length}
   q.forEach((it,i)=>{if(it.done)return;const s=document.getElementById('qs'+i);if(!s)return;const[cl,tx]=qst(it),nc='qs '+cl;if(s.className!==nc)s.className=nc;if(s.textContent!==tx)s.textContent=tx})}
-function openQ(i){const it=st.queue[i];if(!it)return;if(it.ai){toast('🤖 AI가 심사 중인 건이에요');return}if(it.by==='ai'){toast(`🤖 AI가 처리한 건이에요 (${it.right}/${it.items})`);return}it.mine=1;st.cur=i;st.c=it.c;st.c._fresh=true;st.c.opened=1;st.c.sx=null;st.c.maxI=0;st.c.dsSeen=0;st.c.padTop=null;st.c.padTopN=null;st.done=it.done;st.scr='game';render(it.done);window.scrollTo({top:0})}
+function openQ(i){const it=st.queue[i];if(!it)return;if(it.ai){toast('🤖 AI가 심사 중인 건이에요');return}if(it.by==='ai'){toast(`🤖 AI가 처리한 건이에요 (${it.right}/${it.items})`);return}it.mine=1;st.lastQ=i;st.cur=i;st.c=it.c;st.c._fresh=true;st.c.opened=1;st.c.sx=null;st.c.maxI=0;st.c.dsSeen=0;st.c.padTop=null;st.c.padTopN=null;st.done=it.done;st.scr='game';render(it.done);window.scrollTo({top:0})}
 function noticeHTML(c,res){
   const okT=[...c.ntA].sort().join()===[...c.nt].sort().join(),okS=c.ns===c.nsA;
   const showFr=res?(c.fr||sumPick(c)===0):sumPick(c)===0,okF=c.frP===c.fr;
@@ -1852,7 +1867,7 @@ function afterSubmit(it,c,right,items,mul){const g=st.g,L=[],perfect=right===ite
 function callDone(it,k){if(!it||st.tut)return;(st.callLog=st.callLog||[]).push({at:st.gm,it,k});if(k.end===1){st.g.callOk++;CR.tot.calls++;mProg('callOk');if(CR.tot.calls>=10)unlock('calls10')}saveCR()}
 /* 근무 시작 */
 function beginDay(){st.sil=st.pick;st.ai=st.vs&&!st.chR?{lv:st.aiLv||1,score:0,n:0,ok:0,tot:0,cur:null,next:R(3,8)}:null;if(!st.ai)st.vs=false;st.notice=true;TOTAL=LV[st.lv].total;best=st.chR?null:bests[mk()]||null;st.g={combo:0,maxC:0,perfect:0,fraud:0,callOk:0,silOk:0};st.gXp=0;st.newAch=[];
-  Object.assign(st,{i:0,score:0,ok:0,okClaims:0,totalCov:0,queue:[],gm:0,lateN:0,cur:-1});
+  Object.assign(st,{i:0,score:0,ok:0,okClaims:0,totalCov:0,queue:[],gm:0,lateN:0,cur:-1,lastQ:null});
   st.sched=seeded(()=>Array.from({length:Math.max(1,VOL[st.vol].k+R(-2,2))},()=>R(3,528)).sort((a,b)=>a-b));
   msgPlan();arrive();arrive();inbox();window.scrollTo({top:0});startT()}
 /* AI 대결 */
