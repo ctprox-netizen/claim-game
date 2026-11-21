@@ -491,7 +491,7 @@ body.app.ingame .msgc{bottom:74px}
 .msgf{font-size:12.5px;color:#5a5048;margin:0 0 6px}.msgb{background:#fff;border:1.5px solid #1d1a17;border-radius:10px;padding:10px 12px;font-size:14px;line-height:1.6;margin-bottom:8px}
 .gmb .ccase{position:static;max-height:none;box-shadow:none;margin:6px 0}.gmb .nss{margin-top:8px}.gmb .ns.right{outline:3px solid #1d4ed8}
 .urgb{font-size:11.5px;color:#1d1a17;background:#ffd27a;border-radius:4px;padding:0 4px;white-space:nowrap}.urgb.late{background:#1d1a17;color:#fff}.reab{font-size:11.5px;color:#1d4ed8;white-space:nowrap}
-.gpop.wpop{width:150px;padding:0}.dpu{margin:6px 8px 2px;font-size:11.5px;color:#5a5048;text-align:center}.whw{position:relative;margin:0 6px;height:108px}.whb{position:absolute;left:0;right:0;top:36px;height:36px;border:2.5px solid #1d4ed8;border-radius:9px;background:#1d4ed812;pointer-events:none}.whl{height:108px;overflow-y:scroll;scroll-snap-type:y mandatory;padding:36px 0;box-sizing:border-box;scrollbar-width:none;-webkit-mask-image:linear-gradient(transparent,#000 35%,#000 65%,transparent);mask-image:linear-gradient(transparent,#000 35%,#000 65%,transparent);overscroll-behavior:contain;touch-action:pan-y;outline:none;cursor:grab}.whl::-webkit-scrollbar{display:none}.whi{height:36px;line-height:36px;text-align:center;scroll-snap-align:center;font-size:16px;font-weight:600;color:#5a5048;user-select:none}.whi.on{font-size:19px;font-weight:900;color:#1d1a17}.dpf{display:flex;align-items:center;gap:6px;margin:6px 6px 6px}.dps{flex:1;text-align:center;font-size:13px;white-space:nowrap}.dpt{color:#1d4ed8}.dpok{flex:none;border:2px solid #1d1a17;background:#1d1a17;color:#fff;border-radius:8px;padding:5px 9px;font-size:13px;font-weight:800;font-family:inherit;cursor:pointer}.dayb,.dayb span{font-family:inherit}.dayb b{font-weight:900}
+.gpop.wpop{width:128px;padding:0;overflow:hidden}.whw{position:relative;height:220px}.whb{position:absolute;left:6px;right:6px;top:88px;height:44px;border:2.5px solid #1d4ed8;border-radius:10px;background:#1d4ed812;pointer-events:none}.whl{height:220px;overflow-y:scroll;scroll-snap-type:y mandatory;padding:88px 0;box-sizing:border-box;scrollbar-width:none;-webkit-mask-image:linear-gradient(transparent,#000 28%,#000 72%,transparent);mask-image:linear-gradient(transparent,#000 28%,#000 72%,transparent);overscroll-behavior:contain;touch-action:pan-y;outline:none;cursor:grab}.whl::-webkit-scrollbar{display:none}.whi{height:44px;line-height:44px;text-align:center;scroll-snap-align:center;font-size:18px;font-weight:600;color:#5a5048;user-select:none;cursor:pointer}.whi.on{font-size:22px;font-weight:900;color:#1d1a17}.dayb,.dayb span{font-family:inherit}.dayb b{font-weight:900}
 .gpop.frp{width:min(300px,calc(100vw - 24px))}.gpop.frp .gpl button{white-space:normal;text-align:left;padding:6px 10px;line-height:1.3}.frb{width:100%;text-align:left}
 .go.blk{background:#cfc6ba!important;border-color:#cfc6ba!important;color:#5a5048!important}.pbh{margin:0 0 6px;font-size:12.5px;font-weight:700;color:#1d1a17;text-align:center}.stw{flex-direction:column;align-items:center}
 .cov.flash{animation:flash 1.2s}@keyframes flash{0%,60%{background:#ffd27a}100%{background:transparent}}
@@ -508,7 +508,7 @@ body.app.ingame .msgc{bottom:74px}
 <body>
 <button id="mute" class="mute" aria-label="게임 소리 켜기/끄기" aria-pressed="true">🔊</button>
 <header>
-  <h1>보험금 심사하기<span class="bld" id="bld">build 103</span><small>서류와 증권을 대조해 담보별로 지급·부지급을 결정하세요</small></h1>
+  <h1>보험금 심사하기<span class="bld" id="bld">build 104</span><small>서류와 증권을 대조해 담보별로 지급·부지급을 결정하세요</small></h1>
   <div class="stats">
     <button class="home" id="home" aria-label="처음 화면으로">⌂ 처음 화면</button>
     <div class="stat"><b id="prog">0 / 0</b><span>처리 / 접수</span></div>
@@ -1329,12 +1329,12 @@ function openGp(i,btn){closeCalc();closeInfo(false);closeDoc(false);gpFrom=btn;c
   gpop.className='pop gpop'+(C.carG?' many':'');
   gpop.innerHTML=`<div class="ph"><b>${C.n}</b><button id="gpx" aria-label="닫기">✕</button></div><div class="gpl">${L.map((t,v)=>`<button role="option" data-gv="${v}" data-gi="${i}" aria-selected="${c.pick[i]===v}">${t}</button>`).join('')}</div>`;
   gpop.hidden=false;btn.setAttribute('aria-expanded','true');place(btn,gpop);const s=gpop.querySelector('[aria-selected="true"]');s&&s.focus({preventScroll:true})}
-function openDp(i,btn){closeCalc();closeInfo(false);closeDoc(false);gpFrom=btn;const c=st.c,k=c.covs[i],C=COV[k],u=dUnit(k),MX=Math.max(30,dGet(c,i)+5),IH=36;
+function openDp(i,btn){closeCalc();closeInfo(false);closeDoc(false);gpFrom=btn;const c=st.c,k=c.covs[i],C=COV[k],u=dUnit(k),MX=Math.max(30,dGet(c,i)+5),IH=44;
   gpop.className='pop gpop wpop';
-  gpop.innerHTML=`<p class="dpu">${u==='회'?'1회당':'1일당'} <b>${won(C.amt)}</b></p><div class="whw"><div class="whb" aria-hidden="true"></div><div class="whl" id="whl" tabindex="0" role="listbox" aria-label="보상 ${u}수">${Array.from({length:MX+1},(_,n)=>`<div class="whi" role="option" data-wn="${n}">${n?n+u:'0'+u}</div>`).join('')}</div></div><div class="dpf"><div class="dps" id="dps"></div><button class="dpok" id="dpok">확인</button></div>`;
+  gpop.innerHTML=`<div class="whw"><div class="whb" aria-hidden="true"></div><div class="whl" id="whl" tabindex="0" role="listbox" aria-label="${C.n} 보상 ${u}수">${Array.from({length:MX+1},(_,n)=>`<div class="whi" role="option" data-wn="${n}">${n?n+u:'부지급'}</div>`).join('')}</div></div>`;
   gpop.hidden=false;btn.setAttribute('aria-expanded','true');place(btn,gpop);
-  const W=document.getElementById('whl'),S=document.getElementById('dps');let tm=null;
-  const show=n=>{S.innerHTML=n?`<b class="dpt">${won(n*C.amt)}</b>`:'<b>부지급</b>';W.querySelectorAll('.whi').forEach(e=>e.classList.toggle('on',+e.dataset.wn===n));W.setAttribute('aria-valuenow',n)};
+  const W=document.getElementById('whl');let tm=null;
+  const show=n=>{W.querySelectorAll('.whi').forEach(e=>e.classList.toggle('on',+e.dataset.wn===n));W.setAttribute('aria-valuenow',n)};
   const cur=()=>Math.max(0,Math.min(MX,Math.round(W.scrollTop/IH)));
   W.scrollTop=dGet(c,i)*IH;show(dGet(c,i));
   W.addEventListener('scroll',()=>{const n=cur();show(n);clearTimeout(tm);tm=setTimeout(()=>{if(!st.done)dSet(c,i,cur())},90)},{passive:true});
@@ -1343,11 +1343,11 @@ function openDp(i,btn){closeCalc();closeInfo(false);closeDoc(false);gpFrom=btn;c
   W.addEventListener('keydown',e=>{if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();W.scrollTo({top:(cur()+(e.key==='ArrowDown'?1:-1))*IH,behavior:'smooth'})}else if(e.key==='Enter'){e.preventDefault();dpClose()}});
   {let d=null;W.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse')return;d={y:e.clientY,t:W.scrollTop};W.setPointerCapture(e.pointerId);e.preventDefault()});W.addEventListener('pointermove',e=>{if(d)W.scrollTop=d.t-(e.clientY-d.y)});W.addEventListener('pointerup',e=>{if(!d)return;const mv=Math.abs(e.clientY-d.y);d=null;W.scrollTo({top:cur()*IH,behavior:'smooth'});if(mv<4){const el=document.elementFromPoint(e.clientX,e.clientY);const t=el&&el.closest('.whi');if(t)pickN(+t.dataset.wn)}})}
   gpop._dp=i;W.focus({preventScroll:true})}
-function dpClose(){const i=gpop._dp;if(i==null)return;const W=document.getElementById('whl');if(W&&!st.done)dSet(st.c,i,Math.max(0,Math.round(W.scrollTop/36)));gpop._dp=null;closeGp(false);render(false);const t=document.querySelector(`[data-dp="${i}"]`);t&&t.focus({preventScroll:true})}
+function dpClose(){const i=gpop._dp;if(i==null)return;const W=document.getElementById('whl');if(W&&!st.done)dSet(st.c,i,Math.max(0,Math.round(W.scrollTop/44)));gpop._dp=null;closeGp(false);render(false);const t=document.querySelector(`[data-dp="${i}"]`);t&&t.focus({preventScroll:true})}
 function openFr(btn){closeCalc();closeInfo(false);closeDoc(false);gpFrom=btn;const c=st.c;gpop.className='pop gpop frp';
   gpop.innerHTML=`<div class="ph"><b>최종 부지급 사유</b><button id="gpx" aria-label="닫기">✕</button></div><div class="gpl">${Object.entries(RS).filter(([k])=>k!=='reduce').map(([k,t])=>`<button role="option" data-frv="${k}" aria-selected="${c.frP===k}">${t}</button>`).join('')}</div>`;
   gpop.hidden=false;btn.setAttribute('aria-expanded','true');place(btn,gpop);const s=gpop.querySelector('[aria-selected="true"]');s&&s.focus({preventScroll:true})}
-function closeGp(focus){if(gpop.hidden)return;if(gpop._dp!=null){const i=gpop._dp,W=document.getElementById('whl');gpop._dp=null;if(W&&!st.done)dSet(st.c,i,Math.max(0,Math.round(W.scrollTop/36)));gpop.hidden=true;gpFrom&&gpFrom.setAttribute('aria-expanded','false');render(false);return}gpop.hidden=true;gpFrom&&gpFrom.setAttribute('aria-expanded','false');focus&&gpFrom&&gpFrom.focus({preventScroll:true})}
+function closeGp(focus){if(gpop.hidden)return;if(gpop._dp!=null){const i=gpop._dp,W=document.getElementById('whl');gpop._dp=null;if(W&&!st.done)dSet(st.c,i,Math.max(0,Math.round(W.scrollTop/44)));gpop.hidden=true;gpFrom&&gpFrom.setAttribute('aria-expanded','false');render(false);return}gpop.hidden=true;gpFrom&&gpFrom.setAttribute('aria-expanded','false');focus&&gpFrom&&gpFrom.focus({preventScroll:true})}
 gpop.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.id==='dpok')return dpClose();if(b.id==='gpx')return closeGp(true);
   if(b.dataset.frv!==undefined&&!st.done){st.c.frP=b.dataset.frv;closeGp(false);render(false);const t=document.querySelector('[data-frp]');t&&t.focus({preventScroll:true});return}
   if(b.dataset.gv!==undefined&&!st.done){const i=+b.dataset.gi;st.c.pick[i]=+b.dataset.gv;closeGp(false);render(false);const t=document.querySelector(`[data-gp="${i}"]`);t&&t.focus({preventScroll:true})}});
@@ -1668,7 +1668,7 @@ function tutStart(){const c=tutPrep();st.tut=true;st.callAll=true;st.notice=true
    {sel:'#ov',t:`서류를 <b>짧게 톡</b> 터치하면 닫혀요.`,done:()=>ov.hidden}]),
    {sel:row(t1),t:`${DESKQ()?'오른쪽':'아래'} 심사표에는 <b>가입한 담보만</b> 나와요. 이 건은 <b>${N(t1)}</b>, <b>${N(t0)}</b> 두 개예요.<br>${N(t1)} 옆 <b>🔍</b>를 눌러 지급기준을 보세요.`,done:()=>!inf.hidden},
    {sel:'#inf',t:`담보마다 <b>지급 조건</b>이 있어요. 이 조건과 서류 내용을 대조하는 게 심사의 핵심이에요.`,btn:'확인'},
-   {sel:()=>!gpop.hidden?gpop:row(t1)(),t:`<b>${N(t1)}</b>: ${c.ans[t1].w}<br>→ 조건을 충족하니 ${isDay(c.covs[t1])?`<b>[▾]</b>를 누르고 위아래로 굴려서 <b>${aDays(c,t1)}${dUnit(c.covs[t1])}</b>을 고른 뒤 [확인]을 눌러요.`:'<b>[지급]</b>을 눌러요.'}`,done:()=>gpop.hidden&&decOk(c,t1)},
+   {sel:()=>!gpop.hidden?gpop:row(t1)(),t:`<b>${N(t1)}</b>: ${c.ans[t1].w}<br>→ 조건을 충족하니 ${isDay(c.covs[t1])?`<b>[▾]</b>를 누르고 위아래로 굴려서 <b>${aDays(c,t1)}${dUnit(c.covs[t1])}</b>을 눌러요.`:'<b>[지급]</b>을 눌러요.'}`,done:()=>gpop.hidden&&decOk(c,t1)},
    {sel:()=>!gpop.hidden?gpop:row(t0)(),t:`<b>${N(t0)}</b>: ${c.ans[t0].w}<br>→ 조건에 안 맞으니 <b>부지급</b>이 맞아요. ${c.pick[t0]===0?'기본값이 부지급이라 그대로 두면 돼요.':isDay(c.covs[t0])?'[▾]를 눌러 <b>0일</b>로 굴려요.':'[부지급]을 눌러요.'}`,done:()=>decOk(c,t0),btn:'알겠어요'},
    {sel:()=>{const g=document.getElementById('go'),s=document.getElementById('slides');if(g&&s){const r=g.getBoundingClientRect(),R=s.getBoundingClientRect();if(r.left>=R.left-2&&r.right<=R.right+2){if(r.bottom>R.bottom||r.top<R.top)g.scrollIntoView({block:'nearest'});return g}}return document.getElementById('snx')},t:`<b>결정 지급액 합계</b>로 금액을 확인하고, <b>다음 ›</b>으로 심사표 <b>마지막 장</b>까지 넘기면 나오는 <b>[심사 완료 · 도장 찍기]</b>를 눌러요.`,done:()=>st.queue[0].done},
    {sel:'.res',t:`도장을 찍으면 담보별 <b>✓ 정답 / ✗ 오답</b>과 판정 사유가 나와요. 틀린 건 여기서 복습해요.`,btn:'다음'},
