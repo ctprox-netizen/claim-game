@@ -589,7 +589,7 @@ body.scene details.rules,body.scene h1 small,body.scene header .stats,body.scene
 <body>
 <button id="mute" class="mute" aria-label="게임 소리 켜기/끄기" aria-pressed="true">🔊</button>
 <header>
-  <h1>보험금 심사하기<span class="bld" id="bld">build 193 · 2026.11.22</span><small>서류와 증권을 대조해 담보별로 지급·부지급을 결정하세요</small></h1>
+  <h1>보험금 심사하기<span class="bld" id="bld">build 194 · 2026.11.22</span><small>서류와 증권을 대조해 담보별로 지급·부지급을 결정하세요</small></h1>
   <div class="stats">
     <button class="home" id="home" aria-label="처음 화면으로">⌂ 처음 화면</button>
     <div class="stat"><b id="prog">0 / 0</b><span>처리 / 접수</span></div>
@@ -3565,6 +3565,8 @@ function scnEvCard(S){const E=scnEv(S),L=[];if(S.esc&&hamAlive(S).length)L.push(
   if(S.hamLost)L.push(`<div class="scev scwarn"><b>🏡 본가 햄스터 ${S.hamLost}마리</b>부모님이 대신 키워 주셔서 매일 퇴근 때 <b>사료비 ${f(3000*S.hamLost)}원</b>이 빠져나가요.</div>`);
   if(S.guilt>0)L.push(`<div class="scev scwarn"><b>😢 햄스터 걱정</b>본가로 간 햄스터 생각에 집중이 안 돼요. 오늘 <b>근무 시간 −10% · 경고 1장 덜</b> (${S.guilt}일 남음)</div>`);
   if(hamAlive(S).length&&S.cage.hu)L.push('<div class="scev scwarn"><b>🍽 굶은 햄스터</b>어젯밤 밥을 못 줘서 마음이 쓰여요. 오늘 <b>근무 시간 −5%</b>.</div>');
+  if(S.gameW===S.day)L.push('<div class="scev"><b>🎮 어젯밤 게임</b>스트레스가 풀렸어요. 오늘은 오심 경고 1장을 더 봐줘요.</div>');
+  if(S.petPlay===S.day&&spOf(S))L.push('<div class="scev"><b>🐾 어젯밤 놀이</b>특수 동물이 응원해 줘요. 오늘 <b>근무 시간 +5%</b>.</div>');
   if(S.hang===S.day)L.push('<div class="scev"><b>🍻 어제 회식</b>오늘은 근무 시간이 조금 짧아요. 대신 팀장님이 경고 1장을 봐줘요.</div>');
   if(E){const t={audit:`감사 ${E.i+1}/3일차 · 경고 넘긴 오심 감봉이 <b>2배</b>예요.${E.i===2?' 오늘까지 감봉 없이 버티면 보너스!':''}`,rule:'오늘부터 바뀐 지침이 있어요. 출근하면 <b>팀장님 공지 쪽지</b>를 꼭 읽어요.',fraud:'위조 서류가 평소보다 <b>훨씬 많아요</b>. 잡아낼 때마다 +3,000원.',mentor:'신입들이 쪽지로 검토를 부탁해요. 정확히 봐 주면 건당 +2,000원.',cmp:'자꾸 다시 전화하는 고객이 있어요. 통화마다 ±2,000원.',hosp:'병원에서 연락이 올 수도 있어요.',favor:''}[E.k];
     if(E.k==='favor'){const nm=E.nm||(E.nm=pick(SN)+pick(GN));L.push(`<div class="scev"><b>🤝 동료 부탁</b>${nm} 님: "오늘 제 건 <b>2개만</b> 대신 해 줄 수 있어요? 다음에 접수 몰리는 날 제가 2건 가져갈게요!"<div class="evb"><button data-evf="1" aria-pressed="${E.a===1}">👍 수락 (오늘 +2건)</button><button data-evf="0" aria-pressed="${E.a===0}">🙅 거절</button></div></div>`)}
@@ -3575,9 +3577,9 @@ function scnEvCard(S){const E=scnEv(S),L=[];if(S.esc&&hamAlive(S).length)L.push(
   if(S.day===10||S.day===SCN_DAYS)L.push('<div class="scev"><b>💰 월급날</b>오늘 정산 때 그동안 정확도에 따라 <b>월 성과급</b>이 들어와요.</div>');
   return L.join('')}
 
-function scnGo(){const S=scnS();if(S.esc&&hamAlive(S).length){toast('🐹 햄스터부터 찾아요! 방 그림을 잘 살펴봐요.');return}st.scnBoost=hamBoost(S);if(S.hang===S.day)st.scnBoost=Object.assign({},st.scnBoost,{t:(st.scnBoost.t||1)*.85,free:(st.scnBoost.free||0)+1});
+function scnGo(){const S=scnS();if(S.esc&&hamAlive(S).length){toast('🐹 햄스터부터 찾아요! 방 그림을 잘 살펴봐요.');return}st.scnBoost=hamBoost(S);if(S.hang===S.day)st.scnBoost=Object.assign({},st.scnBoost,{t:(st.scnBoost.t||1)*.85,free:(st.scnBoost.free||0)+1});if(S.gameW===S.day)st.scnBoost=Object.assign({},st.scnBoost,{free:(st.scnBoost.free||0)+1});
   if(hamAlive(S).length&&S.cage.hu)st.scnBoost=Object.assign({},st.scnBoost,{t:(st.scnBoost.t||1)*.95});
-  {const F=S.furn||{};let m=condMul(condOf(S));if(F.coffee)m*=1.05;if(F.tunnel&&hamAlive(S).some(h=>hamOK(h,S.cage)))m*=1.05;if(S.hamPlay===S.day&&hamAlive(S).length)m*=1.05;if(S.ferMis===S.day&&spOn(S,'ferret'))m*=.95;st.scnBoost=Object.assign({},st.scnBoost,{t:(st.scnBoost.t||1)*m});st.scnHint=S.hint||0;S.hint=0;if(spOn(S,'hog'))st.scnBoost=Object.assign({},st.scnBoost,{free:(st.scnBoost.free||0)+1})}
+  {const F=S.furn||{};let m=condMul(condOf(S));if(F.coffee)m*=1.05;if(F.tunnel&&hamAlive(S).some(h=>hamOK(h,S.cage)))m*=1.05;if(S.hamPlay===S.day&&hamAlive(S).length)m*=1.05;if(S.petPlay===S.day&&spOf(S))m*=1.05;if(S.ferMis===S.day&&spOn(S,'ferret'))m*=.95;st.scnBoost=Object.assign({},st.scnBoost,{t:(st.scnBoost.t||1)*m});st.scnHint=S.hint||0;S.hint=0;if(spOn(S,'hog'))st.scnBoost=Object.assign({},st.scnBoost,{free:(st.scnBoost.free||0)+1})}
   if(S.guilt>0){st.scnBoost=Object.assign({},st.scnBoost,{t:(st.scnBoost.t||1)*.9,free:(st.scnBoost.free||0)-1});S.guilt--}
   const E=scnEv(S);st.scnEvK=E?E.k:null;{const V=scnVol(S,S.day);let n=V.lo+Math.floor(Math.random()*(V.hi-V.lo+1));if(E&&E.k==='favor'&&E.a===1){n+=2;S.favor=(S.favor||0)+1}if(S.favor&&V.w==='busy'){n=Math.max(1,n-2);S.favor--}st.scnCnt=n}st.scnRule=E&&E.k==='rule'?E.r:null;st.scnFr=E&&E.k==='fraud'?.3:null;st.scnRun=true;st.sty=null;st.vs=false;st.chR=null;st.lv=scnLv(S.day);st.pick=scnSil(S.day);st.vol=0;beginDay();scnEvStart(S);if(S.mom){const nm=S.mom;S.mom=null;st.evm.push({at:R(70,160),fn:()=>evMsg({kind:'mom',from:'엄마',title:'📱 엄마',text:`${nm} 잘 지내고 있어~ 해바라기씨 주니까 엄청 잘 먹더라 🐹<br>근데 너는 괜찮니? 요즘 많이 바빠? 밥은 챙겨 먹고 다니고?`,opts:[['응 괜찮아~ 요즘 일이 좀 많았어. 고마워 엄마.',true],['미안해… 잘 못 챙겨서. 주말에 보러 갈게!',true]],why:'엄마: "그래, 너무 무리하지 말고. 힘들면 언제든 전화해 ❤️" — 마음이 조금 가벼워졌어요. (걱정 하루 줄어듦)'})});st.evm.sort((a,b)=>a.at-b.at)}}
 function scnEndHook(){if(!st.scnRun)return'';st.scnRun=false;const S=scnS(),mine=st.queue.filter(x=>x.done&&x.by!=='ai'&&!x.ai),ok=mine.filter(x=>x.right===x.items).length,bad=mine.length-ok,un=st.queue.filter(x=>!x.done&&!x.ai).length,B=st.scnBoost||{free:0,waive:0},warn=Math.max(0,bad-3-B.free),wv=Math.min(warn,B.waive),base=10000,perf=ok*3000,E=scnEv(S),aud=E&&E.k==='audit',pen=(warn-wv)*3000*(aud?2:1),ex=[],MA=st.msgAll||[];
@@ -3603,12 +3605,12 @@ function scnItems(S){const H=scnHamAgg(S),I=S.iso,L=[];
   if(isoTotal(I)>0){L.push({k:'im',n:`🪲 분무·가습 (${I.tubs.length}통)`,a:ic,d:I.dry?'통들이 말랐어요!':'습도를 유지해요. 안 하면 마릿수가 줄어요',def:1});
     L.push({k:'if',n:'🪲 먹이 (낙엽·채소)',a:ic,d:'습도와 먹이가 다 있어야 번식해요',def:1});
     L.push({k:'ic',n:'🪲 칼슘 (갑오징어뼈)',a:2000,d:'번식 확률이 올라가요',def:0})}
-  L.push({k:'m_conv',g:'meal',n:'🍙 편의점 도시락',a:2000,d:'컨디션 +2',def:1},{k:'m_cook',g:'meal',n:'🍳 장 봐서 요리',a:4000,d:'컨디션 +6',def:0},{k:'m_deliv',g:'meal',n:'🛵 배달 음식',a:9000,d:'컨디션 +10',def:0});
-  L.push({k:'a_rest',g:'act',n:'🛌 푹 쉬기',a:0,d:'컨디션 +22',def:1},{k:'a_game',g:'act',n:'🎮 게임·유튜브',a:0,d:'컨디션 +14',def:0},{k:'a_study',g:'act',n:'📚 약관 공부',a:0,d:'컨디션 −4 · 내일 수상한 담보 2건 힌트',def:0},{k:'a_job',g:'act',n:'💻 부업 (번역 알바)',a:-8000,d:'+8,000원 · 컨디션 −14',def:0});
-  if(hamAlive(S).length)L.push({k:'a_ham',g:'act',n:'🐹 햄스터랑 놀기',a:0,d:'컨디션 +12 · 내일 햄스터 응원 근무 시간 +5%',def:0});
+  L.push({k:'dinner',n:'🍙 저녁 (편의점 도시락)',a:2000,d:'매일 먹는 저녁이에요',def:1,lock:1});
+  L.push({k:'a_rest',g:'act',n:'🛌 푹 쉬기',a:0,d:'컨디션 +20 · 회복이 가장 커요',def:1},{k:'a_game',g:'act',n:'🎮 게임·유튜브',a:0,d:'컨디션 +10 · 스트레스가 풀려서 내일 오심 경고 1장 더 봐줘요',def:0},{k:'a_study',g:'act',n:'📚 약관 공부',a:0,d:'컨디션 −4 · 내일 수상한 담보 2건을 미리 표시해 줘요',def:0},{k:'a_job',g:'act',n:'💻 부업 (번역 알바)',a:-8000,d:'+8,000원 · 컨디션 −14',def:0});
+  if(hamAlive(S).length)L.push({k:'a_ham',g:'act',n:'🐹 햄스터랑 놀기',a:0,d:'컨디션 +8 · 햄스터 응원으로 내일 근무 시간 +5%',def:0});
   {const pet=spOf(S);if(!S.pet){L.push({k:'sp_none',g:'sp',n:'🐾 이번엔 안 들이기',a:0,d:'나중에 들여도 돼요',def:1});SPP.forEach(p=>L.push({k:'sp_'+p.k,g:'sp',n:`${p.ic} ${p.n}`,a:SP_BUY,d:`${p.ab} — ${p.abd} · 관리비 하루 ${f(p.fee)}원`,def:0}))}
-   else if(pet){const D=spDef(pet.k);L.push({k:'spf',n:`${D.ic} ${D.n} 먹이`,a:D.fee,d:pet.hu?`<b>${pet.hu}일째 못 먹었어요</b> · 이틀 빼먹으면 능력이 꺼져요`:'오늘 밥 · 빼먹으면 능력이 꺼져요',def:1});L.push({k:'a_pet',g:'act',n:`${D.ic} ${D.n+jo(D.n,'이랑','랑')} 놀기`,a:0,d:'컨디션 +10'+(pet.k==='hog'?' · 고슴도치 능력 유지':''),def:0})}}
-  if((S.evn||{})[S.day]==='din'){L.push({k:'din',n:'🍻 팀 회식 가기',a:0,d:'공짜 저녁 · 내일 경고 1장 봐줌 · 대신 내일 근무 시간 −15%',def:0});L.push({k:'ot',n:'🌙 야근하기',a:-8000,d:'수당 +8,000원 · 대신 오늘 밤 햄스터를 못 돌봐요',def:0})}
+   else if(pet){const D=spDef(pet.k);L.push({k:'spf',n:`${D.ic} ${D.n} 먹이`,a:D.fee,d:pet.hu?`<b>${pet.hu}일째 못 먹었어요</b> · 이틀 빼먹으면 능력이 꺼져요`:'오늘 밥 · 빼먹으면 능력이 꺼져요',def:1});L.push({k:'a_pet',g:'act',n:`${D.ic} ${D.n+jo(D.n,'이랑','랑')} 놀기`,a:0,d:'컨디션 +8 · 내일 근무 시간 +5%'+(pet.k==='hog'?' · 고슴도치 삐짐 방지':''),def:0})}}
+  if((S.evn||{})[S.day]==='din'){L.push({k:'din',n:'🍻 팀 회식 가기',a:0,d:'저녁값 굳어요 · 내일 경고 1장 봐줌 · 대신 내일 근무 시간 −15%',def:0});L.push({k:'ot',n:'🌙 야근하기',a:-8000,d:'수당 +8,000원 · 대신 오늘 밤 햄스터를 못 돌봐요',def:0})}
   if(S.cold===S.day)L.push({k:'heat',n:'🔥 난방·보온 (한파)',a:4000,d:'안 하면 콩벌레가 얼고 햄스터가 감기에 걸려요',def:1});
   {const own=I.tubs.map(x=>x.t);if(ISHOP.some(t=>!own.includes(t)))L.push({k:'inew',n:'🪲 새 콩벌레 들이기',a:spOn(S,'ferret')?Math.round(INEW*.9):INEW,d:`아직 없는 종 중 랜덤 1종 · 2마리 · 선반 ${I.tubs.filter(x=>typeof x.t==='number').length}/${ISHOP.length}`,def:0})}
   return L}
@@ -3633,29 +3635,29 @@ function scnSettle(){storyPrep();document.body.classList.remove('scene');st.scr=
       ng=L.filter(x=>!x.g),U=ng.filter(urg),F=ng.filter(x=>!urg(x)&&x.def),E=ng.filter(x=>!urg(x)&&!x.def),
       fOn=F.filter(x=>X[x.k]),fSum=fOn.reduce((a,x)=>a+x.a,0),eOn=E.filter(x=>X[x.k]),
       fold=(k,ic,t,sub,on)=>`<button class="sxfold" data-sxo="${k}" aria-expanded="${!!O[k]}"><span class="sxn">${ic} ${t}<small>${sub}</small></span><span class="sxa">${on}</span><span class="sxar">${O[k]?'▴':'▾'}</span></button>`,
-      chip=x=>`<button class="sxchip" data-sx="${x.k}" aria-pressed="${!!X[x.k]}">${SXS[x.k]||x.n}</button>`,
+      chip=x=>`<button class="sxchip" data-sx="${x.k}" aria-pressed="${!!X[x.k]}" aria-label="${x.n}">${SXS[x.k]||(x.k==='a_pet'?x.n.split(' ')[0]+' 놀기':x.n)}</button>`,
       grp=g=>{const G=L.filter(x=>x.g===g),c=G.find(x=>X[x.k]);return`<div class="sxchips">${G.map(chip).join('')}</div><p class="sxsel">${c?`${X[c.k]?'✔':''} <b>${c.n}</b> · ${c.d} · <b>${am(c)}</b>`:'아직 안 골랐어요'}</p>`},
       spSel=L.find(x=>x.g==='sp'&&X[x.k]&&x.k!=='sp_none');
      return`${U.length?`<h3 class="wzs">⚠️ 꼭 확인할 것</h3><div class="sxl">${U.map(B).join('')}</div>`:''}
       <h3 class="wzs">오늘 쓸 곳</h3><div class="sxl">${F.length?fold('fix','📌','매일 내는 돈',`${fOn.length}/${F.length}개 체크 · 눌러서 빼거나 넣기`,fSum?'−'+f(fSum):'0'):''}${O.fix?`<div class="sxl sxin">${F.map(B).join('')}</div>`:''}
       ${E.length?fold('ext','🛍','추가 구매',eOn.length?`${eOn.map(x=>x.n.replace(/^\S+\s/,'')).join(', ')} 고름`:E.map(x=>x.n.replace(/^\S+\s/,'')).join(' · '),eOn.length?'−'+f(eOn.reduce((a,x)=>a+x.a,0)):''):''}${O.ext?`<div class="sxl sxin">${E.map(B).join('')}</div>`:''}
       ${L.some(x=>x.g==='sp')?`<button class="sxfold" data-spm="1"><span class="sxn">🐾 특수 동물 들이기<small>${spSel?`${spSel.n} 예약 · 내일 아침에 와요 · 눌러서 바꾸기`:'5만원 · 다섯 마리 중 하나 · 눌러서 보기'}</small></span><span class="sxa">${spSel?'−'+f(spSel.a):''}</span><span class="sxar">›</span></button>`:''}</div>
-      <h3 class="wzs">🍽 오늘 저녁 <small>안 고르면 굶어요 (컨디션 −10)</small></h3>${grp('meal')}
       <h3 class="wzs">🌆 저녁 활동 <small>지금 컨디션 ${condOf(S)}</small></h3>${X.ot?'<p class="scrule">🌙 야근하는 날은 저녁 활동을 못 해요.</p>':grp('act')}`})()}
    ${canSell?`<h3 class="wzs">🪲 분양 (통마다 ${IUNIT}마리)</h3><div class="sxl">${sellT.map(([x,i])=>{const k='sell'+i,on=!!st.scx[k];return`<button class="sxi sell" data-sx="${k}" aria-pressed="${on}"><span class="sxc">${on?'☑':'☐'}</span><span class="sxn">${tubName(x.t)}<small>지금 ${x.n}마리 → ${x.n-IUNIT}마리 · ${ITIERN[ISPC[tubSp(x.t)].t]}</small></span><span class="sxa">+${f(isoPrice(i))}</span></button>`}).join('')}</div>`:`<p class="scrule">🪲 통 하나에 <b>${ISELL}마리</b> 이상 모이면 ${IUNIT}마리씩 분양할 수 있어요. 희귀종일수록 비싸요.</p>`}
    <button class="wzb" id="scnHub">← 나중에 하기</button>
    <div class="scbar"><div class="screst">남는 돈 <b>${f(rest)}원</b></div><button class="begin" id="scnOk">🌙 잠자기</button></div></section>`}
-const SXS={m_conv:'🍙 도시락',m_cook:'🍳 요리',m_deliv:'🛵 배달',a_rest:'🛌 쉬기',a_game:'🎮 게임',a_study:'📚 공부',a_job:'💻 부업',a_ham:'🐹 햄스터'};
+const SXS={a_rest:'🛌 쉬기',a_game:'🎮 게임',a_study:'📚 공부',a_job:'💻 부업',a_ham:'🐹 놀기'};
 function scnSpPick(){const S=scnS(),X=st.scx,L=scnItems(S).filter(x=>x.g==='sp');gOpen('🐾 특수 동물 들이기',`<p class="gmd">5만원 · 한 판에 한 마리 · 고르면 내일 아침에 와요. 관리비(먹이)는 매일 따로 나가요.</p><div class="sxl">${L.map(x=>`<button class="sxi rad" data-sxm="${x.k}" aria-pressed="${!!X[x.k]}"><span class="sxc">${X[x.k]?'◉':'○'}</span><span class="sxn">${x.n}<small>${x.d}</small></span><span class="sxa">${x.a?'−'+f(x.a):'무료'}</span></button>`).join('')}</div><button class="begin" id="gmxc">닫기</button>`)}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#gmo [data-sxm]');if(!b)return;const k=b.dataset.sxm;if(!st.scx)return;const was=st.scx[k];scnToggle(k);if(st.scx[k]&&!was){gClose()}else scnSpPick()});
 function scnToggle(k){const S=scnS(),X=st.scx;
   if(k.startsWith('sell')){if(X[k]&&scnAvail(S)-isoPrice(+k.slice(4))<scnSpent(S)){toast('분양을 취소하면 돈이 모자라요. 다른 지출부터 빼요.');return}X[k]=X[k]?0:1;scnSettle();return}
   const it=scnItems(S).find(x=>x.k===k);if(!it)return;
+  if(it.lock&&X[k]){toast('🍙 저녁은 꼭 먹어야 해요.');return}
   if(it.g){if(X[k])return;const L=scnItems(S),cur=L.find(x=>x.g===it.g&&X[x.k]),diff=it.a-(cur?cur.a:0);if(scnSpent(S)+diff>scnAvail(S)){toast('💸 돈이 모자라요. 다른 걸 빼야 해요.');return}L.filter(x=>x.g===it.g).forEach(x=>X[x.k]=0);X[k]=1;if(it.g==='act')X.ot=0;scnSettle();return}
   if((k==='hf'||k==='hb')&&X.ot&&!X[k]){toast('🌙 야근하는 날은 햄스터를 못 돌봐요.');return}
   if(!X[k]&&scnSpent(S)+it.a>scnAvail(S)){toast('💸 돈이 모자라요. 다른 걸 빼야 해요.');return}
   if(X[k]&&it.a<0&&scnSpent(S)-it.a>scnAvail(S)){toast('💸 야근을 빼면 돈이 모자라요. 다른 지출부터 빼요.');return}
-  if(!X[k]&&k==='din')X.ot=0;if(!X[k]&&k==='ot'){X.din=0;X.hf=0;X.hb=0;scnItems(S).filter(x=>x.g==='act').forEach(x=>X[x.k]=0)}
+  if(!X[k]&&k==='din'){X.ot=0;X.dinner=0}if(X[k]&&k==='din'&&scnSpent(S)+2000<=scnAvail(S))X.dinner=1;if(!X[k]&&k==='ot'){X.din=0;X.hf=0;X.hb=0;scnItems(S).filter(x=>x.g==='act').forEach(x=>X[x.k]=0)}
   X[k]=X[k]?0:1;scnSettle()}
 function scnNight(){const S=scnS(),X=st.scx,C=S.cage,I=S.iso,N=[];
   S.money=scnAvail(S)-scnSpent(S);
@@ -3688,11 +3690,10 @@ function scnNight(){const S=scnS(),X=st.scx,C=S.cage,I=S.iso,N=[];
     if(spOn(S,'dorm')){if(X.ot){S.money+=3000;N.push('🐭 피그미 다람쥐랑 같이 밤샜어요. 야근 수당 <b>+3,000원</b>, 컨디션도 멀쩡해요!')}if(hamAlive(S).length&&!C.free&&Math.random()<.25){C.free=1;N.push('🐭 피그미 다람쥐가 간식을 잔뜩 숨겨 뒀어요! 내일 햄스터 사료 1마리분 무료.')}}
     if(spOn(S,'ferret')){if(Math.random()<.4){const m=(1+Math.floor(Math.random()*5))*1000;S.money+=m;N.push(`🦦 페럿이 소파 밑에서 <b>${f(m)}원</b>을 물어 왔어요!`)}if(Math.random()<.1){S.ferMis=S.day+1;N.push('🦦 페럿이 출근 가방을 숨겼어요… 내일 아침 찾느라 근무 시간 −5%')}}
     {const T=S.st||(S.st={});if(X.din)T.din=(T.din||0)+1;if(X.ot)T.ot=(T.ot||0)+1}
-    {const F=S.furn||{},Pd=S.pend||{},n=(Pd.ok||0)+(Pd.bad||0);let c=condOf(S),fat=4+Math.max(0,n-6)*2+(X.ot&&!spOn(S,'dorm')?15:0);if(F.chair)fat*=.5;c-=Math.round(fat);
-      if(X.m_deliv)c+=10;else if(X.m_cook)c+=6;else if(X.m_conv)c+=2;else{c-=10;N.push('🍽 저녁을 굶었어요… (컨디션 −10)')}
-      if(X.a_rest)c+=22;if(X.a_game){c+=14;if(Math.random()<.3)N.push(['🎮 랭크 게임에서 연승! 기분 최고예요.','📺 유튜브 알고리즘이 햄스터 영상만 보여 줘요.','🎮 새벽까지 할 뻔했지만 참았어요.'][Math.floor(Math.random()*3)])}
-      if(X.a_study){c-=4;S.hint=2;N.push('📚 약관을 공부했어요. 내일은 수상한 담보가 눈에 띌 거예요.')}if(X.a_job){c-=14;N.push('💻 번역 알바 +8,000원. 눈이 뻑뻑해요.')}if(X.a_ham){c+=12;S.hamPlay=S.day+1;N.push('🐹 햄스터랑 실컷 놀았어요. 내일 응원이 더 힘차요!')}
-      if(X.din)c+=6;if(X.a_pet)c+=10;if(spOn(S,'tiel')){c+=5}if(F.plant)c+=3;['poster','rug','lamp'].forEach(k=>{if(F[k])c+=1});if(S.wx==='rain')c-=3;
+    {const F=S.furn||{},Pd=S.pend||{},n=(Pd.ok||0)+(Pd.bad||0);let c=condOf(S),fat=2+Math.max(0,n-6)*2+(X.ot&&!spOn(S,'dorm')?15:0);if(F.chair)fat*=.5;c-=Math.round(fat);
+      if(X.a_rest)c+=20;if(X.a_game){c+=10;S.gameW=S.day+1;if(Math.random()<.3)N.push(['🎮 랭크 게임에서 연승! 기분 최고예요.','📺 유튜브 알고리즘이 햄스터 영상만 보여 줘요.','🎮 새벽까지 할 뻔했지만 참았어요.'][Math.floor(Math.random()*3)])}
+      if(X.a_study){c-=4;S.hint=2;N.push('📚 약관을 공부했어요. 내일은 수상한 담보가 눈에 띌 거예요.')}if(X.a_job){c-=14;N.push('💻 번역 알바 +8,000원. 눈이 뻑뻑해요.')}if(X.a_ham){c+=8;S.hamPlay=S.day+1;N.push('🐹 햄스터랑 실컷 놀았어요. 내일 응원이 더 힘차요!')}
+      if(X.din)c+=6;if(X.a_pet){c+=8;S.petPlay=S.day+1}if(spOn(S,'tiel')){c+=5}if(F.plant)c+=3;['poster','rug','lamp'].forEach(k=>{if(F[k])c+=1});if(S.wx==='rain')c-=3;
       c=Math.max(0,Math.min(100,c));S.cond=c;N.push(`🔋 컨디션 <b>${c}</b> · ${condLab(c)}`);
       const r=Math.random();S.wxN=r<.25?'rain':r<.55?'cloud':'sun'}
     if(X.din){S.hang=S.day+1;N.push('🍻 회식에서 팀장님이랑 친해졌어요. 내일은 경고 1장을 봐준대요. (대신 근무 시간이 조금 짧아요)')}
