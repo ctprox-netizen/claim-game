@@ -581,7 +581,7 @@ body.scene details.rules,body.scene h1 small,body.scene header .stats,body.scene
 <body>
 <button id="mute" class="mute" aria-label="게임 소리 켜기/끄기" aria-pressed="true">🔊</button>
 <header>
-  <h1>보험금 심사하기<span class="bld" id="bld">build 191 · 2026.11.22</span><small>서류와 증권을 대조해 담보별로 지급·부지급을 결정하세요</small></h1>
+  <h1>보험금 심사하기<span class="bld" id="bld">build 192 · 2026.11.22</span><small>서류와 증권을 대조해 담보별로 지급·부지급을 결정하세요</small></h1>
   <div class="stats">
     <button class="home" id="home" aria-label="처음 화면으로">⌂ 처음 화면</button>
     <div class="stat"><b id="prog">0 / 0</b><span>처리 / 접수</span></div>
@@ -2721,7 +2721,7 @@ const HPAL={o:'#1d1a17',a:'#e08a00',w:'#fff8e6',p:'#f0a88a',k:'#1d1a17'};
 const HMINI={idle:["..o.o..",".oaaao.","oaaakao","oawwwwo",".ooooo."]};
 const ISOC=[['회색','#6e6862','#57514b'],['검정','#34302c','#24211e'],['오렌지','#e08a00','#b35c00'],['얼룩','#9a8c7b','#7a6d5f'],['우유','#e9e4da','#b9b0a2'],['파랑','#5a78a8','#41598a']];
 /* --- 방 (아이소 도트) --- */
-const RM={OX:84,OY:62};
+const RM={OX:100,OY:62};
 function rmP(x,y,z){return[RM.OX+Math.round((x-y)*8),RM.OY+Math.round((x+y)*4-z*8)]}
 function rmBox(o,x,y,z,w,d,h,top,lf,rt,ol){const P=rmP;o.poly([P(x,y,z+h),P(x+w,y,z+h),P(x+w,y+d,z+h),P(x,y+d,z+h)],top);o.poly([P(x+w,y,z),P(x+w,y+d,z),P(x+w,y+d,z+h),P(x+w,y,z+h)],rt);o.poly([P(x,y+d,z),P(x+w,y+d,z),P(x+w,y+d,z+h),P(x,y+d,z+h)],lf);
   if(ol){const L=(a,b)=>o.line(a[0],a[1],b[0],b[1],ol);L(P(x,y,z+h),P(x+w,y,z+h));L(P(x+w,y,z+h),P(x+w,y+d,z+h));L(P(x+w,y+d,z+h),P(x,y+d,z+h));L(P(x,y+d,z+h),P(x,y,z+h));L(P(x+w,y,z),P(x+w,y+d,z));L(P(x+w,y+d,z),P(x,y+d,z));L(P(x+w,y,z),P(x+w,y,z+h));L(P(x+w,y+d,z),P(x+w,y+d,z+h));L(P(x,y+d,z),P(x,y+d,z+h))}}
@@ -2739,26 +2739,26 @@ const spNm=(k,a,b)=>{const n=spDef(k).n;return n+jo(n,a,b)};
 function spDexAdd(k){const D=CR.spDex||(CR.spDex=[]);if(!D.includes(k)){D.push(k);saveCR()}}
 /* --- 3D 도트 모델 --- */
 const SP3={N:72,zb:null,cb:null};
-function sp3D(o,cam,X,Y,Z,yaw,parts,sc,olc,gray){const N=SP3.N,c0=cam.P(X,Y,Z+3*sc),ox=Math.round(c0[0])-N/2,oy=Math.round(c0[1])-N/2;
+function sp3D(o,cam,X,Y,Z,yaw,parts,sc,olc,gray,clip){const N=SP3.N,c0=cam.P(X,Y,Z+3*sc),ox=Math.round(c0[0])-N/2,oy=Math.round(c0[1])-N/2;
   if(!SP3.zb){SP3.zb=new Float32Array(N*N);SP3.cb=new Array(N*N)}const zb=SP3.zb,cb=SP3.cb;zb.fill(-1e9);cb.fill(null);const cy=Math.cos(yaw),sy=Math.sin(yaw),K=cam.K;
   parts.forEach(p=>{const[cu,cv,cz]=p.c,[ru,rv,rz]=p.r,pa=p.a||0,pp=p.p||0,ca=Math.cos(pa),sa=Math.sin(pa),cp=Math.cos(pp),spp=Math.sin(pp),nt=Math.ceil(Math.max(ru,rv,rz)*sc*K*2.4)+4,np=nt*2;
     for(let i=0;i<=nt;i++){const th=i/nt*Math.PI,st=Math.sin(th),ct=Math.cos(th);for(let j=0;j<np;j++){const ph=j/np*6.2832,lu=st*Math.cos(ph),lv=st*Math.sin(ph),lz=ct;if(p.cut!=null&&lz<p.cut)continue;
       const x=ru*lu,y=rv*lv,z=rz*lz;let nx=lu/ru,ny=lv/rv,nz=lz/rz;const x1=x*cp-z*spp,z1=x*spp+z*cp,nx1=nx*cp-nz*spp,nz1=nx*spp+nz*cp,x2=x1*ca-y*sa,y2=x1*sa+y*ca,nx2=nx1*ca-ny*sa,ny2=nx1*sa+ny*ca;
-      const u=cu+x2,v=cv+y2,w=cz+z1,wx=X+(u*cy-v*sy)*sc,wy=Y+(u*sy+v*cy)*sc,wz=Z+w*sc;let gx=nx2*cy-ny2*sy,gy=nx2*sy+ny2*cy,gz=nz1;const gl=Math.hypot(gx,gy,gz)||1;gx/=gl;gy/=gl;gz/=gl;
+      const u=cu+x2,v=cv+y2,w=cz+z1,wx=X+(u*cy-v*sy)*sc,wy=Y+(u*sy+v*cy)*sc,wz=Z+w*sc;if(clip&&wz<Z)continue;let gx=nx2*cy-ny2*sy,gy=nx2*sy+ny2*cy,gz=nz1;const gl=Math.hypot(gx,gy,gz)||1;gx/=gl;gy/=gl;gz/=gl;
       if(gx+gy+gz<-.17)continue;const l=Math.max(0,-.3*gx+.32*gy+.9*gz);let col=gray?'#8c8273':typeof p.col==='function'?p.col(lu,lv,lz):p.col;
-      const sh=p.flat?col:l>.86?ixMix(col,'#ffffff',.32):l>.58?col:l>.3?ixMix(col,'#2a1a0c',.22):ixMix(col,'#1a120c',.45);
+      const hi=p.hi==null?.32:p.hi,sh=p.flat?col:l>.86?ixMix(col,'#ffffff',hi):l>.58?(p.hi!=null?ixMix(col,'#ffffff',hi*.35):col):l>.3?ixMix(col,'#2a1a0c',.22):ixMix(col,'#1a120c',.45);
       const q=cam.P(wx,wy,wz),px=Math.round(q[0])-ox,py=Math.round(q[1])-oy;if(px<0||py<0||px>=N||py>=N)continue;const d=wx+wy+wz+(p.b||0),k=py*N+px;if(d>zb[k]){zb[k]=d;cb[k]=sh}}}});
   for(let y=1;y<N-1;y++)for(let x=1;x<N-1;x++){const k=y*N+x;if(cb[k])continue;const nb=[cb[k-1],cb[k+1],cb[k-N],cb[k+N]].filter(Boolean);if(nb.length>=3)cb[k]=nb[0]}
   const OL=ixMix(gray?'#8c8273':olc,'#1d1a17',.6);for(let y=0;y<N;y++)for(let x=0;x<N;x++){const k=y*N+x;if(cb[k]){o.p(ox+x,oy+y,cb[k]);continue}if((x>0&&cb[k-1])||(x<N-1&&cb[k+1])||(y>0&&cb[k-N])||(y<N-1&&cb[k+N]))o.p(ox+x,oy+y,OL)}}
 const spHash=(a,b,c)=>{const h=Math.sin(a*37.1+b*23.7+c*31.3)*43758.5;return h-Math.floor(h)};
 const SPM={
- mega(pose,t){const P=[],band=f=>f<.2?'#21170f':'#3e2b1f';
-  if(pose==='ball'){P.push({c:[0,0,2.7],r:[2.7,2.7,2.7],col:(lu,lv,lz)=>band(((Math.atan2(lz,lu)+3.3)*1.75)%1)});return{P,sc:1.3,ol:'#3e2b1f'}}
-  const wv=pose==='walk'?t*8:0,low=pose==='burrow'?-1.6:0;
-  for(let i=0;i<10;i++)[1,-1].forEach(s=>P.push({c:[-3.8+i*.85+(pose==='walk'?Math.sin(wv+i*.9)*.22:0),s*2.55,.35+low],r:[.28,.48,.3],col:'#c06a2c'}));
-  P.push({c:[0,0,1.05+low],r:[4.5,2.95,2.45],cut:-.12,col:lu=>band(((lu+1)*5.6)%1)});
-  P.push({c:[4.35,0,.95+low],r:[1.05,1.95,1.15],col:'#2b1f17'});[1,-1].forEach(s=>P.push({c:[5.25,s*.85,.95+low],r:[.75,.16,.16],a:s*(.45+Math.sin(t*2+s)*.12),col:'#2b1f17'}));
-  return{P,sc:1.3,ol:'#3e2b1f'}},
+ mega(pose,t){const P=[],band=f=>f<.24?'#160e09':f<.32?'#2a1b12':'#4a3222';
+  if(pose==='ball'){P.push({c:[0,0,2.7],r:[2.7,2.7,2.7],hi:.18,col:(lu,lv,lz)=>band(((Math.atan2(lz,lu)+3.3)*1.75)%1)});return{P,sc:1.3,ol:'#3e2b1f'}}
+  const wv=pose==='walk'?t*9:0,low=pose==='burrow'?-1.3:0,lift=.45;
+  for(let i=0;i<17;i++)[1,-1].forEach(s=>{const u=-3.7+i*.46,w=pose==='walk'?Math.sin(wv-i*.7):0;P.push({c:[u+w*.14,s*(2.45+Math.max(0,w)*.14),.18+low+Math.max(0,w)*.12],r:[.17,.44,.24],a:s*.15,hi:.12,col:'#a8562a'})});
+  P.push({c:[0,0,lift+.55+low],r:[4.5,2.95,2.5],cut:-.2,hi:.18,col:(lu,lv,lz)=>{const b=band(((lu+1)*5.6)%1);return Math.abs(lv)>.9&&lz<.2?ixMix(b,'#5a3a26',.35):b}});
+  P.push({c:[4.35,0,1.25+low],r:[1.05,1.95,1.15],hi:.15,col:'#2b1f17'});[1,-1].forEach(s=>P.push({c:[5.25,s*.85,1.05+low],r:[.75,.16,.16],a:s*(.45+Math.sin(t*2+s)*.12),col:'#2b1f17'}));
+  return{P,sc:1.3,ol:'#3e2b1f',clip:pose==='burrow'}},
  dorm(pose,t){const G='#aaa59c',W='#f3eee4',E='#141210',PK='#d9aea4',T='#9b968d',P=[];
   if(pose==='sleep'){P.push({c:[0,0,1.25],r:[1.75,1.6,1.3],col:G},{c:[.95,.2,1.45],r:[.95,.9,.8],col:G},{c:[.1,0,2.35],r:[1.75,.6,.45],a:.5,col:T},{c:[1.7,.35,1.55],r:[.25,.35,.4],col:PK});return{P,sc:2.2,ol:G}}
   const mv=['run','walk','climb'].includes(pose),ph=t*(pose==='run'?22:13),bob=mv?Math.abs(Math.sin(ph))*.3:0,up=pose==='sit'||pose==='groom',cl=pose==='climb'?-1.1:0;
@@ -2791,16 +2791,18 @@ const SPM={
   for(let j=0;j<5;j++)P.push({c:[-4.6-j*.65,Math.sin(t*4+j)*.3,1.6-j*.15+arch*.3],r:[.6-j*.06,.55-j*.06,.55-j*.06],col:Sb});
   for(let i=0;i<4;i++){const s=i%2?1:-1,f=i<2?2.3:-2.4,sw=mv?Math.sin(ph+i*1.6)*.55:0;P.push({c:[f+sw,s*.95,.35],r:[.45,.32,.4],col:M})}
   return{P,sc:1.6,ol:Sb}},
- hog(pose,t){const Sp='#8a7257',Tp='#f1e9da',Fc='#ead9bf',E='#141210',N='#3a2a20',L='#c99a86',P=[],spk=(lu,lv,lz)=>spHash(Math.round(lu*9),Math.round(lv*9),Math.round(lz*9))<.42?Tp:Sp;
-  if(pose==='ball'||pose==='sleep'){P.push({c:[0,0,2.5],r:[2.7,2.6,2.5],col:spk});if(pose==='sleep')P.push({c:[2.1,0,1.2],r:[.8,.6,.55],col:Fc},{c:[2.75,0,1.15],r:[.2,.2,.18],col:N});return{P,sc:1.9,ol:Sp}}
-  const mv=['run','walk'].includes(pose),ph=t*(pose==='run'?20:10),bob=mv?Math.abs(Math.sin(ph))*.2:0,sn=pose==='sniff'?Math.sin(t*8)*.25:0,tw=pose==='anoint'?1.1:0;
-  P.push({c:[-.3,0,1.5+bob],r:[3,2.55,2.15],cut:-.32,col:spk});
-  const fx=2.35*Math.cos(tw),fy=2.35*Math.sin(tw);
-  P.push({c:[fx,fy,1+bob],r:[1.4,1.1,1],a:tw,col:Fc},{c:[fx+1.2*Math.cos(tw),fy+1.2*Math.sin(tw),.8+bob+sn],r:[.7,.5,.45],a:tw,col:Fc},{c:[fx+1.85*Math.cos(tw),fy+1.85*Math.sin(tw),.85+bob+sn],r:[.22,.2,.2],col:N});
-  [1,-1].forEach(s=>P.push({c:[fx+.6*Math.cos(tw)-s*.6*Math.sin(tw),fy+.6*Math.sin(tw)+s*.6*Math.cos(tw),1.4+bob],r:[.22,.2,.24],col:E},{c:[fx-.5*Math.cos(tw)-s*.95*Math.sin(tw),fy-.5*Math.sin(tw)+s*.95*Math.cos(tw),2],r:[.3,.35,.35],col:L}));
-  for(let i=0;i<4;i++){const s=i%2?1:-1,f=i<2?1.6:-1.6,sw=mv?Math.sin(ph+i*1.6)*.4:0;P.push({c:[f+sw,s*1.5,.25],r:[.4,.3,.25],col:L})}
-  return{P,sc:1.9,ol:Sp}}};
+ hog(pose,t){const Sp='#5e4a3a',Tp='#efe4cf',Fc='#f3e6cf',E='#141210',N='#3a2224',L='#e7a9a4',P=[],spk=(lu,lv,lz)=>{if(lz<-.15)return Fc;const h=spHash(Math.round(lu*8),Math.round(lv*8),Math.round(lz*8));return h<.2?Tp:h<.5?'#9c8466':Sp};
+  if(pose==='ball'||pose==='sleep'){P.push({c:[0,0,2.2],r:[2.5,2.35,2.2],hi:.2,col:spk});if(pose==='sleep'){P.push({c:[1.85,0,1.05],r:[.95,.85,.7],col:Fc},{c:[2.65,0,.95],r:[.3,.3,.26],col:N},{c:[1.3,.62,1.55],r:[.28,.22,.26],col:L},{c:[1.3,-.62,1.55],r:[.28,.22,.26],col:L});[1,-1].forEach(s=>P.push({c:[2.25,s*.5,1.3],r:[.18,.25,.08],col:'#5a4636'}))}return{P,sc:1.55,ol:'#3e3026'}}
+  const mv=['run','walk'].includes(pose),ph=t*(pose==='run'?20:10),bob=mv?Math.abs(Math.sin(ph))*.18:0,sn=pose==='sniff'?Math.sin(t*8)*.22:0,tw=pose==='anoint'?1.1:0,cw=Math.cos(tw),sw2=Math.sin(tw),rt=(x,y)=>[x*cw-y*sw2,x*sw2+y*cw];
+  P.push({c:[-.15,0,.95+bob],r:[2.35,1.85,.95],col:Fc});
+  P.push({c:[-.45,0,1.75+bob],r:[2.55,2.2,1.75],cut:-.15,hi:.2,col:spk});
+  const f=(x,y,z,r,col,a)=>{const q=rt(x,y);P.push({c:[q[0],q[1],z+bob],r,a:(a||0)+tw,col})};
+  f(1.85,0,1.3,[1.25,1.15,1.1],Fc);f(2.75,0,1.05+sn,[.62,.52,.46],Fc);f(3.3,0,1.1+sn,[.26,.26,.22],N);
+  [1,-1].forEach(s=>{f(2.45,s*.62,1.65,[.3,.24,.32],E);f(2.68,s*.55,1.82,[.08,.08,.08],'#ffffff');f(1.5,s*.95,2.2,[.34,.24,.36],L);f(2.25,s*.95,1.1,[.22,.2,.12],'#f0b8b0')});
+  for(let i=0;i<4;i++){const s=i%2?1:-1,fx=i<2?1.3:-1.4,sw=mv?Math.sin(ph+i*1.6)*.35:0;f(fx+sw,s*1.2,.2,[.36,.28,.22],L)}
+  return{P,sc:1.55,ol:'#3e3026'}}};
 /* --- 사육장 · 행동 --- */
+const SPWH={y:6,z:8.8,r:8.3};
 const SPE={
  mega:{W:50,D:34,H:24,sp:3,lv:[{z:0,r:()=>[6+Math.random()*38,5+Math.random()*24]}],links:[],
   acts:[['wander',4],['eat',2],['burrow',2],['rest',2],['bark',1]]},
@@ -2846,8 +2848,11 @@ function spBG(o,k,E,cam){const P=cam.P,W=E.W,D=E.D,H=E.H,L=(a,b,c)=>o.line(a[0],
     q([[26,20,28],[38,20,28],[38,28,26],[26,28,26]],'#1d4ed8');L(P(26,20,28),P(26,20,35),'#5d564e');L(P(38,20,28),P(38,20,35),'#5d564e');
     box(4,22,0,10,8,3,'#8c8273','#6e6458','#7a7064');{const c=P(42,4,12);o.r(c[0],c[1],2,6,'#cfe2fa');o.r(c[0],c[1]+6,2,2,'#5d564e')}}
   else{q([[0,0,0],[0,D,0],[0,D,H],[0,0,H]],'#f4f1ea');q([[0,0,0],[W,0,0],[W,0,H],[0,0,H]],'#ece8e0');for(let i=0;i<=W;i+=10)L(P(i,0,0),P(i,0,H),'#c9c3b8');for(let i=0;i<=D;i+=10)L(P(0,i,0),P(0,i,H),'#c9c3b8');
-    floor('#e9dcc4','#d9c6a6',300);{const c=P(12,30,0);for(let a=0;a<=6.3;a+=.05)for(let r=0;r<9;r+=.5){const p=P(12+Math.cos(a)*r*.9,30+Math.sin(a)*r*.7,Math.sqrt(Math.max(0,81-r*r))*.8);o.p(p[0],p[1],r>7.5?'#b35c00':'#e08a00')}const d=P(15,33,2);o.r(d[0]-3,d[1]-4,6,5,'#5a2f00')}
-    {const c=P(48,8,8);o.ring(c[0],c[1],10,'#5d564e');o.ring(c[0],c[1],9,'#8c8273');o.line(c[0],c[1]+10,c[0]-3,c[1]+15,'#5d564e');o.line(c[0],c[1]+10,c[0]+3,c[1]+15,'#5d564e')}
+    floor('#e9dcc4','#d9c6a6',300);{const R0=7.5,Hd=8;for(let r=R0;r>=0;r-=.25)for(let a=0;a<6.29;a+=.035){const x=Math.cos(a)*r,y=Math.sin(a)*r,z=Math.sqrt(Math.max(0,R0*R0-r*r))*Hd/R0,p=P(12+x,30+y,z),lt=(-x-y)/R0*.5+z/Hd*.5;o.p(p[0],p[1],r>R0-.6?'#a85400':lt>.55?'#f2a43a':lt>.1?'#e08a00':'#c46f00')}
+      for(let u=-2;u<=2;u+=.12)for(let z=0;z<=Math.sqrt(4-u*u)*1.25;z+=.12){const p=P(12+5.3+u*.71,30+5.3-u*.71,z);o.p(p[0],p[1],'#4a2600')}}
+    {const cx=48,cy=SPWH.y,cz=SPWH.z,rr=SPWH.r;[[-1,1],[1,1]].forEach(([s])=>{L(P(cx+s*5,cy+5.5,0),P(cx,cy+5.5,cz),'#8c8273');L(P(cx+s*5,cy-.8,0),P(cx,cy-.8,cz),'#a8a297')});
+      for(let a=0;a<6.29;a+=.04){const x=cx+Math.cos(a)*rr,z=cz+Math.sin(a)*rr,p=P(x,cy,z);o.p(p[0],p[1],'#8c8273');if(Math.sin(a)<-.15){L(P(x,cy,z),P(x,cy+4.5,z),'#d6d0c4')}}
+      for(let i=0;i<8;i++){const a=i*.785;L(P(cx,cy,cz),P(cx+Math.cos(a)*rr,cy,cz+Math.sin(a)*rr),'#bdb6aa')}}
     box(28,30,0,6,5,1.5,'#ffffff','#e6e0d6','#d9d2c6')}}
 function spFront(o){const{k,E,cam}=SPZ,P=cam.P,W=E.W,D=E.D,H=E.H,L=(a,b,c)=>o.line(a[0],a[1],b[0],b[1],c);
   if(k==='mega'){L(P(W,0,0),P(W,0,H),'#c9d6e4');L(P(0,D,0),P(0,D,H),'#c9d6e4');L(P(W,D,0),P(W,D,H),'#c9d6e4');L(P(W,0,0),P(W,D,0),'#c9d6e4');L(P(0,D,0),P(W,D,0),'#c9d6e4');L(P(0,0,H),P(W,0,H),'#5d564e');L(P(W,0,H),P(W,D,H),'#5d564e');L(P(W,D,H),P(0,D,H),'#5d564e');L(P(0,D,H),P(0,0,H),'#5d564e')}
@@ -2863,7 +2868,7 @@ function spChoose(){const A=SPZ.A,E=SPZ.E,k=SPZ.k,W=E.acts;let r=W.reduce((a,x)=
   else if(pk==='burrow'){go(0,fl(),'burrow',5+Math.random()*5,'burrow')}
   else if(pk==='bark'){go(0,[8+Math.random()*20,6,4],'bark',3,'idle')}
   else if(pk==='climbup'){const tl=1+Math.floor(Math.random()*(E.lv.length-1));go(tl,spLvPt(E,tl),'look',2+Math.random()*3,'sit')}
-  else if(pk==='wheel'){go(0,k==='dorm'?[6,24,0]:[48,9,0],'wheel',4+Math.random()*4,'run')}
+  else if(pk==='wheel'){go(0,k==='dorm'?[6,24,0]:[48,8.3,0],'wheel',4+Math.random()*4,'run')}
   else if(pk==='groom'){const tl=Math.floor(Math.random()*E.lv.length);go(tl,spLvPt(E,tl),'groom',2+Math.random()*2,'groom')}
   else if(pk==='sleep'){const tl=k==='dorm'?3:k==='ferret'?2:0;go(tl,k==='ferret'?[31,24,27]:spLvPt(E,tl),'sleep',6+Math.random()*6,'sleep')}
   else if(pk==='sit'){go(A.lv,spLvPt(E,A.lv),'look',2,'sit')}
@@ -2897,11 +2902,14 @@ function spStep(dt){const A=SPZ.A,E=SPZ.E;if(!A)return;A.anim+=dt;SPZ.parts.forE
   if(A.t<=0){A.act=null;spChoose()}}
 function spDraw(){const cv=document.getElementById('sczc'),o=PXG(cv),A=SPZ.A,{k,cam,E}=SPZ;o.g.drawImage(SPZ.off,0,0);if(!A)return;
   if(SPZ.food){const c=cam.P(...SPZ.food);o.r(c[0]-2,c[1]-2,4,3,'#e08a00');o.p(c[0],c[1]-3,'#3f6b4f')}
-  const hidden=(A.act&&A.act.n==='hide'&&!A.path.length)||(k==='mega'&&A.pose==='burrow'&&!A.path.length);
-  if(!hidden){const sh=cam.P(A.x,A.y,A.z);for(let x=-5;x<=5;x++)o.p(sh[0]+x,sh[1]+1,'rgba(20,10,5,.18)');
-    const pose=A.react?A.react.pose:A.pose,M=SPM[k](pose,A.anim);sp3D(o,cam,A.x,A.y,A.z+(A.jz||0),A.yaw,M.P,M.sc,M.ol)}
-  else if(k==='mega'){const c=cam.P(A.x,A.y,0);for(let i=0;i<14;i++)o.p(c[0]-4+i%7,c[1]-1-Math.floor(i/7),i%3?'#523a28':'#2a1d14')}
-  if(A.act&&A.act.n==='wheel'&&!A.path.length){const c=cam.P(k==='dorm'?6:48,k==='dorm'?24:8,k==='dorm'?6:8),a=A.anim*8;for(let i=0;i<4;i++){const r=k==='dorm'?6:9;o.p(c[0]+Math.cos(a+i*1.57)*r,c[1]+Math.sin(a+i*1.57)*r,'#1d1a17')}}
+  const hidden=A.act&&A.act.n==='hide'&&!A.path.length;
+  const inWh=k==='hog'&&A.act&&A.act.n==='wheel'&&!A.path.length,whF=()=>{const cy=SPWH.y+4.5,a0=inWh?A.anim*4:0;for(let a=0;a<6.29;a+=.03){const p=cam.P(48+Math.cos(a)*SPWH.r,cy,SPWH.z+Math.sin(a)*SPWH.r);o.p(p[0],p[1],'#5d564e')}for(let i=0;i<6;i++){const a=a0+i*1.047,p1=cam.P(48,cy,SPWH.z),p2=cam.P(48+Math.cos(a)*SPWH.r,cy,SPWH.z+Math.sin(a)*SPWH.r);o.line(p1[0],p1[1],p2[0],p2[1],'#8c8273')}const c=cam.P(48,cy,SPWH.z);o.r(c[0]-1,c[1]-1,3,3,'#5d564e')},whBehind=k==='hog'&&A.y<SPWH.y+5&&Math.abs(A.x-48)<SPWH.r+4;
+  if(k==='hog'&&!whBehind)whF();
+  if(!hidden){if(inWh)A.yaw=0;const sh=cam.P(A.x,A.y,A.z);for(let x=-5;x<=5;x++)o.p(sh[0]+x,sh[1]+1,'rgba(20,10,5,.18)');
+    const pose=A.react?A.react.pose:A.pose,M=SPM[k](pose,A.anim);sp3D(o,cam,A.x,A.y,A.z+(A.jz||0),A.yaw,M.P,M.sc,M.ol,false,M.clip);if(M.clip){const c=cam.P(A.x,A.y,A.z);for(let i=0;i<26;i++){const a=i/26*6.28,r=7+spHash(i,1,2)*2;o.p(c[0]+Math.cos(a)*r,c[1]+Math.sin(a)*r*.5,i%3?'#6b4a32':'#523a28')}}}
+  else if(k==='hog'){const c=cam.P(16.6,34.6,.9);o.r(c[0]-2,c[1]-1,4,2,'#f3e6cf');o.p(c[0]+2,c[1],'#3a2224');if(Math.sin(A.anim*1.3)>-.6){o.p(c[0]-1,c[1]-2,'#141210');o.p(c[0]+1,c[1]-2,'#141210')}}
+  if(k==='hog'&&whBehind)whF();
+  if(A.act&&A.act.n==='wheel'&&!A.path.length&&k==='dorm'){const c=cam.P(k==='dorm'?6:48,k==='dorm'?24:8,k==='dorm'?6:8),a=A.anim*8;for(let i=0;i<4;i++){const r=k==='dorm'?6:9;o.p(c[0]+Math.cos(a+i*1.57)*r,c[1]+Math.sin(a+i*1.57)*r,'#1d1a17')}}
   SPZ.parts.forEach(p=>{const c=cam.P(p.x,p.y,p.z);if(p.ch==='n'){o.r(c[0],c[1]-3,1,4,p.c);o.r(c[0]-2,c[1],3,2,p.c)}else if(p.ch==='z'){o.r(c[0],c[1],3,1,p.c);o.p(c[0]+1,c[1]+1,p.c);o.r(c[0],c[1]+2,3,1,p.c)}else o.r(c[0],c[1],2,2,p.c)});
   spFront(o)}
 function spTap(sx,sy){const A=SPZ.A,{k,cam}=SPZ,c=cam.P(A.x,A.y,A.z+3);if(Math.hypot(c[0]-sx,c[1]-sy)<14){spReact();return}zmMsg('동물을 직접 눌러 보세요')}
@@ -2909,7 +2917,7 @@ function spReact(){const A=SPZ.A,k=SPZ.k;A.path=[];const R={mega:['ball',4,'🟤
   A.react={pose:R[0],t:R[1]};zmMsg(R[2]);if(k==='dorm'){A.act=null;const E=SPZ.E,tl=Math.min(E.lv.length-1,A.lv+1);A.path=spPath(A,E,tl,spLvPt(E,tl));A.react=null}if(k==='tiel')SPZ.parts.push({x:A.x,y:A.y,z:A.z+11,vz:5,t:1,c:'#e08a00',ch:'n'})}
 function spTreat(){const A=SPZ.A,E=SPZ.E,k=SPZ.k,f=k==='tiel'?[33,24,1]:k==='dorm'?[25,6,0]:[10+Math.random()*(E.W-20),8+Math.random()*(E.D-16),0];SPZ.food=f;A.react=null;A.path=spPath(A,E,0,f);A.act={n:'eat',dur:3,pose:k==='tiel'?'bob':k==='mega'?'idle':'sniff'};zmMsg('🍎 간식을 놓았어요')}
 function spPetIt(){const A=SPZ.A,k=SPZ.k,R={mega:['idle',2,'🟤 더듬이를 살랑살랑… 느긋해요'],dorm:['groom',2,'🐭 손바닥 위에서 세수해요'],tiel:['bob',2.5,'🦜 머리를 쓰다듬으니 고개를 숙여요 💕'],ferret:['sleep',2.5,'🦦 배를 보이고 축 늘어져요'],hog:['sniff',2.5,'🦔 킁킁… 가시를 눕혔어요. 기분 좋은가 봐요']}[k];A.path=[];A.react={pose:R[0],t:R[1]};zmMsg(R[2])}
-function spRoomDraw(o,S){const p=spOf(S);RM.pet=null;if(!p)return;const P=rmP,x=1.5,y=3.7,w=1.5,d=1.6,L=(a,b,c)=>o.line(a[0],a[1],b[0],b[1],c),k=p.k,G=[];
+function spRoomDraw(o,S){const p=spOf(S);RM.pet=null;if(!p)return;const P=rmP,x=10.2,y=3.2,w=1.3,d=1.6,L=(a,b,c)=>o.line(a[0],a[1],b[0],b[1],c),k=p.k,G=[];
   const H={mega:.9,dorm:2.4,tiel:2.6,ferret:2.6,hog:.6}[k];
   if(k==='mega'){rmBox(o,x,y,0,w,d,.35,'#3b2a1e','#2a1d14','#2a1d14','#1d1a17');rmBox(o,x,y,.35,w,d,.55,'rgba(223,231,238,.35)','rgba(201,214,228,.5)','rgba(201,214,228,.5)','#8fa3b8');const c=P(x+.8,y+.8,.4);o.r(c[0]-2,c[1]-1,4,2,'#3e2b1f')}
   else if(k==='hog'){rmBox(o,x,y,0,w,d,.6,'#e9dcc4','#d9d2c6','#e6e0d6','#8c8273');const c=P(x+.5,y+.6,.6);o.r(c[0]-3,c[1]-3,5,3,'#e08a00');const h=P(x+1.1,y+1.1,.6);o.r(h[0]-2,h[1]-2,4,2,'#8a7257')}
@@ -2947,22 +2955,22 @@ function drawHome(o,S){const P=rmP,F=S.furn||{},L=(a,b,c)=>o.line(a[0],a[1],b[0]
   if(F.coffee){rmBox(o,7.35,.25,2.6,.55,.5,.7,'#2f2b28','#1d1a17','#3e3934');{const c=P(7.6,.75,2.65);o.r(c[0]-1,c[1]-2,3,2,'#fff')}}
   if(F.lamp){const a=P(4.55,1.65,2.6),b=P(4.55,1.65,3.6);L(a,b,'#3e3934');o.r(b[0]-3,b[1]-2,6,3,'#e08a00');o.r(b[0]-2,b[1]+1,4,1,'#ffd98a')}
   if(F.chair)rmBox(o,5.75,3.3,2,1,.15,.8,'#1d1a17','#2f2b28','#3e3934');
-  if(F.plant){rmBox(o,9.2,2.3,0,.6,.6,.7,'#b35c00','#8a4600','#7a3e00');const c=P(9.5,2.6,1.1);[[0,-5],[-2,-3],[2,-3],[-1,-1],[1,-1],[0,-2]].forEach(([u,v])=>o.r(c[0]+u,c[1]+v,2,2,'#3f6b4f'))}
-  if(F.air){rmBox(o,9.1,3.3,0,.7,.6,1.4,'#fff','#e6e0d6','#d9d2c6','#8c8273');const c=P(9.45,3.9,.9);o.ring(c[0],c[1],2,'#8c8273')}
+  if(F.plant){rmBox(o,11.1,11,0,.6,.6,.7,'#b35c00','#8a4600','#7a3e00');const c=P(11.4,11.3,1.1);[[0,-5],[-2,-3],[2,-3],[-1,-1],[1,-1],[0,-2]].forEach(([u,v])=>o.r(c[0]+u,c[1]+v,2,2,'#3f6b4f'))}
+  if(F.air){rmBox(o,11.1,8.4,0,.7,.6,1.4,'#fff','#e6e0d6','#d9d2c6','#8c8273');const c=P(11.45,9,.9);o.ring(c[0],c[1],2,'#8c8273')}
   if(F.thermo){const c=P(2.2,1.25,.3);o.r(c[0],c[1]-3,4,3,'#9c9b98');o.p(c[0]+1,c[1]-2,'#fff')}
   if(F.cork){const c=P(1.6,1.2,.62);o.r(c[0]-2,c[1]-1,5,2,'#8a5a2b')}
   RM.cal=rmBB([P(4.2,0,4.4),P(5.6,0,5.9)]);RM.door=rmBB([P(8.3,0,0),P(9.9,0,5.2)]);RM.pc=rmBB([P(5.2,.25,2.6),P(7,.55,4)]);RM.win=rmBB([P(0,5.8,3),P(0,9.2,6)]);RM.bed=rmBB([P(0,5.4,0),P(3.3,9.8,1.2)]);RM.fridge=rmBB([P(.05,1.55,0),P(1,2.85,2.7)])}
 
 function drawRoom(cv,S){const o=PXG(cv),P=rmP,H=scnHamAgg(S),I=S.iso,L=(a,b,c)=>o.line(a[0],a[1],b[0],b[1],c);o.g.clearRect(0,0,o.W,o.H);
   // 벽
-  o.poly([P(0,0,0),P(0,10,0),P(0,10,7),P(0,0,7)],'#efe6d6');o.poly([P(0,0,0),P(10,0,0),P(10,0,7),P(0,0,7)],'#e2d6c1');
-  for(let i=1;i<10;i++){L(P(0,i,.5),P(0,i,7),'#e7dcc8');L(P(i,0,.5),P(i,0,7),'#d8cbb3')}
-  o.poly([P(0,0,0),P(0,10,0),P(0,10,.5),P(0,0,.5)],'#cbbda5');o.poly([P(0,0,0),P(10,0,0),P(10,0,.5),P(0,0,.5)],'#bfb096');
+  o.poly([P(0,0,0),P(0,12,0),P(0,12,7),P(0,0,7)],'#efe6d6');o.poly([P(0,0,0),P(12,0,0),P(12,0,7),P(0,0,7)],'#e2d6c1');
+  for(let i=1;i<12;i++){L(P(0,i,.5),P(0,i,7),'#e7dcc8');L(P(i,0,.5),P(i,0,7),'#d8cbb3')}
+  o.poly([P(0,0,0),P(0,12,0),P(0,12,.5),P(0,0,.5)],'#cbbda5');o.poly([P(0,0,0),P(12,0,0),P(12,0,.5),P(0,0,.5)],'#bfb096');
   // 바닥
-  o.poly([P(0,0,0),P(10,0,0),P(10,10,0),P(0,10,0)],'#c9a67a');
-  for(let i=1;i<10;i++)L(P(0,i,0),P(10,i,0),'#b08a5e');
-  for(let i=0;i<10;i++){const j=1+Math.floor(pxH(i,3)*8);L(P(j,i,0),P(j,i+1,0),'#a88358')}
-  for(let k=0;k<140;k++){const p=P(pxH(k,1)*10,pxH(k,2)*10,0);o.p(p[0],p[1],pxH(k,5)<.5?'#bf9a6d':'#d4b386')}
+  o.poly([P(0,0,0),P(12,0,0),P(12,12,0),P(0,12,0)],'#c9a67a');
+  for(let i=1;i<12;i++)L(P(0,i,0),P(12,i,0),'#b08a5e');
+  for(let i=0;i<12;i++){const j=1+Math.floor(pxH(i,3)*10);L(P(j,i,0),P(j,i+1,0),'#a88358')}
+  for(let k=0;k<200;k++){const p=P(pxH(k,1)*12,pxH(k,2)*12,0);o.p(p[0],p[1],pxH(k,5)<.5?'#bf9a6d':'#d4b386')}
   // 창문 빛
   o.poly([P(.2,6,0),P(3.6,6.8,0),P(3.6,9.6,0),P(.2,8.8,0)],'#d9bd92');
   // 창문
@@ -2978,8 +2986,8 @@ function drawRoom(cv,S){const o=PXG(cv),P=rmP,H=scnHamAgg(S),I=S.iso,L=(a,b,c)=>
   L(P(8.6,0,2.6),P(9.6,0,2.6),'#86613f');L(P(8.6,0,4.6),P(9.6,0,4.6),'#86613f');{const c=P(8.7,0,2.3);o.r(c[0],c[1],2,2,'#e08a00')}
   if(S.arr){o.poly([P(8.75,0,3),P(9.55,0,3),P(9.55,0,4.3),P(8.75,0,4.3)],'#fff8e6');for(let k=0;k<3;k++)L(P(8.85,0,3.9-k*.3),P(9.45,0,3.9-k*.3),'#b35c00');const c=P(9.15,0,4.25);o.r(c[0]-1,c[1]-2,2,2,'#1d4ed8')}
   // 러그
-  o.poly([P(4,4,0),P(9.3,4,0),P(9.3,8.8,0),P(4,8.8,0)],'#1d4ed8');o.poly([P(4.3,4.3,0),P(9,4.3,0),P(9,8.5,0),P(4.3,8.5,0)],'#8fb0e6');
-  for(let i=0;i<6;i++)for(let j=0;j<5;j++){const c=P(4.8+i*.8,4.8+j*.8,0);o.p(c[0],c[1],'#c9dbf7')}
+  o.poly([P(4.6,4.8,0),P(10.6,4.8,0),P(10.6,10.4,0),P(4.6,10.4,0)],'#1d4ed8');o.poly([P(4.9,5.1,0),P(10.3,5.1,0),P(10.3,10.1,0),P(4.9,10.1,0)],'#8fb0e6');
+  for(let i=0;i<7;i++)for(let j=0;j<6;j++){const c=P(5.4+i*.8,5.6+j*.8,0);o.p(c[0],c[1],'#c9dbf7')}
   // 콩벌레 통 (가진 만큼 쌓기)
   {const dry=I.dry,G=[],nT=Math.max(1,Math.min(10,I.tubs.length)),cols=[[.3,3],[1.35,4],[2.4,3]],ord=[[1,0],[0,0],[2,0],[1,1],[0,1],[2,1],[1,2],[0,2],[2,2],[1,3]];
     const sl=ord.slice(0,nT).sort((a,b)=>a[1]-b[1]||a[0]-b[0]);sl.forEach(([c,k])=>{const x=cols[c][0],y=0,z=k*.62;rmBox(o,x,y+.1,z,.95,1.15,.5,'#f4f1ea','#d9e2ec','#cfd8e3','#9c9387');const a=P(x,y+1.25,z+.04),b=P(x+.95,y+1.25,z+.04),cc=P(x+.95,y+1.25,z+.26),d=P(x,y+1.25,z+.26);o.poly([a,b,cc,d],dry?'#a89070':'#3c281a');rmBox(o,x-.03,y+.07,z+.5,1.01,1.21,.1,'#ffffff','#ece8e0','#e2ddd3','#b9b3a8');G.push(P(x,y,z),P(x+.95,y+1.25,z+.6))});RM.tank=rmBB(G)}
@@ -3000,7 +3008,7 @@ function drawRoom(cv,S){const o=PXG(cv),P=rmP,H=scnHamAgg(S),I=S.iso,L=(a,b,c)=>
   rmBox(o,1,5.5,1.1,2.25,2.7,.12,'#1d4ed8','#163ea8','#1a46bf');L(P(1,7,1.23),P(3.25,7,1.23),'#4a86e8');L(P(1,6.3,1.23),P(3.25,6.3,1.23),'#4a86e8');
   drawHome(o,S);
   // 햄스터 케이지
-  const cx=5.9,cy=4.7,cw=3,cd=2.4,ch=2.2;
+  const cx=6.6,cy=5.9,cw=3,cd=2.4,ch=2.2;
   rmBox(o,cx,cy,0,cw,cd,.4,H.di>=3?'#a98a5c':'#f3e2b5','#1d4ed8','#163ea8','#0f2a73');
   for(let k=0;k<18;k++){const c=P(cx+.2+pxH(k,31)*2.6,cy+.2+pxH(k,32)*2,.4);o.p(c[0],c[1],H.di>=3?'#6b4f2c':H.di>=1?'#d9c08a':'#fff8e6')}
   rmBox(o,cx+.15,cy+.15,.4,.9,.8,.6,'#b8875a','#9a6d45','#8a5f3a','#5d4630');{const c=P(cx+1.05,cy+.55,.65);o.r(c[0],c[1],2,3,'#1d1a17')}
@@ -3059,14 +3067,14 @@ const ISPC=[
  {n:'응우옌',ln:'Cubaris sp. \'Nguyen\'',c:['#e09a5c','#b8723a'],pat:'edge',pc:'#f2c08c',roll:1,L:7.6,W:5.6,H:.52,t:2,env:'22–26℃ · 70–85%'},
  {n:'드워프 화이트',ln:'Trichorhina tomentosa',c:['#f4f1ea','#d6d0c4'],pat:'hairy',pc:'#ffffff',roll:0,L:3.8,W:2.3,H:.42,t:0,env:'22–28℃ · 80% 이상'},
  {n:'불가레',ln:'Armadillidium vulgare',c:['#55565e','#34353b'],pat:'vulg',pc:'#c8b25e',roll:1,L:8.4,W:5.8,H:.5,t:0,env:'18–25℃ · 50–70%'}];
-const ISCARE=[['💧 분무·가습','매일 정산 때 챙겨요 (통이 늘수록 비싸져요)','빼먹으면 그날 밤 통마다 약 15%가 죽고 번식도 쉬어요'],['🥕 먹이','분무와 먹이를 둘 다 챙긴 날에만 번식해요','먹이만 빼먹으면 죽지는 않고 번식만 쉬어요'],['🦴 칼슘','번식이 더 잘 돼요 (2,000원)','기대 새끼 수: 마릿수 × 0.16 → 칼슘을 주면 × 0.21'],['🐣 번식','통에 2마리 이상 있어야 번식해요','마릿수가 많을수록 더 많이 태어나요. 종마다 첫 번식에 성공하면 🐣이 붙어요'],['📦 분양','한 통에 10마리 이상 모이면 정산 때 5마리씩 분양할 수 있어요','보통 3,000원 · 인기 5,000원 · 희귀 ✨ 9,000원'],['🆕 새 콩벌레 들이기','정산 때 12,000원으로 아직 없는 종 중 하나를 2마리 들여요','한 번이라도 들인 종은 도감이 열려요'],['🥶 한파 · 📈 분양 문의 폭주','한파 날 난방을 빼먹으면 콩벌레 25%가 죽어요','분양 문의가 몰린 날은 분양가가 2배예요'],['🏆 콩벌레 농장 사장','20일 동안 분양 수익 6만원을 넘기면 특별 엔딩','도감의 모든 종을 번식시키면 업적 \'콩벌레 브리더\'']];
+const ISCARE=[['💧 분무·가습','매일 정산 때 챙겨요 (통이 늘수록 비싸져요)','빼먹으면 그날 밤 통마다 약 15%가 죽고 번식도 쉬어요'],['🥕 먹이','분무와 먹이를 둘 다 챙긴 날에만 번식해요','먹이만 빼먹으면 죽지는 않고 번식만 쉬어요'],['🦴 칼슘','번식이 더 잘 돼요 (2,000원)','기대 새끼 수: 마릿수 × 0.16 → 칼슘을 주면 × 0.21'],['🐣 번식','통에 다 자란 콩벌레가 2마리 이상 있어야 번식해요','마릿수가 많을수록 더 많이 태어나요. 갓 태어난 새끼는 크기가 절반이고, 하루가 지나야 번식·분양에 참여해요. 종마다 첫 번식에 성공하면 🐣이 붙어요'],['📦 분양','한 통에 10마리 이상 모이면 정산 때 5마리씩 분양할 수 있어요','보통 3,000원 · 인기 5,000원 · 희귀 ✨ 9,000원'],['🆕 새 콩벌레 들이기','정산 때 12,000원으로 아직 없는 종 중 하나를 2마리 들여요','한 번이라도 들인 종은 도감이 열려요'],['🥶 한파 · 📈 분양 문의 폭주','한파 날 난방을 빼먹으면 콩벌레 25%가 죽어요','분양 문의가 몰린 날은 분양가가 2배예요'],['🏆 콩벌레 농장 사장','20일 동안 분양 수익 6만원을 넘기면 특별 엔딩','도감의 모든 종을 번식시키면 업적 \'콩벌레 브리더\'']];
 const IGRP=[['Armadillidiidae','Armadillidium',[8,14,18,9,10,11,13,17,22,16,15]],['Armadillidiidae','Cristarmadillidium',[6]],['Armadillidae','Armadillo',[7]],['Armadillidae','Cubaris',[1,20,4,3,2,5]],['Armadillidae','Troglodillo',[0]],['Porcellionidae','Porcellio',[12,19]],['Platyarthridae','Trichorhina',[21]]];
 const ITUBS=[[0,1,2,3,4,5],[6,7,8,9,10,11,12,'12b'],[13,14,15,16,17,18,19],[20,21,22]];
 const ITUBL=ITUBS.flat(),ITIER=[3000,5000,9000],ITIERN=['보통','인기','희귀 ✨'],ISELL=10,IUNIT=5,IG=.16,IGC=.21;
 const tubSp=t=>typeof t==='string'?parseInt(t):t,tubName=t=>ISPC[tubSp(t)].n+(typeof t==='string'?' 새끼':'');
 const ISHOP=ITUBL.filter(t=>typeof t==='number'),INEW=12000;
 function isoStart(){const t=22;return{tubs:[{t,n:2}],dry:0,sold:0}}
-const isoTotal=I=>(I.tubs||[]).reduce((a,x)=>a+x.n,0);
+const isoTotal=I=>(I.tubs||[]).reduce((a,x)=>a+x.n+(x.b||0),0);
 function isoFixState(S){const I=S.iso||{};if(!I.tubs){S.iso=isoStart()}return S}
 function isoSeenAdd(sp){const D=CR.isoSeen||(CR.isoSeen=[]);if(D.includes(sp))return;D.push(sp);saveCR()}
 function isoDexAdd(sp){isoSeenAdd(sp);const D=CR.isoDex||(CR.isoDex=[]);if(D.includes(sp))return false;D.push(sp);if(D.length>=ISPC.length)unlock('isoDex');saveCR();return true}
@@ -3118,7 +3126,7 @@ function isoDexDraw(cv,sp,t,gray){const o=PXG(cv);o.g.clearRect(0,0,cv.width,cv.
 const IT={};
 function isoInit(S){const I=S.iso;IT.sel=null;document.getElementById('sczt').textContent='🪲 콩벌레 선반';isoShelf(S)}
 function isoShelf(S){IT.sel=null;const I=S.iso,cv=document.getElementById('sczc');cv.hidden=true;let sh=document.getElementById('isoShelf');if(!sh){cv.insertAdjacentHTML('afterend','<div id="isoShelf" class="ishelf"></div>');sh=document.getElementById('isoShelf')}sh.hidden=false;
-  const tubH=i=>{const T=I.tubs[i];return`<button class="itub" data-tub="${i}" aria-label="${tubName(T.t)} ${T.n}마리"><span class="itl">${tubName(T.t)}</span><canvas width="64" height="26" data-tc="${i}"></canvas><span class="itn">${T.n}마리</span></button>`};
+  const tubH=i=>{const T=I.tubs[i];return`<button class="itub" data-tub="${i}" aria-label="${tubName(T.t)} ${T.n+(T.b||0)}마리"><span class="itl">${tubName(T.t)}</span><canvas width="64" height="26" data-tc="${i}"></canvas><span class="itn">${T.n}마리${T.b?` · 🐣${T.b}`:''}</span></button>`};
   const rows=[];for(let k=0;k<I.tubs.length;k+=3)rows.push(`<div class="irow">${[k,k+1,k+2].map(i=>i<I.tubs.length?tubH(i):'<span class="itub"></span>').join('')}</div>`);
   sh.innerHTML=`<div class="iwall">${rows.reverse().join('')}</div>`;
   document.getElementById('sczs').innerHTML=`<b>${I.tubs.length}통 · ${isoTotal(I)}마리</b> · ${I.dry?'통들이 <b>말랐어요</b>.':'촉촉해요.'} 통을 누르면 안을 볼 수 있어요.${I.tubs.length<ISHOP.length?' 새 종은 정산 때 들일 수 있어요.':''}`;
@@ -3127,15 +3135,15 @@ function isoShelf(S){IT.sel=null;const I=S.iso,cv=document.getElementById('sczc'
   sh.onclick=e=>{const b=e.target.closest('[data-tub]');if(b)isoTubOpen(S,+b.dataset.tub)}}
 function isoTubMini(cv,T,dry,sd){sd=sd||0;const o=PXG(cv),W=64,H=26;o.g.clearRect(0,0,W,H);o.r(1,0,62,26,'rgba(220,232,245,.35)');o.r(1,15,62,11,dry?'#a89070':'#2e2019');for(let i=0;i<60;i++)o.p(2+pxH(i,1,sd)*60,16+pxH(i,2,1)*9,dry?'#c4ae8a':'#4a3222');
   for(let i=0;i<26;i++){const x=3+pxH(i,3,2)*16,y=11+pxH(i,4,2)*5;o.p(x,y,i%2?'#d9c29a':'#b8996a')}for(let i=0;i<14;i++)o.r(40+pxH(i,5,2)*20,12+pxH(i,6,2)*3,3,1,i%2?'#8a5a2b':'#b35c00');o.r(28,13,7,2,'#fff');
-  const SP=ISPC[tubSp(T.t)],n=Math.min(T.n,10);for(let k=0;k<n;k++){const x=4+pxH(k,7,sd)*55,y=13+pxH(k,8,3)*2;o.r(x,y,SP.L>5?3:2,2,SP.c[0]);o.p(x,y+1,SP.c[1])}
+  const SP=ISPC[tubSp(T.t)],n=Math.min(T.n,10),nb=Math.min(T.b||0,6);for(let k=0;k<n;k++){const x=4+pxH(k,7,sd)*55,y=13+pxH(k,8,3)*2;o.r(x,y,SP.L>5?3:2,2,SP.c[0]);o.p(x,y+1,SP.c[1])}for(let k=0;k<nb;k++){const x=4+pxH(k+20,7,sd)*55,y=14+pxH(k+20,8,3)*2;o.p(x,y,SP.c[0])}
   o.r(46,20,15,5,'#9c9b98');o.line(0,0,0,25,'#cfd8e3');o.line(63,0,63,25,'#cfd8e3')}
 /* 통 클로즈업: 옆에서 본 단면 */
 const IW2=100,ID2=34,ISZ=16,ILID=44;
 const iCam={P:(x,y,z)=>[6+x*1.68,112-z*1.68-y*.55],D:(x,y,z)=>-y*1.2+z*.15,Lv:[-.35,-.55,.75],V:[0,-.95,.3]};
 const iSurf=x=>ISZ+(x<28?3.4*Math.max(0,Math.sin((x-2)/26*Math.PI)):0);
-function isoTubOpen(S,i){const I=S.iso,T=I.tubs[i],SP=ISPC[tubSp(T.t)],n=Math.min(T.n,14),cv=document.getElementById('sczc');document.getElementById('isoShelf').hidden=true;cv.hidden=false;cv.width=180;cv.height=120;
+function isoTubOpen(S,i){const I=S.iso,T=I.tubs[i],SP=ISPC[tubSp(T.t)],n=Math.min(T.n,14),nbb=Math.min(T.b||0,8),cv=document.getElementById('sczc');document.getElementById('isoShelf').hidden=true;cv.hidden=false;cv.width=180;cv.height=120;
   Object.assign(IT,{sel:i,sp:tubSp(T.t),SP,dry:!!I.dry,food:[],drops:[],puff:[],liftL:0,liftM:0,wet:0,baby:typeof T.t==='string'});
-  IT.bugs=Array.from({length:n},(_,k)=>{const b=IT.baby||(k>=n*.7&&n>4);return{x:10+Math.random()*80,y:4+Math.random()*28,z:0,a:Math.random()*6.28,tv:0,pl:'f',st:'walk',t:Math.random()*3,sp:(b?3:4.4)*(SP.roll?1:1.35)*(.85+Math.random()*.3),sc:b?.6:.92+Math.random()*.16,ph:Math.random()*6,molt:!b&&Math.random()<.06,tgt:null}});
+  IT.bugs=Array.from({length:n+nbb},(_,k)=>{const b=IT.baby||k>=n;return{x:10+Math.random()*80,y:4+Math.random()*28,z:0,a:Math.random()*6.28,tv:0,pl:'f',st:'walk',t:Math.random()*3,sp:(b?3:4.4)*(SP.roll?1:1.35)*(.85+Math.random()*.3),sc:b?.48+Math.random()*.06:.92+Math.random()*.16,ph:Math.random()*6,molt:!b&&Math.random()<.06,tgt:null}});
   IT.bugs.forEach(b=>{if(b.molt){b.st='molt';b.t=8+Math.random()*10}});
   // 정적 배경
   const off=document.createElement('canvas');off.width=180;off.height=120;const o=PXG(off),P=iCam.P;
@@ -3153,7 +3161,7 @@ function isoTubOpen(S,i){const I=S.iso,T=I.tubs[i],SP=ISPC[tubSp(T.t)],n=Math.mi
   {const a=P(70,0,4),b=P(97,0,9);o.r(a[0],b[1],b[0]-a[0],a[1]-b[1],'#9c9b98');o.line(a[0]+2,b[1]+3,b[0]-3,b[1]+3,'#e6e3de');o.line(a[0]+2,b[1]+6,b[0]-8,b[1]+6,'#e6e3de')}
   IT.off=off;
   document.getElementById('sczt').textContent=`🪲 ${tubName(T.t)}`;
-  document.getElementById('sczs').innerHTML=`<b>${T.n}마리</b>${T.n>n?` (그중 ${n}마리가 보여요)`:''} · ${SP.roll?'위협받으면 공처럼 말아요':'몸을 못 말아서 도망가요'} · ${IT.dry?'흙이 <b>말랐어요</b>':'촉촉해요'}`;
+  document.getElementById('sczs').innerHTML=`<b>${T.n}마리</b>${T.b?` + 🐣 새끼 <b>${T.b}마리</b> (내일부터 번식·분양 가능)`:''}${T.n>n||(T.b||0)>nbb?` (일부만 보여요)`:''} · ${SP.roll?'위협받으면 공처럼 말아요':'몸을 못 말아서 도망가요'} · ${IT.dry?'흙이 <b>말랐어요</b>':'촉촉해요'}`;
   document.getElementById('scza').innerHTML=`<button data-za="shelf">← 선반으로</button><button data-za="mist">💧 분무</button><button data-za="food">🥕 먹이</button>`}
 const iBF=b=>{const ca=Math.cos(b.a),sa=Math.sin(b.a);if(b.pl==='wl')return[[0,ca,sa],[1,0,0]];if(b.pl==='wr')return[[0,ca,sa],[-1,0,0]];if(b.pl==='wb')return[[ca,0,sa],[0,-1,0]];if(b.pl==='tun')return[[ca,0,sa],[0,-1,0]];return[[ca,sa,0],[0,0,1]]};
 const iPos=b=>b.pl==='wl'?[1.5,b.y,b.z]:b.pl==='wr'?[IW2-1.5,b.y,b.z]:b.pl==='wb'?[b.x,ID2-1,b.z]:b.pl==='tun'?[b.x,.4,b.z]:[b.x,b.y,iSurf(b.x)+(b.pl==='fall'?b.z:0)];
@@ -3447,7 +3455,7 @@ function hamDraw(){const cv=document.getElementById('sczc'),o=PXG(cv);o.g.clearR
   for(let i=6.5;i<HW;i+=6.5){const a=hP(i,0,HGT),b=hP(i,HD,HGT);o.line(a[0],a[1],b[0],b[1],'rgba(93,86,78,.25)')}}
 
 function scnRoom(S){const H=scnHamAgg(S),I=S.iso,say=S.esc&&!H.gone?'햄스터가 탈출했어요!':H.gone?'햄스터가 없는 방':H.sick?'햄스터가 아파요':S.arr?'월세 독촉장이 붙었어요':I.dry?'콩벌레 통들이 말랐어요':'평화로운 아침';
-  return`<figure class="scroom"><canvas id="scrc" width="168" height="148" role="img" aria-label="내 방: ${say}"></canvas><figcaption>${say}</figcaption><div class="scrb"><button data-zm="ham">🐹 케이지 들여다보기</button><button data-zm="iso">🪲 콩벌레 선반 보기</button><button data-shop="1">🛒 상점</button></div></figure>`}
+  return`<figure class="scroom"><canvas id="scrc" width="200" height="164" role="img" aria-label="내 방: ${say}"></canvas><figcaption>${say}</figcaption><div class="scrb"><button data-zm="ham">🐹 케이지 들여다보기</button><button data-zm="iso">🪲 콩벌레 선반 보기</button><button data-shop="1">🛒 상점</button>${spOf(S)?`<button data-zm="sp">${spDef(spOf(S).k).ic} 사육장 들여다보기</button>`:''}</div></figure>`}
 function scnRoomMount(S){const cv=document.getElementById('scrc');if(!cv)return;drawRoom(cv,S);cv.addEventListener('click',e=>{const R=cv.getBoundingClientRect(),x=(e.clientX-R.left)*cv.width/R.width,y=(e.clientY-R.top)*cv.height/R.height,In=b=>b&&x>=b[0]-3&&x<=b[2]+3&&y>=b[1]-3&&y<=b[3]+3;if(S.esc&&In(RM.esc)){const h=hamAlive(S)[0];S.esc=0;saveCR();toast(`🐹 ${nRul(h.nm)} 찾았어요! 케이지에 다시 넣었어요.`);sfx('coin');scnHub();return}if(S.esc&&In(RM.cage)){toast('🐹 케이지가 비어 있어요… 방 어딘가에 있을 거예요.');return}if(In(RM.pet)){zmOpen('sp');return}{const hit=['cal','pc','door','win','fridge'].find(k=>In(RM[k]));if(hit){roomTap(hit);return}}if(In(RM.tank))zmOpen('iso');else if(In(RM.cage))zmOpen('ham');else if(In(RM.bed))roomTap('bed')})}
 function scnHub(){storyPrep();document.body.classList.remove('scene');st.scr='start';st.scx=null;const S=scnS(),H=scnHamAgg(S),I=S.iso;
   if(S.end){scnEnding();return}
@@ -3460,7 +3468,7 @@ function scnHub(){storyPrep();document.body.classList.remove('scene');st.scr='st
    <div class="scpets">
     <div class="scpet"><h3>🐹 햄스터 ${H.n}/${HAM_MAX}</h3>${H.gone?'<p class="sst">🏡 모두 본가에 있어요</p>':`<ul class="scham">${H.A.map(h=>`<li><b>${h.nm}</b> <small>${hamTag(h)}</small><br>${scnHam1(h,S.cage)}</li>`).join('')}</ul><ul><li>🍚 ${H.hu?`<b>${H.hu}일째 굶었어요</b>`:'배불러요'}</li><li>🛏 ${H.di>=3?'<b>베딩이 더러워요</b>':H.di>=1?`베딩 교체 ${H.di}일 지남`:'베딩 깨끗해요'}</li></ul>`}</div>
     <div class="scpet"><h3>🪲 콩벌레</h3><p class="sst"><b>${I.tubs.length}통 · ${isoTotal(I)}마리</b></p><ul><li>💧 ${I.dry?'<b>통들이 말랐어요</b>':'촉촉해요'}</li><li>📦 분양 가능 ${I.tubs.filter(x=>x.n>=ISELL).length}통</li><li>💰 분양 수익 ${f(I.sold)}원</li></ul></div>
-    ${(p=>p?(D=>`<div class="scpet"><h3>${D.ic} ${D.n}</h3><p class="sst">${spOn(S)?'<b>✨ 능력 켜짐</b>':'<b>능력 꺼짐</b>'}</p><ul><li>${D.ab}</li><li>🍽 ${p.hu?`<b>${p.hu}일째 굶었어요</b>`:'배불러요'}</li>${p.k==='hog'?`<li>🤝 ${p.ign?`<b>${p.ign}일째 못 놀았어요</b>`:'기분 좋아요'}</li>`:''}</ul><button class="scdexb" data-zm="sp">🔍 들여다보기</button></div>`)(spDef(p.k)):'')(spOf(S))}
+    ${(p=>p?(D=>`<div class="scpet"><h3>${D.ic} ${D.n}</h3><p class="sst">${spOn(S)?'<b>✨ 능력 켜짐</b>':'<b>능력 꺼짐</b>'}</p><ul><li>${D.ab}</li><li>🍽 ${p.hu?`<b>${p.hu}일째 굶었어요</b>`:'배불러요'}</li>${p.k==='hog'?`<li>🤝 ${p.ign?`<b>${p.ign}일째 못 놀았어요</b>`:'기분 좋아요'}</li>`:''}</ul></div>`)(spDef(p.k)):'')(spOf(S))}
    </div>
       ${S.pend?'':(V=>V.w?`<div class="scwarn" role="alert"><b>${V.w==='last'?'🚨 마지막 날 — 월말 마감 폭주':'⚠️ 접수 폭주 경보'}</b>${V.w==='last'?`오늘은 <b>접수량 매우 많음</b> (${V.lo}~${V.hi}건)이에요. 마지막까지 버텨 봐요!`:`오늘은 평소보다 <b>접수가 몰려요</b> (${V.lo}~${V.hi}건). 빠르고 정확하게!`}</div>`:'')(scnVol(S,S.day))}
    ${S.pend?'':scnEvCard(S)}
@@ -3638,10 +3646,11 @@ function scnNight(){const S=scnS(),X=st.scx,C=S.cage,I=S.iso,N=[];
     else if(L2.length&&!N.some(x=>x.startsWith('🐹')||x.startsWith('🤒')))N.push(`🐹 ${nGa(L2[0].nm)} 쳇바퀴를 열심히 돌려요.`)}
   if(X.buy&&hamAlive(S).length<HAM_MAX){const h=newHam(S);S.hams.push(h);hamDexAdd(h.m);if(hamAlive(S).length===1){C.hu=0}N.push(`🎉 새 햄스터 <b>${h.nm}</b> 입양! (${hamTag(h)})${HMORPH[h.m].r===2?' — 희귀 모프예요!':''}`)}
   if(isoTotal(I)>0){const rnd=e=>Math.floor(e)+(Math.random()<e-Math.floor(e)?1:0);
-    if(!X.im){let l=0;I.tubs.forEach(x=>{const d=rnd(x.n*((S.furn||{}).thermo?.07:.15)*(spOn(S,'mega')?.5:1));x.n=Math.max(0,x.n-d);l+=d});I.dry=1;N.push(l?`💧 통들이 말라서 콩벌레 <b>${l}마리</b>가 죽었어요.`:'💧 통들이 말라서 콩벌레가 힘들어해요. 내일은 꼭 분무해 줘요.')}
-    else{I.dry=0;if(!X.if)N.push('🪲 먹이가 없어서 번식을 안 했어요.');else{let g=0;const first=[];I.tubs.forEach(x=>{if(x.n<2)return;const b=rnd(x.n*(X.ic?IGC:IG)*((S.furn||{}).cork?1.1:1)*(S.wx==='rain'?1.25:1)*(spOn(S,'mega')?1.15:1));if(b){x.n+=b;g+=b;{const T=S.st||(S.st={}),br=T.br||(T.br=[]);if(!br.includes(tubSp(x.t)))br.push(tubSp(x.t))}if(isoDexAdd(tubSp(x.t)))first.push(ISPC[tubSp(x.t)].n)}});
-      N.push(g?`🪲 콩벌레 새끼 <b>${g}마리</b>가 태어났어요!${X.ic?' (칼슘 효과)':''}`:'🪲 오늘은 새끼가 안 태어났어요.');if(first.length)N.push(`🐣 도감 등록: <b>${first.join(', ')}</b> 첫 번식 성공!`)}}
-    I.tubs.forEach(x=>{if(x.n===0&&!x.lost){x.lost=1;N.push(`🪦 ${tubName(x.t)} 통이 텅 비었어요…`)}});
+    if(!X.im){let l=0;I.tubs.forEach(x=>{const r=((S.furn||{}).thermo?.07:.15)*(spOn(S,'mega')?.5:1),d=rnd(x.n*r),db=rnd((x.b||0)*r);x.n=Math.max(0,x.n-d);if(x.b)x.b=Math.max(0,x.b-db);l+=d+db});I.dry=1;N.push(l?`💧 통들이 말라서 콩벌레 <b>${l}마리</b>가 죽었어요.`:'💧 통들이 말라서 콩벌레가 힘들어해요. 내일은 꼭 분무해 줘요.')}
+    else{I.dry=0;if(!X.if)N.push('🪲 먹이가 없어서 번식을 안 했어요.');else{let g=0;const first=[];I.tubs.forEach(x=>{if(x.n<2)return;const b=rnd(x.n*(X.ic?IGC:IG)*((S.furn||{}).cork?1.1:1)*(S.wx==='rain'?1.25:1)*(spOn(S,'mega')?1.15:1));if(b){x.nb=b;g+=b;{const T=S.st||(S.st={}),br=T.br||(T.br=[]);if(!br.includes(tubSp(x.t)))br.push(tubSp(x.t))}if(isoDexAdd(tubSp(x.t)))first.push(ISPC[tubSp(x.t)].n)}});
+      N.push(g?`🪲 콩벌레 새끼 <b>${g}마리</b>가 태어났어요!${X.ic?' (칼슘 효과)':''} 새끼는 하루 지나야 번식·분양할 수 있어요.`:'🪲 오늘은 새끼가 안 태어났어요.');if(first.length)N.push(`🐣 도감 등록: <b>${first.join(', ')}</b> 첫 번식 성공!`)}}
+    I.tubs.forEach(x=>{const m=x.b||0;x.n+=m;x.b=x.nb||0;delete x.nb});
+    I.tubs.forEach(x=>{if(x.n+(x.b||0)===0&&!x.lost){x.lost=1;N.push(`🪦 ${tubName(x.t)} 통이 텅 비었어요…`)}});
     {const dc=I.tubs.find(x=>x.t===12);if(dc&&dc.n>=12&&!I.tubs.some(x=>x.t==='12b')){dc.n-=4;I.tubs.push({t:'12b',n:4});N.push('🍼 데어리카우가 많아져서 <b>새끼 통</b>을 따로 만들었어요.')}}}
   if(X.inew){const own=I.tubs.map(x=>x.t),pool=ISHOP.filter(t=>!own.includes(t));if(pool.length){const t=pool[Math.floor(Math.random()*pool.length)];I.tubs.push({t,n:2});N.push(`📦 새 콩벌레 <b>${ISPC[t].n}</b> 2마리가 왔어요! 선반 ${I.tubs.filter(x=>typeof x.t==='number').length}/${ISHOP.length}`)}}
   {const rnd=e=>Math.floor(e)+(Math.random()<e-Math.floor(e)?1:0);
@@ -3661,7 +3670,7 @@ function scnNight(){const S=scnS(),X=st.scx,C=S.cage,I=S.iso,N=[];
       const r=Math.random();S.wxN=r<.25?'rain':r<.55?'cloud':'sun'}
     if(X.din){S.hang=S.day+1;N.push('🍻 회식에서 팀장님이랑 친해졌어요. 내일은 경고 1장을 봐준대요. (대신 근무 시간이 조금 짧아요)')}
     if(X.ot)N.push('🌙 야근 수당 <b>+8,000원</b>. 햄스터는 오늘 밤 혼자 기다렸어요.');
-    if(S.cold===S.day){if(X.heat)N.push('🔥 난방을 켜 둬서 다들 따뜻하게 잤어요.');else{let l=0;I.tubs.forEach(x=>{const d=rnd(x.n*((S.furn||{}).thermo?.12:.25));x.n=Math.max(0,x.n-d);l+=d});if(l)N.push(`🥶 추위에 콩벌레 <b>${l}마리</b>가 죽었어요.`);hamAlive(S).forEach(h=>{if(!h.sick&&Math.random()<((S.furn||{}).air?.25:.5)){h.sick=1;h.sd=0;N.push(`🥶 ${nGa(h.nm)} 감기에 걸렸어요!`)}})}S.cold=0}
+    if(S.cold===S.day){if(X.heat)N.push('🔥 난방을 켜 둬서 다들 따뜻하게 잤어요.');else{let l=0;I.tubs.forEach(x=>{const r=(S.furn||{}).thermo?.12:.25,d=rnd(x.n*r),db=rnd((x.b||0)*r);x.n=Math.max(0,x.n-d);if(x.b)x.b=Math.max(0,x.b-db);l+=d+db});if(l)N.push(`🥶 추위에 콩벌레 <b>${l}마리</b>가 죽었어요.`);hamAlive(S).forEach(h=>{if(!h.sick&&Math.random()<((S.furn||{}).air?.25:.5)){h.sick=1;h.sd=0;N.push(`🥶 ${nGa(h.nm)} 감기에 걸렸어요!`)}})}S.cold=0}
     const nk=(S.evn||{})[S.day];
     if(nk==='cold'){S.cold=S.day+1;N.push('🌨 일기예보: 내일 밤 <b>한파</b>가 온대요. 정산 때 난방을 챙겨요.')}
     if(nk==='esc'&&hamAlive(S).length)S.esc=1;
