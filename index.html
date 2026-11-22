@@ -398,7 +398,15 @@ table.sil th{background:#f3efe7}
 .scrule{font-size:12.5px;color:#4a443d;text-align:left;margin:8px 0}.scw{color:#b35c00}
 .sct{width:100%;border-collapse:collapse;font-size:14px;margin:6px 0}.sct td{padding:5px 6px;border-bottom:1px solid #ddd5c8;text-align:left}.sct .num{text-align:right;font-variant-numeric:tabular-nums}.sct .tot td{font-weight:800;border-top:2px solid #1d1a17}
 .sxl{display:grid;gap:6px}.sxi{display:flex;align-items:center;gap:8px;width:100%;min-height:52px;padding:8px 10px;border:2px solid #9c9387;border-radius:10px;background:#fff;color:#1d1a17;text-align:left;font:600 14px "Noto Sans KR",sans-serif}.sxi[aria-pressed="true"]{border-color:#1d4ed8;background:#eef3ff}.sxi .sxc{font-size:20px;width:22px}.sxi .sxn{flex:1}.sxi .sxn small{display:block;font-weight:400;font-size:12px;color:#5d564e}.sxi .sxa{font-variant-numeric:tabular-nums;font-weight:800}.sxi.sell .sxa{color:#1d4ed8}
-.screst{margin:12px 0 0;font-size:18px;text-align:right}.scend{font-size:15px;text-align:left}.scsum{text-align:left;font-size:14px;padding-left:1.2em}
+.screst{margin:0;font-size:17px;text-align:left;flex:1}
+.scbar{position:sticky;bottom:0;z-index:5;display:flex;align-items:center;gap:10px;margin:12px -4px 0;padding:10px 8px;background:#fffdf8;border-top:2px solid #1d1a17;box-shadow:0 -4px 10px rgba(0,0,0,.08)}.scbar .begin{width:auto;margin:0;padding:12px 18px;flex:none}
+.sxfold{display:flex;align-items:center;gap:8px;width:100%;min-height:52px;padding:8px 10px;border:2px dashed #9c9387;border-radius:10px;background:#faf7f1;color:#1d1a17;text-align:left;font:700 14px "Noto Sans KR",sans-serif;cursor:pointer}
+.sxfold .sxn{flex:1}.sxfold small{display:block;font-weight:400;font-size:12px;color:#5d564e}.sxfold .sxa{font-variant-numeric:tabular-nums;font-weight:800}.sxfold .sxar{font-size:16px;width:16px;text-align:center}
+.sxin{padding-left:12px;border-left:3px solid #c9c3b8}
+.sxchips{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:6px}
+.sxchip{min-height:44px;padding:6px 4px;border:2px solid #9c9387;border-radius:999px;background:#fff;color:#1d1a17;font:700 14px "Noto Sans KR",sans-serif;cursor:pointer}
+.sxchip[aria-pressed="true"]{border-color:#1d4ed8;background:#1d4ed8;color:#fff}
+.sxsel{margin:6px 2px 0;font-size:13px;color:#4a443d}.scend{font-size:15px;text-align:left}.scsum{text-align:left;font-size:14px;padding-left:1.2em}
 .begin small{display:block;font:500 13px 'IBM Plex Sans KR';letter-spacing:0;opacity:.8;margin-top:2px}.begin{padding:8px 12px}
 .begin:disabled{background:#cfc8bd;color:#5a5048;font:700 16px "Noto Sans KR";letter-spacing:0;cursor:default}
 .begin:not(:disabled):hover{background:#1d4ed8}
@@ -581,7 +589,7 @@ body.scene details.rules,body.scene h1 small,body.scene header .stats,body.scene
 <body>
 <button id="mute" class="mute" aria-label="게임 소리 켜기/끄기" aria-pressed="true">🔊</button>
 <header>
-  <h1>보험금 심사하기<span class="bld" id="bld">build 192 · 2026.11.22</span><small>서류와 증권을 대조해 담보별로 지급·부지급을 결정하세요</small></h1>
+  <h1>보험금 심사하기<span class="bld" id="bld">build 193 · 2026.11.22</span><small>서류와 증권을 대조해 담보별로 지급·부지급을 결정하세요</small></h1>
   <div class="stats">
     <button class="home" id="home" aria-label="처음 화면으로">⌂ 처음 화면</button>
     <div class="stat"><b id="prog">0 / 0</b><span>처리 / 접수</span></div>
@@ -1749,6 +1757,8 @@ app.addEventListener('click',e=>{
   if(b.dataset.zm){zmOpen(b.dataset.zm);return}
   if(b.id==='scnSet'){st.scx=null;scnSettle();return}
   if(b.dataset.sx!==undefined){scnToggle(b.dataset.sx);return}
+  if(b.dataset.sxo){const O=st.sxo||(st.sxo={});O[b.dataset.sxo]=O[b.dataset.sxo]?0:1;scnSettle();return}
+  if(b.dataset.spm){scnSpPick();return}
   if(b.id==='scnOk'){scnNight();return}
   if(b.id==='scnRst'){scnReset();return}
   if(b.id==='sbbeg'){st.vs=false;st.sty=null;st.wz=1;start();return}
@@ -2721,8 +2731,9 @@ const HPAL={o:'#1d1a17',a:'#e08a00',w:'#fff8e6',p:'#f0a88a',k:'#1d1a17'};
 const HMINI={idle:["..o.o..",".oaaao.","oaaakao","oawwwwo",".ooooo."]};
 const ISOC=[['회색','#6e6862','#57514b'],['검정','#34302c','#24211e'],['오렌지','#e08a00','#b35c00'],['얼룩','#9a8c7b','#7a6d5f'],['우유','#e9e4da','#b9b0a2'],['파랑','#5a78a8','#41598a']];
 /* --- 방 (아이소 도트) --- */
-const RM={OX:100,OY:62};
-function rmP(x,y,z){return[RM.OX+Math.round((x-y)*8),RM.OY+Math.round((x+y)*4-z*8)]}
+const RM={OX:100,OY:62,tx:0,ty:0};
+const rmT=(x,y)=>{RM.tx=x;RM.ty=y};
+function rmP(x,y,z){x+=RM.tx;y+=RM.ty;return[RM.OX+Math.round((x-y)*8),RM.OY+Math.round((x+y)*4-z*8)]}
 function rmBox(o,x,y,z,w,d,h,top,lf,rt,ol){const P=rmP;o.poly([P(x,y,z+h),P(x+w,y,z+h),P(x+w,y+d,z+h),P(x,y+d,z+h)],top);o.poly([P(x+w,y,z),P(x+w,y+d,z),P(x+w,y+d,z+h),P(x+w,y,z+h)],rt);o.poly([P(x,y+d,z),P(x+w,y+d,z),P(x+w,y+d,z+h),P(x,y+d,z+h)],lf);
   if(ol){const L=(a,b)=>o.line(a[0],a[1],b[0],b[1],ol);L(P(x,y,z+h),P(x+w,y,z+h));L(P(x+w,y,z+h),P(x+w,y+d,z+h));L(P(x+w,y+d,z+h),P(x,y+d,z+h));L(P(x,y+d,z+h),P(x,y,z+h));L(P(x+w,y,z),P(x+w,y+d,z));L(P(x+w,y+d,z),P(x,y+d,z));L(P(x+w,y,z),P(x+w,y,z+h));L(P(x+w,y+d,z),P(x+w,y+d,z+h));L(P(x,y+d,z),P(x,y+d,z+h))}}
 function rmBB(pts){let a=1e9,b=1e9,c=-1e9,d=-1e9;pts.forEach(p=>{a=Math.min(a,p[0]);b=Math.min(b,p[1]);c=Math.max(c,p[0]);d=Math.max(d,p[1])});return[a,b,c,d]}
@@ -2917,7 +2928,7 @@ function spReact(){const A=SPZ.A,k=SPZ.k;A.path=[];const R={mega:['ball',4,'🟤
   A.react={pose:R[0],t:R[1]};zmMsg(R[2]);if(k==='dorm'){A.act=null;const E=SPZ.E,tl=Math.min(E.lv.length-1,A.lv+1);A.path=spPath(A,E,tl,spLvPt(E,tl));A.react=null}if(k==='tiel')SPZ.parts.push({x:A.x,y:A.y,z:A.z+11,vz:5,t:1,c:'#e08a00',ch:'n'})}
 function spTreat(){const A=SPZ.A,E=SPZ.E,k=SPZ.k,f=k==='tiel'?[33,24,1]:k==='dorm'?[25,6,0]:[10+Math.random()*(E.W-20),8+Math.random()*(E.D-16),0];SPZ.food=f;A.react=null;A.path=spPath(A,E,0,f);A.act={n:'eat',dur:3,pose:k==='tiel'?'bob':k==='mega'?'idle':'sniff'};zmMsg('🍎 간식을 놓았어요')}
 function spPetIt(){const A=SPZ.A,k=SPZ.k,R={mega:['idle',2,'🟤 더듬이를 살랑살랑… 느긋해요'],dorm:['groom',2,'🐭 손바닥 위에서 세수해요'],tiel:['bob',2.5,'🦜 머리를 쓰다듬으니 고개를 숙여요 💕'],ferret:['sleep',2.5,'🦦 배를 보이고 축 늘어져요'],hog:['sniff',2.5,'🦔 킁킁… 가시를 눕혔어요. 기분 좋은가 봐요']}[k];A.path=[];A.react={pose:R[0],t:R[1]};zmMsg(R[2])}
-function spRoomDraw(o,S){const p=spOf(S);RM.pet=null;if(!p)return;const P=rmP,x=10.2,y=3.2,w=1.3,d=1.6,L=(a,b,c)=>o.line(a[0],a[1],b[0],b[1],c),k=p.k,G=[];
+function spRoomDraw(o,S){const p=spOf(S);RM.pet=null;if(!p)return;const P=rmP,x=10.5,y=4.2,w=1.3,d=1.6,L=(a,b,c)=>o.line(a[0],a[1],b[0],b[1],c),k=p.k,G=[];
   const H={mega:.9,dorm:2.4,tiel:2.6,ferret:2.6,hog:.6}[k];
   if(k==='mega'){rmBox(o,x,y,0,w,d,.35,'#3b2a1e','#2a1d14','#2a1d14','#1d1a17');rmBox(o,x,y,.35,w,d,.55,'rgba(223,231,238,.35)','rgba(201,214,228,.5)','rgba(201,214,228,.5)','#8fa3b8');const c=P(x+.8,y+.8,.4);o.r(c[0]-2,c[1]-1,4,2,'#3e2b1f')}
   else if(k==='hog'){rmBox(o,x,y,0,w,d,.6,'#e9dcc4','#d9d2c6','#e6e0d6','#8c8273');const c=P(x+.5,y+.6,.6);o.r(c[0]-3,c[1]-3,5,3,'#e08a00');const h=P(x+1.1,y+1.1,.6);o.r(h[0]-2,h[1]-2,4,2,'#8a7257')}
@@ -2947,19 +2958,19 @@ function roomTap(k){const S=scnS(),c=condOf(S);if(k==='pc')openShop();else if(k=
   else if(k==='win')toast(S.wx==='rain'?'🌧 비가 와요. 콩벌레들이 좋아할 것 같아요 (오늘 밤 번식 +25%)':S.wx==='cloud'?'☁️ 흐린 날이에요. 무난한 하루!':'☀️ 맑은 날이에요. 기분 좋게 출근!');
   else if(k==='fridge')toast('🧊 오늘 저녁 메뉴와 저녁 활동은 퇴근 정산 때 골라요.')}
 function drawHome(o,S){const P=rmP,F=S.furn||{},L=(a,b,c)=>o.line(a[0],a[1],b[0],b[1],c);
-  if(S.wx==='rain')for(let k=0;k<10;k++){const y=6.1+pxH(k,1,S.day)*2.8,z=3.4+pxH(k,2,S.day)*2.2;L(P(0,y,z),P(0,y-.15,z-.5),'#4a86e8')}
+  if(S.wx==='rain')for(let k=0;k<10;k++){const y=7.9+pxH(k,1,S.day)*2.8,z=3.4+pxH(k,2,S.day)*2.2;L(P(0,y,z),P(0,y-.15,z-.5),'#4a86e8')}
   // 냉장고
   rmBox(o,.05,1.55,0,.95,1.3,2.7,'#f4f1ea','#d9d2c6','#e6e0d6','#8c8273');L(P(1,1.55,1.7),P(1,2.85,1.7),'#8c8273');{const c=P(1,2.6,2.1);o.r(c[0],c[1],1,3,'#8c8273')}
   if(F.poster){o.poly([P(1.4,0,3.3),P(2.7,0,3.3),P(2.7,0,5.1),P(1.4,0,5.1)],'#1d4ed8');o.poly([P(1.55,0,3.5),P(2.55,0,3.5),P(2.55,0,4.9),P(1.55,0,4.9)],'#e08a00');{const c=P(2.05,0,4.3);o.r(c[0]-2,c[1]-2,4,4,'#fff8e6')}}
-  if(F.rug){o.poly([P(4.3,4.3,0),P(9,4.3,0),P(9,8.5,0),P(4.3,8.5,0)],'#e9c98f');for(let i=0;i<6;i++)for(let j=0;j<5;j++){const c=P(4.8+i*.8,4.8+j*.8,0);o.p(c[0],c[1],'#e08a00')}}
-  if(F.coffee){rmBox(o,7.35,.25,2.6,.55,.5,.7,'#2f2b28','#1d1a17','#3e3934');{const c=P(7.6,.75,2.65);o.r(c[0]-1,c[1]-2,3,2,'#fff')}}
+  if(F.rug){o.poly([P(4.9,5.9,0),P(9.8,5.9,0),P(9.8,10.9,0),P(4.9,10.9,0)],'#e9c98f');for(let i=0;i<6;i++)for(let j=0;j<6;j++){const c=P(5.4+i*.8,6.4+j*.8,0);o.p(c[0],c[1],'#e08a00')}}
+  rmT(1.3,0);if(F.coffee){rmBox(o,7.35,.25,2.6,.55,.5,.7,'#2f2b28','#1d1a17','#3e3934');{const c=P(7.6,.75,2.65);o.r(c[0]-1,c[1]-2,3,2,'#fff')}}
   if(F.lamp){const a=P(4.55,1.65,2.6),b=P(4.55,1.65,3.6);L(a,b,'#3e3934');o.r(b[0]-3,b[1]-2,6,3,'#e08a00');o.r(b[0]-2,b[1]+1,4,1,'#ffd98a')}
   if(F.chair)rmBox(o,5.75,3.3,2,1,.15,.8,'#1d1a17','#2f2b28','#3e3934');
-  if(F.plant){rmBox(o,11.1,11,0,.6,.6,.7,'#b35c00','#8a4600','#7a3e00');const c=P(11.4,11.3,1.1);[[0,-5],[-2,-3],[2,-3],[-1,-1],[1,-1],[0,-2]].forEach(([u,v])=>o.r(c[0]+u,c[1]+v,2,2,'#3f6b4f'))}
-  if(F.air){rmBox(o,11.1,8.4,0,.7,.6,1.4,'#fff','#e6e0d6','#d9d2c6','#8c8273');const c=P(11.45,9,.9);o.ring(c[0],c[1],2,'#8c8273')}
+  rmT(0,0);if(F.plant){rmBox(o,11.1,11,0,.6,.6,.7,'#b35c00','#8a4600','#7a3e00');const c=P(11.4,11.3,1.1);[[0,-5],[-2,-3],[2,-3],[-1,-1],[1,-1],[0,-2]].forEach(([u,v])=>o.r(c[0]+u,c[1]+v,2,2,'#3f6b4f'))}
+  if(F.air){rmBox(o,11.1,8.2,0,.7,.6,1.4,'#fff','#e6e0d6','#d9d2c6','#8c8273');const c=P(11.45,8.8,.9);o.ring(c[0],c[1],2,'#8c8273')}
   if(F.thermo){const c=P(2.2,1.25,.3);o.r(c[0],c[1]-3,4,3,'#9c9b98');o.p(c[0]+1,c[1]-2,'#fff')}
   if(F.cork){const c=P(1.6,1.2,.62);o.r(c[0]-2,c[1]-1,5,2,'#8a5a2b')}
-  RM.cal=rmBB([P(4.2,0,4.4),P(5.6,0,5.9)]);RM.door=rmBB([P(8.3,0,0),P(9.9,0,5.2)]);RM.pc=rmBB([P(5.2,.25,2.6),P(7,.55,4)]);RM.win=rmBB([P(0,5.8,3),P(0,9.2,6)]);RM.bed=rmBB([P(0,5.4,0),P(3.3,9.8,1.2)]);RM.fridge=rmBB([P(.05,1.55,0),P(1,2.85,2.7)])}
+  RM.cal=rmBB([P(5.5,0,4.4),P(6.9,0,5.9)]);RM.door=rmBB([P(10.1,0,0),P(11.7,0,5.2)]);RM.pc=rmBB([P(6.5,.25,2.6),P(8.3,.55,4)]);RM.win=rmBB([P(0,7.6,3),P(0,11,6)]);RM.bed=rmBB([P(0,7.2,0),P(3.3,11.6,1.2)]);RM.fridge=rmBB([P(.05,1.55,0),P(1,2.85,2.7)])}
 
 function drawRoom(cv,S){const o=PXG(cv),P=rmP,H=scnHamAgg(S),I=S.iso,L=(a,b,c)=>o.line(a[0],a[1],b[0],b[1],c);o.g.clearRect(0,0,o.W,o.H);
   // 벽
@@ -2971,27 +2982,27 @@ function drawRoom(cv,S){const o=PXG(cv),P=rmP,H=scnHamAgg(S),I=S.iso,L=(a,b,c)=>
   for(let i=1;i<12;i++)L(P(0,i,0),P(12,i,0),'#b08a5e');
   for(let i=0;i<12;i++){const j=1+Math.floor(pxH(i,3)*10);L(P(j,i,0),P(j,i+1,0),'#a88358')}
   for(let k=0;k<200;k++){const p=P(pxH(k,1)*12,pxH(k,2)*12,0);o.p(p[0],p[1],pxH(k,5)<.5?'#bf9a6d':'#d4b386')}
-  // 창문 빛
+  rmT(0,1.8);// 창문 빛
   o.poly([P(.2,6,0),P(3.6,6.8,0),P(3.6,9.6,0),P(.2,8.8,0)],'#d9bd92');
   // 창문
   o.poly([P(0,5.8,3),P(0,9.2,3),P(0,9.2,6),P(0,5.8,6)],'#5d564e');o.poly([P(0,6,3.2),P(0,9,3.2),P(0,9,4.5),P(0,6,4.5)],'#cfe2fa');o.poly([P(0,6,4.5),P(0,9,4.5),P(0,9,5.8),P(0,6,5.8)],'#9fc4f0');
   {const c=P(0,8,5.2);o.r(c[0]-3,c[1],6,1,'#fff');o.r(c[0]-2,c[1]-1,3,1,'#fff')}L(P(0,7.5,3.2),P(0,7.5,5.8),'#5d564e');L(P(0,6,4.5),P(0,9,4.5),'#5d564e');
   o.poly([P(0,5.6,2.9),P(0,6.2,2.9),P(0,6.2,6.2),P(0,5.6,6.2)],'#e08a00');o.poly([P(0,8.8,2.9),P(0,9.4,2.9),P(0,9.4,6.2),P(0,8.8,6.2)],'#e08a00');
   rmBox(o,.01,5.7,2.85,.4,3.6,.15,'#f4f1ea','#cfc8bb','#ddd6ca');
-  // 달력 (오른쪽 벽)
+  rmT(1.3,0);// 달력 (오른쪽 벽)
   o.poly([P(4.2,0,4.4),P(5.6,0,4.4),P(5.6,0,5.9),P(4.2,0,5.9)],'#fff');o.poly([P(4.2,0,5.5),P(5.6,0,5.5),P(5.6,0,5.9),P(4.2,0,5.9)],'#1d4ed8');
   {const c=P(4.55,0,5.25);pxNum(o,S.day,c[0]-1,c[1]+1,'#1d1a17')}
-  // 문
+  rmT(1.8,0);// 문
   o.poly([P(8.3,0,0),P(9.9,0,0),P(9.9,0,5.2),P(8.3,0,5.2)],'#5d4630');o.poly([P(8.45,0,0),P(9.75,0,0),P(9.75,0,5),P(8.45,0,5)],'#9a7350');
   L(P(8.6,0,2.6),P(9.6,0,2.6),'#86613f');L(P(8.6,0,4.6),P(9.6,0,4.6),'#86613f');{const c=P(8.7,0,2.3);o.r(c[0],c[1],2,2,'#e08a00')}
   if(S.arr){o.poly([P(8.75,0,3),P(9.55,0,3),P(9.55,0,4.3),P(8.75,0,4.3)],'#fff8e6');for(let k=0;k<3;k++)L(P(8.85,0,3.9-k*.3),P(9.45,0,3.9-k*.3),'#b35c00');const c=P(9.15,0,4.25);o.r(c[0]-1,c[1]-2,2,2,'#1d4ed8')}
-  // 러그
-  o.poly([P(4.6,4.8,0),P(10.6,4.8,0),P(10.6,10.4,0),P(4.6,10.4,0)],'#1d4ed8');o.poly([P(4.9,5.1,0),P(10.3,5.1,0),P(10.3,10.1,0),P(4.9,10.1,0)],'#8fb0e6');
-  for(let i=0;i<7;i++)for(let j=0;j<6;j++){const c=P(5.4+i*.8,5.6+j*.8,0);o.p(c[0],c[1],'#c9dbf7')}
+  rmT(0,0);// 러그
+  o.poly([P(4.6,5.6,0),P(10.1,5.6,0),P(10.1,11.2,0),P(4.6,11.2,0)],'#1d4ed8');o.poly([P(4.9,5.9,0),P(9.8,5.9,0),P(9.8,10.9,0),P(4.9,10.9,0)],'#8fb0e6');
+  for(let i=0;i<6;i++)for(let j=0;j<6;j++){const c=P(5.4+i*.8,6.4+j*.8,0);o.p(c[0],c[1],'#c9dbf7')}
   // 콩벌레 통 (가진 만큼 쌓기)
   {const dry=I.dry,G=[],nT=Math.max(1,Math.min(10,I.tubs.length)),cols=[[.3,3],[1.35,4],[2.4,3]],ord=[[1,0],[0,0],[2,0],[1,1],[0,1],[2,1],[1,2],[0,2],[2,2],[1,3]];
     const sl=ord.slice(0,nT).sort((a,b)=>a[1]-b[1]||a[0]-b[0]);sl.forEach(([c,k])=>{const x=cols[c][0],y=0,z=k*.62;rmBox(o,x,y+.1,z,.95,1.15,.5,'#f4f1ea','#d9e2ec','#cfd8e3','#9c9387');const a=P(x,y+1.25,z+.04),b=P(x+.95,y+1.25,z+.04),cc=P(x+.95,y+1.25,z+.26),d=P(x,y+1.25,z+.26);o.poly([a,b,cc,d],dry?'#a89070':'#3c281a');rmBox(o,x-.03,y+.07,z+.5,1.01,1.21,.1,'#ffffff','#ece8e0','#e2ddd3','#b9b3a8');G.push(P(x,y,z),P(x+.95,y+1.25,z+.6))});RM.tank=rmBB(G)}
-  // 책상·의자·모니터
+  rmT(1.3,0);// 책상·의자·모니터
   rmBox(o,4,0,0,4,2,2.6,'#b8875a','#9a6d45','#8a5f3a','#5d4630');
   L(P(4.3,2,1.9),P(7.7,2,1.9),'#7a5636');L(P(4.3,2,1.1),P(7.7,2,1.1),'#7a5636');{const c=P(6,2,1.5);o.r(c[0],c[1],2,1,'#e08a00')}
   rmBox(o,5.2,.25,2.6,1.8,.3,1.4,'#2f2b28','#1d1a17','#1d1a17');o.poly([P(5.3,.56,2.75),P(6.9,.56,2.75),P(6.9,.56,3.9),P(5.3,.56,3.9)],'#4a86e8');
@@ -3000,15 +3011,15 @@ function drawRoom(cv,S){const o=PXG(cv),P=rmP,H=scnHamAgg(S),I=S.iso,L=(a,b,c)=>
   rmBox(o,4.3,.7,2.6,.8,1,.35,'#fff','#ddd5c8','#cfc7ba','#8c8273');
   rmBox(o,7.2,1.2,2.6,.35,.35,.4,'#fff','#e6e0d6','#d9d2c6');
   {const c=P(6.2,2.9,0),d=P(6.2,2.9,.9);o.line(c[0],c[1],d[0],d[1],'#3e3934');o.line(c[0]-3,c[1]+1,c[0]+3,c[1]-1,'#3e3934')}rmBox(o,5.7,2.4,.9,1.1,1,.2,'#1d4ed8','#163ea8','#1a46bf','#0f2a73');rmBox(o,5.7,3.25,1.1,1.1,.18,1.1,'#1d4ed8','#163ea8','#1a46bf','#0f2a73');
-  // 화분
+  rmT(0,.6);// 화분
   rmBox(o,.3,3.9,0,.8,.8,.9,'#b35c00','#8a4600','#7a3e00');{const c=P(.7,4.3,1.4);[[0,-6],[-3,-4],[3,-4],[-2,-2],[2,-2],[0,-3],[-4,-1],[4,-1],[1,-7],[-1,-5]].forEach(([u,v])=>o.r(c[0]+u,c[1]+v,2,2,'#3f6b4f'))}
-  // 침대
+  rmT(0,1.8);// 침대
   rmBox(o,0,5.4,0,3.3,4.4,.6,'#9a7350','#7a5636','#86613f','#5d4630');rmBox(o,.1,5.5,.6,3.1,4.2,.5,'#f4f1ea','#cfc8bb','#d9d2c6');
   rmBox(o,.25,8.3,1.1,2.8,1.2,.35,'#fff','#e6e0d6','#ece6dc','#bdb4a6');
   rmBox(o,1,5.5,1.1,2.25,2.7,.12,'#1d4ed8','#163ea8','#1a46bf');L(P(1,7,1.23),P(3.25,7,1.23),'#4a86e8');L(P(1,6.3,1.23),P(3.25,6.3,1.23),'#4a86e8');
-  drawHome(o,S);
+  rmT(0,0);drawHome(o,S);rmT(0,0);
   // 햄스터 케이지
-  const cx=6.6,cy=5.9,cw=3,cd=2.4,ch=2.2;
+  const cx=6.9,cy=7.3,cw=3,cd=2.4,ch=2.2;
   rmBox(o,cx,cy,0,cw,cd,.4,H.di>=3?'#a98a5c':'#f3e2b5','#1d4ed8','#163ea8','#0f2a73');
   for(let k=0;k<18;k++){const c=P(cx+.2+pxH(k,31)*2.6,cy+.2+pxH(k,32)*2,.4);o.p(c[0],c[1],H.di>=3?'#6b4f2c':H.di>=1?'#d9c08a':'#fff8e6')}
   rmBox(o,cx+.15,cy+.15,.4,.9,.8,.6,'#b8875a','#9a6d45','#8a5f3a','#5d4630');{const c=P(cx+1.05,cy+.55,.65);o.r(c[0],c[1],2,3,'#1d1a17')}
@@ -3527,7 +3538,7 @@ addEventListener('resize',()=>{if(st.scr==='game'&&st.c){PC.rs='';pcPost()}else 
 const EVN={audit:'🔍 감사 주간',rule:'📜 신규 지침 시행일',fraud:'🚨 보험사기 경보',mentor:'🐣 신입 사수',cmp:'😤 민원 고객',favor:'🤝 동료 부탁',hosp:'🏥 병원 서류 정정'};
 const EVJR=[['KTAS <b>4등급</b> 응급실 내원인데 응급실내원비를 <b>응급 10만원</b>으로 지급했어요.',0,'KTAS 4~5등급은 비응급 2만원이에요.'],['KTAS <b>2등급</b> 응급실 내원이라 <b>응급 10만원</b> 지급했어요.',1,'1~2등급은 응급 10만원이 맞아요.'],['1인실에 <b>10일</b> 입원하셔서 1인실 입원일당 <b>10일치 50만원</b> 지급했어요.',0,'1인실 입원일당은 입원 1회당 최대 7일이라 35만원이에요.'],['2인실 <b>5일</b> 입원이라 2~3인실 입원일당 <b>5일치 10만원</b> 지급했어요.',1,'1일 2만원 × 5일, 맞아요.'],['치아파절(S02.5)인데 <b>골절진단비(치아파절 제외)</b> 30만원 지급했어요.',0,'치아파절 제외 담보라 S02.5는 보장하지 않아요.'],['물리치료를 <b>14회</b> 받으셔서 상해재활물리치료비 <b>14만원</b> 지급했어요.',0,'1일 1회 · 최대 10회라 10만원이에요.'],['<b>5일</b> 입원이라 입원일당(4일 이상) <b>2일치 4만원</b> 지급했어요.',1,'3일 초과 일수 2일 × 2만원, 맞아요.'],['감기(J06.9)로 독감(인플루엔자) 치료비 20만원 지급했어요.',0,'J06 감기는 인플루엔자(J09~J11)가 아니에요.'],['<b>표재성 2도</b> 화상이라 화상진단비 30만원 지급했어요.',0,'심재성 2도 이상만 보장해요.'],['입원 기간 중에 받은 외래 진료도 <b>질병통원일당</b>으로 지급했어요.',0,'입원 기간 중 통원은 통원일당에서 빼요.'],['KTAS <b>1등급</b>이라 응급 10만원, 같은 날 상해통원일당 2만원도 지급했어요.',1,'응급실 내원과 통원일당은 각각 지급해요.']];
 const EVHS=[['통풍진단비','M10.07 특발성 통풍, 발목 및 발','M10.97 상세불명의 통풍, 발목 및 발',1],['통풍진단비','M10.07 특발성 통풍, 발목 및 발','M25.57 발목 및 발의 관절통',0],['요로결석진단비','N20.0 신장의 결석','N20.1 요관의 결석',1],['요로결석진단비','N20.0 신장의 결석','N39.0 요로감염',0],['엘보우(상과염)진단비','M77.1 외측상과염','M77.0 내측상과염',1],['엘보우(상과염)진단비','M77.1 외측상과염','M25.52 팔꿈치 관절통',0],['대상포진진단비','B02.9 합병증 없는 대상포진','B02.2 기타 신경계통 침범을 동반한 대상포진',1],['대상포진진단비','B02.9 합병증 없는 대상포진','B00.9 상세불명의 헤르페스바이러스 감염',0]];
-const ESCP=[[5.6,8.6],[8.6,6.2],[4.2,2.6],[7.4,3.4],[2.2,4.4]];
+const ESCP=[[5.6,10.4],[8.6,6.4],[4.4,3.2],[10.8,10.2],[2.2,5.6]];
 function scnEvPlan(busy){const P={},N={},used=new Set(busy),rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
   const take=(k,a,b,x)=>{for(let t=0;t<80;t++){const d=rnd(a,b);if(!used.has(d)){used.add(d);P[d]=Object.assign({k},x||{});return d}}};
   for(let t=0;t<80;t++){const s=rnd(10,13);if([s,s+1,s+2].every(d=>!used.has(d))){[s,s+1,s+2].forEach((d,i)=>{used.add(d);P[d]={k:'audit',i}});break}}
@@ -3607,7 +3618,7 @@ function scnAvail(S){return S.money+S.pend.net+scnSellSum()}
 function scnSpent(S){return scnItems(S).filter(x=>st.scx[x.k]).reduce((s,x)=>s+x.a,0)}
 function scnSettle(){storyPrep();document.body.classList.remove('scene');st.scr='start';const S=scnS(),P=S.pend;if(!P){scnHub();return}
   const L=scnItems(S),sellT=S.iso.tubs.map((x,i)=>[x,i]).filter(([x])=>x.n>=ISELL),canSell=sellT.length>0;
-  if(!st.scx){st.scx={};let left=scnAvail(S);L.forEach(x=>{if(x.def&&x.a<=left){st.scx[x.k]=1;left-=x.a}})}
+  if(!st.scx){st.scx={};st.sxo={};let left=scnAvail(S);L.forEach(x=>{if(x.def&&x.a<=left){st.scx[x.k]=1;left-=x.a}})}
   const av=scnAvail(S),sp=scnSpent(S),rest=av-sp;
   app.innerHTML=`<section class="paper end start wz scn"><h2 class="wzh">🧾 퇴근 정산 · ${S.day}일차</h2>
    <table class="sct"><tr><td>지갑 잔고</td><td class="num">${f(S.money)}</td></tr>
@@ -3616,11 +3627,27 @@ function scnSettle(){storyPrep();document.body.classList.remove('scene');st.scr=
     ${(P.ex||[]).map(x=>`<tr><td>${x[0]}</td><td class="num">${x[1]<0?'−':'+'}${f(Math.abs(x[1]))}</td></tr>`).join('')}
     ${scnSellSum()?`<tr><td>🪲 분양 수입</td><td class="num">+${f(scnSellSum())}</td></tr>`:''}
     <tr class="tot"><td>쓸 수 있는 돈</td><td class="num">${f(av)}</td></tr></table>
-   <h3 class="wzs">오늘 쓸 곳 (눌러서 고르기)</h3>
-   ${(()=>{const B=x=>`<button class="sxi${x.g?' rad':''}" data-sx="${x.k}" aria-pressed="${!!st.scx[x.k]}"><span class="sxc">${x.g?(st.scx[x.k]?'◉':'○'):(st.scx[x.k]?'☑':'☐')}</span><span class="sxn">${x.n}<small>${x.d}</small></span><span class="sxa">${x.a<0?'+'+f(-x.a):x.a===0?'무료':'−'+f(x.a)}</span></button>`;return`<div class="sxl">${L.filter(x=>!x.g).map(B).join('')}</div><h3 class="wzs">🍽 오늘 저녁 <small>하나 고르기 · 안 고르면 굶어요 (컨디션 −10)</small></h3><div class="sxl">${L.filter(x=>x.g==='meal').map(B).join('')}</div><h3 class="wzs">🌆 저녁 활동 <small>하나 고르기 · 지금 컨디션 ${condOf(S)}</small></h3><div class="sxl">${L.filter(x=>x.g==='act').map(B).join('')}</div>${st.scx.ot?'<p class="scrule">🌙 야근하는 날은 저녁 활동을 못 해요.</p>':''}${L.some(x=>x.g==='sp')?`<h3 class="wzs">🐾 특수 동물 <small>5만원 · 한 판에 한 마리 · 고르면 내일 아침에 와요</small></h3><div class="sxl">${L.filter(x=>x.g==='sp').map(B).join('')}</div>`:''}`})()}
+   ${(()=>{const X=st.scx,O=st.sxo||(st.sxo={}),am=x=>x.a<0?'+'+f(-x.a):x.a===0?'무료':'−'+f(x.a),
+      B=x=>`<button class="sxi${x.g?' rad':''}" data-sx="${x.k}" aria-pressed="${!!X[x.k]}"><span class="sxc">${x.g?(X[x.k]?'◉':'○'):(X[x.k]?'☑':'☐')}</span><span class="sxn">${x.n}<small>${x.d}</small></span><span class="sxa">${am(x)}</span></button>`,
+      urg=x=>/^hv/.test(x.k)||x.k==='din'||x.k==='ot'||(x.k==='rent'&&S.arr)||(x.k==='hb'&&x.def)||(x.k==='hf'&&/못 먹/.test(x.d))||(x.k==='spf'&&/못 먹/.test(x.d))||(x.k==='im'&&S.iso.dry),
+      ng=L.filter(x=>!x.g),U=ng.filter(urg),F=ng.filter(x=>!urg(x)&&x.def),E=ng.filter(x=>!urg(x)&&!x.def),
+      fOn=F.filter(x=>X[x.k]),fSum=fOn.reduce((a,x)=>a+x.a,0),eOn=E.filter(x=>X[x.k]),
+      fold=(k,ic,t,sub,on)=>`<button class="sxfold" data-sxo="${k}" aria-expanded="${!!O[k]}"><span class="sxn">${ic} ${t}<small>${sub}</small></span><span class="sxa">${on}</span><span class="sxar">${O[k]?'▴':'▾'}</span></button>`,
+      chip=x=>`<button class="sxchip" data-sx="${x.k}" aria-pressed="${!!X[x.k]}">${SXS[x.k]||x.n}</button>`,
+      grp=g=>{const G=L.filter(x=>x.g===g),c=G.find(x=>X[x.k]);return`<div class="sxchips">${G.map(chip).join('')}</div><p class="sxsel">${c?`${X[c.k]?'✔':''} <b>${c.n}</b> · ${c.d} · <b>${am(c)}</b>`:'아직 안 골랐어요'}</p>`},
+      spSel=L.find(x=>x.g==='sp'&&X[x.k]&&x.k!=='sp_none');
+     return`${U.length?`<h3 class="wzs">⚠️ 꼭 확인할 것</h3><div class="sxl">${U.map(B).join('')}</div>`:''}
+      <h3 class="wzs">오늘 쓸 곳</h3><div class="sxl">${F.length?fold('fix','📌','매일 내는 돈',`${fOn.length}/${F.length}개 체크 · 눌러서 빼거나 넣기`,fSum?'−'+f(fSum):'0'):''}${O.fix?`<div class="sxl sxin">${F.map(B).join('')}</div>`:''}
+      ${E.length?fold('ext','🛍','추가 구매',eOn.length?`${eOn.map(x=>x.n.replace(/^\S+\s/,'')).join(', ')} 고름`:E.map(x=>x.n.replace(/^\S+\s/,'')).join(' · '),eOn.length?'−'+f(eOn.reduce((a,x)=>a+x.a,0)):''):''}${O.ext?`<div class="sxl sxin">${E.map(B).join('')}</div>`:''}
+      ${L.some(x=>x.g==='sp')?`<button class="sxfold" data-spm="1"><span class="sxn">🐾 특수 동물 들이기<small>${spSel?`${spSel.n} 예약 · 내일 아침에 와요 · 눌러서 바꾸기`:'5만원 · 다섯 마리 중 하나 · 눌러서 보기'}</small></span><span class="sxa">${spSel?'−'+f(spSel.a):''}</span><span class="sxar">›</span></button>`:''}</div>
+      <h3 class="wzs">🍽 오늘 저녁 <small>안 고르면 굶어요 (컨디션 −10)</small></h3>${grp('meal')}
+      <h3 class="wzs">🌆 저녁 활동 <small>지금 컨디션 ${condOf(S)}</small></h3>${X.ot?'<p class="scrule">🌙 야근하는 날은 저녁 활동을 못 해요.</p>':grp('act')}`})()}
    ${canSell?`<h3 class="wzs">🪲 분양 (통마다 ${IUNIT}마리)</h3><div class="sxl">${sellT.map(([x,i])=>{const k='sell'+i,on=!!st.scx[k];return`<button class="sxi sell" data-sx="${k}" aria-pressed="${on}"><span class="sxc">${on?'☑':'☐'}</span><span class="sxn">${tubName(x.t)}<small>지금 ${x.n}마리 → ${x.n-IUNIT}마리 · ${ITIERN[ISPC[tubSp(x.t)].t]}</small></span><span class="sxa">+${f(isoPrice(i))}</span></button>`}).join('')}</div>`:`<p class="scrule">🪲 통 하나에 <b>${ISELL}마리</b> 이상 모이면 ${IUNIT}마리씩 분양할 수 있어요. 희귀종일수록 비싸요.</p>`}
-   <div class="screst">남는 돈 <b>${f(rest)}원</b></div>
-   <button class="begin" id="scnOk">🌙 확정하고 잠자기</button><button class="wzb" id="scnHub">← 나중에 하기</button></section>`}
+   <button class="wzb" id="scnHub">← 나중에 하기</button>
+   <div class="scbar"><div class="screst">남는 돈 <b>${f(rest)}원</b></div><button class="begin" id="scnOk">🌙 잠자기</button></div></section>`}
+const SXS={m_conv:'🍙 도시락',m_cook:'🍳 요리',m_deliv:'🛵 배달',a_rest:'🛌 쉬기',a_game:'🎮 게임',a_study:'📚 공부',a_job:'💻 부업',a_ham:'🐹 햄스터'};
+function scnSpPick(){const S=scnS(),X=st.scx,L=scnItems(S).filter(x=>x.g==='sp');gOpen('🐾 특수 동물 들이기',`<p class="gmd">5만원 · 한 판에 한 마리 · 고르면 내일 아침에 와요. 관리비(먹이)는 매일 따로 나가요.</p><div class="sxl">${L.map(x=>`<button class="sxi rad" data-sxm="${x.k}" aria-pressed="${!!X[x.k]}"><span class="sxc">${X[x.k]?'◉':'○'}</span><span class="sxn">${x.n}<small>${x.d}</small></span><span class="sxa">${x.a?'−'+f(x.a):'무료'}</span></button>`).join('')}</div><button class="begin" id="gmxc">닫기</button>`)}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#gmo [data-sxm]');if(!b)return;const k=b.dataset.sxm;if(!st.scx)return;const was=st.scx[k];scnToggle(k);if(st.scx[k]&&!was){gClose()}else scnSpPick()});
 function scnToggle(k){const S=scnS(),X=st.scx;
   if(k.startsWith('sell')){if(X[k]&&scnAvail(S)-isoPrice(+k.slice(4))<scnSpent(S)){toast('분양을 취소하면 돈이 모자라요. 다른 지출부터 빼요.');return}X[k]=X[k]?0:1;scnSettle();return}
   const it=scnItems(S).find(x=>x.k===k);if(!it)return;
