@@ -553,8 +553,10 @@ function refreshDetail(first){const id=CUR;if(!id)return;const sp=spOf(id),E=env
   d.querySelectorAll('[data-ph]').forEach(b=>b.onclick=()=>viewPhoto(b.dataset.ph));
   d.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{if(confirm('이 기록을 지울까요? 가족 화면에서도 지워져요.')){delItem(b.dataset.del);refreshDetail()}});
   startView(first||!keepCv)}
+/* 사육통 안에 보이는 마릿수: 1–9 → 1, 10 → 2 … 99 → 9, 100 → 10, 그 뒤로 100마리마다 +1 (최대 14) */
+function showN(n){n=Math.max(0,Math.floor(+n||0));if(n<1)return 0;if(n<10)return 1;if(n<100)return 2+Math.floor((n-10)*8/90);return Math.min(14,10+Math.floor((n-100)/100))}
 function startView(reset){if(!$('#vcv'))return;const cv=$('#vcv'),id=CUR,c=countOf(id);cancelAnimationFrame(RAF);zmMsg=t=>{const m=$('#vmsg');if(!m)return;m.textContent=t;m.classList.add('on');clearTimeout(zmMsg.t);zmMsg.t=setTimeout(()=>m.classList.remove('on'),1600)};
-  if(VM==='tub'){const T={t:id==='12b'?'12b':parseInt(id),n:c.n!=null?Math.max(0,c.n):8,b:Math.min(8,c.b)};if(id==='12b'){T.n=Math.max(T.n,6)}
+  if(VM==='tub'){const T={t:id==='12b'?'12b':parseInt(id),n:c.n!=null?showN(c.n):1,b:Math.min(8,showN(c.b))};
     const dry=dueMist(id)&&daysAgo((lastOf(id,'mist')||{}).at)<99;isoTubOpen(cv,T,dry);
     cv.onclick=e=>{const r=cv.getBoundingClientRect();isoTap((e.clientX-r.left)*cv.width/r.width,(e.clientY-r.top)*cv.height/r.height)}}
   else{cv.width=96;cv.height=72;cv.onclick=null}
