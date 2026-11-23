@@ -24,6 +24,15 @@
 .cfgo{color:#e08a00;font-weight:900;font-size:26px;opacity:0;transform:scale(.6);transition:all .3s 1.05s cubic-bezier(.3,1.7,.5,1)}
 .cfov.cfon .cfsub,.cfov.cfon .cfgo{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){.cfold,.cfnew,.cfsub,.cfgo{transition:none!important}}
+
+.rmpop{position:fixed;z-index:8500;background:#fffdf8;border:2px solid #1d1a17;border-radius:12px;box-shadow:0 5px 0 #1d1a17,0 10px 24px rgba(0,0,0,.18);display:flex;flex-direction:column;animation:rmpIn .16s ease-out}
+.rmpop.up{animation-name:rmpUp}.rmpop.na{animation:none}
+@keyframes rmpIn{from{opacity:0;transform:translateY(-6px) scale(.97)}}@keyframes rmpUp{from{opacity:0;transform:translateY(6px) scale(.97)}}
+.rmph{display:flex;align-items:center;justify-content:space-between;padding:8px 10px 6px 12px;border-bottom:1.5px solid #e6e0d6;font-size:15px}
+.rmpx{border:0;background:none;font-size:16px;font-weight:800;width:30px;height:30px;border-radius:8px;cursor:pointer;color:#1d1a17}.rmpx:hover{background:#f1ece2}
+.rmpb{overflow:auto;padding:4px 12px 10px;overscroll-behavior:contain}.rmpb .covl{margin:4px 0}.rmpb .gmd{margin:6px 0;font-size:13px}
+.rmpa{position:absolute;top:-8px;width:12px;height:12px;background:#fffdf8;border-left:2px solid #1d1a17;border-top:2px solid #1d1a17;transform:rotate(45deg)}
+.rmpop.up .rmpa{top:auto;bottom:-8px;transform:rotate(225deg)}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700;800;900&family=Nanum+Myeongjo:wght@800&display=swap" rel="stylesheet">
 <style>
@@ -1809,7 +1818,7 @@ app.addEventListener('click',e=>{
     return}
   if(b.id==='scnSick'){const S=scnS();if(S.sick!==S.day||S.pend)return;const ex=[];if(S.day===10||S.day===SCN_DAYS){const M=S.mo||{ok:0,bad:0},t=M.ok+M.bad,acc=t?M.ok/t:0;ex.push([`💰 월 성과급 (정확도 ${Math.round(acc*100)}%)`,Math.round(Math.max(0,(acc-.7)/.3)*30)*1000]);S.mo={ok:0,bad:0}}
     S.cond=Math.min(100,condOf(S)+35);S.pend={ok:0,bad:0,un:0,base:0,perf:0,pen:0,wv:0,ex:[['🤒 병가 (출근 못 함)',0]].concat(ex),net:ex.reduce((a,x)=>a+x[1],0),sick:1};S.news=[];saveCR();st.scx=null;scnSettle();return}
-  if(b.dataset.shop){openShop();return}
+  if(b.dataset.shop){if(rmPop.shut&&rmPop.shut.k==='pc'&&performance.now()-rmPop.shut.t<400){rmPop.shut=null;return}rmPop.btn=b;openShop();return}
   if(b.dataset.buy){buyItem(b.dataset.buy);return}
   if(b.dataset.evf!=null){const S=scnS(),E=scnEv(S);if(E&&E.k==='favor'&&!S.pend){E.a=+b.dataset.evf;saveCR();st.hdexKeep=1;scnHub()}return}
   if(b.dataset.rw){scnRewind(+b.dataset.rw);return}
@@ -1930,7 +1939,7 @@ function start(){document.body.classList.remove('ingame','scene','endm','subm');
    <p class="intro">처음이라면 <b>튜토리얼 모드</b>부터! 사수와 함께 심사를 하나씩 배워요. 익숙해지면 <b>샌드박스 모드</b>에서 원하는 조건으로 자유롭게 심사해요.</p>
    <button class="begin scnbtn" id="scnbeg">시나리오 모드<small>${CR.scn&&!CR.scn.end?`${CR.scn.day}일차 · 잔고 ${f(CR.scn.money)}원`:'출근해서 번 돈으로 햄스터·콩벌레와 20일 버티기'}</small></button>
    <button class="begin stbtn" id="stbeg">튜토리얼 모드<small>신입 심사자의 성장기 · ${Object.keys(storyDone()).length}/${STORY.length}장 클리어</small></button>
-   <button class="begin sbbtn" id="sbbeg">샌드박스 모드<small>난이도 · 실손 · 접수량 · AI 대결을 직접 골라요${vsRec}</small></button><p class="mobnote">Optimized for mobile · 모바일 세로 화면 기준으로 제작</p><p class="fictnote">이 게임은 가상의 보험금 심사 시뮬레이션으로, 등장하는 인물·기관·상품·심사 기준은 모두 게임용 가상 설정이며 실제 보험사 및 약관·실무와는 무관합니다.</p><p class="bldline"><span class="bld" id="bld">build 228 · 2026.11.23</span></p></section>`;
+   <button class="begin sbbtn" id="sbbeg">샌드박스 모드<small>난이도 · 실손 · 접수량 · AI 대결을 직접 골라요${vsRec}</small></button><p class="mobnote">Optimized for mobile · 모바일 세로 화면 기준으로 제작</p><p class="fictnote">이 게임은 가상의 보험금 심사 시뮬레이션으로, 등장하는 인물·기관·상품·심사 기준은 모두 게임용 가상 설정이며 실제 보험사 및 약관·실무와는 무관합니다.</p><p class="bldline"><span class="bld" id="bld">build 230 · 2026.11.23</span></p></section>`;
   else app.innerHTML=`<section class="paper end start wz"><h2 class="wzh">🧪 샌드박스 모드</h2><p class="wzp">조건을 고르고 아래 버튼을 누르세요.</p>
    <h3 class="wzs">진행 방식</h3>
    <div class="lvs two" role="group" aria-label="진행 방식"><button data-vsm="0" aria-pressed="${!st.vs}">👤 혼자 심사 <small>최고 기록 도전</small></button><button data-vsm="1" aria-pressed="${!!st.vs}">🤖 AI 대결 <small>${CR.vsW||CR.vsL?`전적 ${CR.vsW||0}승 ${CR.vsL||0}패`:'AI 동료와 점수 대결'}</small></button></div>
@@ -3039,21 +3048,44 @@ const WXN={sun:'☀️ 맑음',cloud:'☁️ 흐림',rain:'🌧 비'};
 const condOf=S=>S.cond==null?80:S.cond,condLab=c=>c>=85?'최상 😄':c>=65?'좋음 🙂':c>=45?'보통 😐':c>=25?'피곤 😩':'녹초 🥴',condMul=c=>c>=85?1.08:c>=65?1:c>=45?.95:c>=25?.85:.75;
 const condTxt=c=>{const m=condMul(c);return m===1?'근무 시간 영향 없음':`근무 시간 ${m>1?'+':'−'}${Math.round(Math.abs(m-1)*100)}%`};
 function sccond(S){const c=condOf(S),F=S.furn||{};return`<div class="sccond"><div class="sccr"><b>🔋 컨디션 ${c}</b><span>${condLab(c)} · ${condTxt(c)}</span></div><div class="cbar2" role="progressbar" aria-valuenow="${c}" aria-valuemin="0" aria-valuemax="100"><i style="width:${c}%" class="${c<45?'low':''}"></i></div><small>${WXN[S.wx||'sun']} · 가구 ${SHOP.filter(x=>F[x[0]]).length}/${SHOP.length}개 · 방 안 물건을 눌러 보세요 (📅 달력 · 🚪 우편함 · 🖥 상점 · 🛏 침대 · 🪟 창문 · 🧊 냉장고)</small></div>`}
-function openShop(){const S=scnS(),F=S.furn||(S.furn={});gOpen('🛒 인터넷 쇼핑',`<p class="gmd">잔고 <b>${f(S.money)}원</b> · 사면 방에 놓이고 효과는 시나리오가 끝날 때까지 계속돼요.</p><ul class="covl shopl">${SHOP.map(([k,n,p0,d])=>{const U=UPG[k],lv=+F[k]||0,nx=U&&lv&&lv<U.length?U[lv]:null;if(nx){p0=nx[1];}const p=spOn(S,'ferret')?Math.round(p0*.9):p0;
+function openShop(){const S=scnS(),F=S.furn||(S.furn={});scnPop('pc','🛒 인터넷 쇼핑',`<p class="gmd">잔고 <b>${f(S.money)}원</b> · 사면 방에 놓이고 효과는 시나리오가 끝날 때까지 계속돼요.</p><ul class="covl shopl">${SHOP.map(([k,n,p0,d])=>{const U=UPG[k],lv=+F[k]||0,nx=U&&lv&&lv<U.length?U[lv]:null;if(nx){p0=nx[1];}const p=spOn(S,'ferret')?Math.round(p0*.9):p0;
   if(U&&lv){const cur=U[lv-1];return`<li><div><b>${cur[0]} <small>Lv.${lv}</small></b><span>${cur[2]}${nx?` → <b>${nx[0]}</b>: ${nx[2]}`:' · 최고 단계'}</span></div>${nx?`<button class="shopb" data-buy="${k}" ${S.money<p||S.pend?'disabled':''}>⬆ ${f(p)}원</button>`:'<em>✓ 최고</em>'}</li>`}
   return `<li><div><b>${n}</b><span>${d}${U?` · 업그레이드 ${U.length-1}단계`:''}</span></div>${F[k]?'<em>✓ 보유</em>':`<button class="shopb" data-buy="${k}" ${S.money<p||S.pend?'disabled':''}>${f(p)}원</button>`}</li>`}).join('')}
   ${(()=>{const pc=spOn(S,'ferret')?Math.round(ACAD_P*.9):ACAD_P;return`<li><div><b>📚 손해사정 학원 <small>3일 과정</small></b><span>${S.cert?'🎓 자격증 취득 완료 · 매일 수상한 담보 1건 표시 · 감봉 하루 1건 면제':S.acad?`수강 중 (${3-S.acad.left}/3일) · 저녁마다 수업이라 다른 활동은 못 해요`:S.day>ACAD_END?`이번 달 수강생 모집이 끝났어요 (${ACAD_END}일차까지)`:`<b>${ACAD_END}일차까지 모집</b> · 3일 동안 저녁마다 수업(컨디션 −6) · 다 들으면 자격증: <b>매일 수상한 담보 1건 표시 · 감봉 하루 1건 면제</b>`}</span></div>${S.cert?'<em>🎓 취득</em>':S.acad?'<em>수강 중</em>':S.day>ACAD_END?'<em>모집 마감</em>':`<button class="shopb" data-buy="acad" ${S.money<pc||S.pend?'disabled':''}>${f(pc)}원</button>`}</li>`})()}</ul>${spOn(S,'ferret')?'<p class="gmd">🦦 페럿이 택배 상자를 좋아해서 <b>10% 할인</b> 중이에요.</p>':''}${S.pend?'<p class="gmd">⚠️ 정산을 마친 다음 날 아침에 살 수 있어요.</p>':''}<button class="begin" id="gmxc">닫기</button>`)}
 const ACAD_P=50000,ACAD_END=10;
-function buyItem(k){const S=scnS();if(k==='acad'){const pr=spOn(S,'ferret')?Math.round(ACAD_P*.9):ACAD_P;if(S.cert||S.acad||S.money<pr||S.pend||S.day>ACAD_END)return;S.money-=pr;S.acad={left:3};saveCR();sfx('coin');toast('📚 손해사정 학원에 등록했어요! 오늘부터 3일 동안 저녁마다 수업이에요.');scnHub();openShop();return}
+function buyItem(k){const S=scnS();if(k==='acad'){const pr=spOn(S,'ferret')?Math.round(ACAD_P*.9):ACAD_P;if(S.cert||S.acad||S.money<pr||S.pend||S.day>ACAD_END)return;S.money-=pr;S.acad={left:3};saveCR();sfx('coin');toast('📚 손해사정 학원에 등록했어요! 오늘부터 3일 동안 저녁마다 수업이에요.');scnHub.keep=1;scnHub();scnHub.keep=0;openShop();return}
   const it=SHOP.find(x=>x[0]===k);if(!it)return;const F=S.furn||(S.furn={}),U=UPG[k],lv=+F[k]||0;
-  if(U&&lv){if(lv>=U.length)return;const p0=U[lv][1],pr=spOn(S,'ferret')?Math.round(p0*.9):p0;if(S.money<pr||S.pend)return;S.money-=pr;F[k]=lv+1;saveCR();sfx('coin');toast(`⬆ ${U[lv][0]}(으)로 업그레이드했어요!`);scnHub();openShop();return}
-  const pr=spOn(S,'ferret')?Math.round(it[2]*.9):it[2];if(F[k]||S.money<pr||S.pend)return;S.money-=pr;F[k]=1;if(SHOP.every(x=>F[x[0]]))unlock('roomFull');saveCR();sfx('coin');toast(`📦 ${it[1]} 배송 완료! 방에 놓였어요.`);scnHub();openShop()}
-function openCal(){const S=scnS(),L=[];for(let d=S.day;d<=Math.min(SCN_DAYS,S.day+4);d++){const t=[];if(d===SCN_DAYS)t.push('🚨 월말 마감 (접수 폭주)');{const A=scnAucFix(S);if(A&&!A.done&&A.d===d)t.push('🔨 희귀종 경매 (정산 때)')}if(d===11||d===16)t.push(`💸 감봉 인상 (건당 ${f(scnPenU(d))}원)`);if((S.busy||[]).includes(d))t.push('⚠️ 접수 몰리는 날');const E=(S.evp||{})[d];if(E&&E.k==='audit')t.push('🔍 감사 주간');if(d===10||d===SCN_DAYS)t.push('💰 월급날');if((S.evn||{})[d]==='din')t.push('🍻 팀 회식');L.push(`<li><b>${d}일차${d===S.day?' (오늘)':''}</b><span>${t.length?t.join(' · '):'특별한 일정 없음'}</span></li>`)}
-  gOpen('📅 달력',`<p class="gmd">앞으로 5일 일정이에요. 갑자기 생기는 일은 달력에 없어요.</p><ul class="covl">${L.join('')}</ul><button class="begin" id="gmxc">닫기</button>`)}
+  if(U&&lv){if(lv>=U.length)return;const p0=U[lv][1],pr=spOn(S,'ferret')?Math.round(p0*.9):p0;if(S.money<pr||S.pend)return;S.money-=pr;F[k]=lv+1;saveCR();sfx('coin');toast(`⬆ ${U[lv][0]}(으)로 업그레이드했어요!`);scnHub.keep=1;scnHub();scnHub.keep=0;openShop();return}
+  const pr=spOn(S,'ferret')?Math.round(it[2]*.9):it[2];if(F[k]||S.money<pr||S.pend)return;S.money-=pr;F[k]=1;if(SHOP.every(x=>F[x[0]]))unlock('roomFull');saveCR();sfx('coin');toast(`📦 ${it[1]} 배송 완료! 방에 놓였어요.`);scnHub.keep=1;scnHub();scnHub.keep=0;openShop()}
+function openCal(){const S=scnS(),L=[];for(let d=S.day;d<=Math.min(SCN_DAYS,S.day+4);d++){const t=[];if(d===SCN_DAYS)t.push('🚨 월말 마감 (접수 폭주)');{const A=scnAucFix(S);if(A&&!A.done&&A.d===d)t.push('🔨 희귀종 경매 (정산 때)')}if(d===11||d===16)t.push(`💸 감봉 인상 (건당 ${f(scnPenU(d))}원)`);if((S.busy||[]).includes(d))t.push('⚠️ 접수 몰리는 날');
+  if(d===4||d===9){const V=scnVol({busy:[]},d);t.push(`📈 접수량 늘어남 (${V.n} · ${V.lo}~${V.hi}건)`)}
+  if(d>1&&scnLv(d)!==scnLv(d-1))t.push(`🧠 심사 난이도 ↑ (${LV[scnLv(d)].n})`);
+  if(d===9)t.push('🏥 실손 청구 접수 시작');
+  if(S.acad&&d-S.day<S.acad.left)t.push(`📚 학원 수업 ${3-S.acad.left+(d-S.day)+1}/3일차 (저녁)`);
+  else if(!S.acad&&!S.cert&&d===ACAD_END)t.push('📚 손해사정 학원 모집 마감');
+  {const A=scnAucFix(S);if(A&&!A.done&&A.d-d>=1&&A.d-d<=2)t.push(`🔔 경매 D-${A.d-d} (${f(A.p||30000)}원 준비)`)}const E=(S.evp||{})[d];if(E&&E.k==='audit')t.push('🔍 감사 주간');if(d===10||d===SCN_DAYS)t.push('💰 월급날');if((S.evn||{})[d]==='din')t.push('🍻 팀 회식');L.push(`<li><b>${d}일차${d===S.day?' (오늘)':''}</b><span>${t.length?t.join('<br>'):'특별한 일정 없음'}</span></li>`)}
+  scnPop('cal','📅 달력',`<p class="gmd">앞으로 5일 일정이에요. 갑자기 생기는 일은 달력에 없어요.</p><ul class="covl">${L.join('')}</ul><button class="begin" id="gmxc">닫기</button>`)}
 function openMail(){const S=scnS(),L=(S.newsLog||[]).slice(-3).reverse();const lt=[];if(S.arr)lt.push(['🏠 집주인','월세 독촉장',`월세가 <b>${S.arr}일</b> 밀렸어요. 3일 밀리면 방을 빼야 해요.`]);if(S.hamLost)lt.push(['💌 엄마','편지','햄스터들 잘 크고 있어. 너도 밥 잘 챙겨 먹어라~']);lt.push(['📰 관리사무소','공지','분리수거는 매주 목요일이에요. 콩벌레 흙은 일반쓰레기로 버려 주세요.']);
-  gOpen('🚪 우편함',`<ul class="covl">${lt.map(x=>`<li><b>${x[0]} · ${x[1]}</b><span>${x[2]}</span></li>`).join('')}</ul>${L.length?`<h4 class="igh">지난 소식</h4><ul class="covl">${L.map(x=>`<li><b>${x.d}일차 밤</b><span>${x.n.join('<br>')}</span></li>`).join('')}</ul>`:''}<button class="begin" id="gmxc">닫기</button>`)}
-document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#gmo [data-buy]');if(b&&!b.disabled)buyItem(b.dataset.buy)});
-function roomTap(k){const S=scnS(),c=condOf(S);if(k==='pc')openShop();else if(k==='cal')openCal();else if(k==='door')openMail();
+  scnPop('door','🚪 우편함',`<ul class="covl">${lt.map(x=>`<li><b>${x[0]} · ${x[1]}</b><span>${x[2]}</span></li>`).join('')}</ul>${L.length?`<h4 class="igh">지난 소식</h4><ul class="covl">${L.map(x=>`<li><b>${x.d}일차 밤</b><span>${x.n.join('<br>')}</span></li>`).join('')}</ul>`:''}<button class="begin" id="gmxc">닫기</button>`)}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#gmo [data-buy],.rmpop [data-buy]');if(b&&!b.disabled)buyItem(b.dataset.buy)});
+function rmPopX(){const e=document.querySelector('.rmpop');if(e){e.remove();rmPop.k=null}}
+function rmPop(){}
+function scnPop(k,t,b){b=b.replace('<button class="begin" id="gmxc">닫기</button>','');
+  let R=null;const cv=document.querySelector('.hubc #scrc'),bb=RM[k];
+  if(cv&&bb&&!(rmPop.btn&&rmPop.btn.isConnected)){const r=cv.getBoundingClientRect();R={l:r.left+bb[0]*r.width/cv.width,r:r.left+bb[2]*r.width/cv.width,t:r.top+bb[1]*r.height/cv.height,b:r.top+bb[3]*r.height/cv.height};const vr=(cv.closest('.rmwrap')||cv.parentElement.parentElement).getBoundingClientRect();R.t=Math.max(R.t,vr.top);R.b=Math.min(Math.max(R.b,vr.top+20),vr.bottom)}
+  else if(rmPop.btn&&rmPop.btn.isConnected){const r=rmPop.btn.getBoundingClientRect();R={l:r.left,r:r.right,t:r.top,b:r.bottom}}
+  if(!R){rmPop.btn=null;gOpen(t,b+'<button class="begin" id="gmxc">닫기</button>');return}
+  const same=rmPop.k===k&&document.querySelector('.rmpop');rmPopX();rmPop.k=k;
+  const e=document.createElement('div');e.className='rmpop'+(same?' na':'');e.setAttribute('role','dialog');e.setAttribute('aria-label',t);
+  e.innerHTML=`<div class="rmph"><b>${t}</b><button class="rmpx" aria-label="닫기">✕</button></div><div class="rmpb">${b}</div><i class="rmpa"></i>`;document.body.appendChild(e);
+  const W=Math.min(360,innerWidth-16),cx=(R.l+R.r)/2,left=Math.max(8,Math.min(innerWidth-W-8,cx-W/2)),below=innerHeight-R.b-14,above=R.t-14,dn=below>=Math.min(260,above)||below>=300;
+  e.style.width=W+'px';e.style.left=left+'px';const mh=Math.max(140,(dn?below:above)-4);e.style.maxHeight=mh+'px';
+  if(dn)e.style.top=(R.b+10)+'px';else{e.style.bottom=(innerHeight-R.t+10)+'px';e.classList.add('up')}
+  e.querySelector('.rmpa').style.left=Math.max(14,Math.min(W-22,cx-left-6))+'px';
+  e.querySelector('.rmpx').onclick=rmPopX}
+document.addEventListener('pointerdown',e=>{const p=document.querySelector('.rmpop');if(!p||p.contains(e.target))return;const k=rmPop.k;rmPopX();rmPop.shut={k,t:performance.now()}},true);
+addEventListener('keydown',e=>{if(e.key==='Escape')rmPopX()});addEventListener('resize',()=>rmPopX());
+function roomTap(k){if(rmPop.shut&&rmPop.shut.k===({pc:'pc',cal:'cal',door:'door'})[k]&&performance.now()-rmPop.shut.t<400){rmPop.shut=null;return}rmPop.btn=null;const S=scnS(),c=condOf(S);if(k==='pc')openShop();else if(k==='cal')openCal();else if(k==='door')openMail();
   else if(k==='bed')toast(c>=65?`🛏 뒹굴뒹굴~ 컨디션 ${c} · 오늘도 힘내자!`:`🛏 침대가 부른다… 컨디션 ${c} · 오늘 밤은 푹 쉬어요`);
   else if(k==='win')toast(S.wx==='rain'?'🌧 비가 와요. 콩벌레들이 좋아할 것 같아요 (오늘 밤 번식 +25%)':S.wx==='cloud'?'☁️ 흐린 날이에요. 무난한 하루!':'☀️ 맑은 날이에요. 기분 좋게 출근!');
   else if(k==='fridge')toast('🧊 오늘 저녁 메뉴와 저녁 활동은 퇴근 정산 때 골라요.')}
@@ -3598,7 +3630,7 @@ function rmBubbles(o,S){if(S.pend)return;const t=RM.t||0,bob=Math.round(Math.sin
   const F=S.furn||{},can=SHOP.some(([k,n,p])=>{const U=UPG[k],lv=+F[k]||0;const pr=U&&lv?(lv<U.length?U[lv][1]:Infinity):lv?Infinity:p;return pr<=S.money-20000});B(can&&RM.pc,'$','#1d4ed8',2.6)}
 function rmLoop(cv,S){cancelAnimationFrame(rmLoop.raf);let last=0;const f=ts=>{if(!cv.isConnected||!document.querySelector('.hubc')){RM.t=0;return}rmLoop.raf=requestAnimationFrame(f);if(document.hidden||ts-last<110)return;last=ts;RM.t=ts/1000;try{drawRoom(cv,S)}catch(e){}};rmLoop.raf=requestAnimationFrame(f)}
 function scnRoomMount(S){const cv=document.getElementById('scrc');if(!cv)return;RM.t=performance.now()/1000;drawRoom(cv,S);setTimeout(rmZoom,0);rmLoop(cv,S);cv.addEventListener('click',e=>{const R=cv.getBoundingClientRect(),x=(e.clientX-R.left)*cv.width/R.width,y=(e.clientY-R.top)*cv.height/R.height,In=b=>b&&x>=b[0]-3&&x<=b[2]+3&&y>=b[1]-3&&y<=b[3]+3;if(S.esc&&In(RM.esc)){const h=hamAlive(S)[0];S.esc=0;saveCR();toast(`🐹 ${nRul(h.nm)} 찾았어요! 케이지에 다시 넣었어요.`);sfx('coin');scnHub();return}if(S.esc&&In(RM.cage)){toast('🐹 케이지가 비어 있어요… 방 어딘가에 있을 거예요.');return}if(In(RM.pet)){zmOpen('sp');return}{const hit=['cal','pc','door','win','fridge'].find(k=>In(RM[k]));if(hit){roomTap(hit);return}}if(In(RM.tank))zmOpen('iso');else if(In(RM.cage))zmOpen('ham');else if(In(RM.bed))roomTap('bed')})}
-function scnHub(){storyPrep();document.body.classList.remove('scene');st.scr='start';st.scx=null;const S=scnS(),H=scnHamAgg(S),I=S.iso;
+function scnHub(){storyPrep();if(!scnHub.keep)rmPopX();document.body.classList.remove('scene');st.scr='start';st.scx=null;const S=scnS(),H=scnHamAgg(S),I=S.iso;
   if(S.end){scnEnding();return}
   const lv=scnLv(S.day),sil=scnSil(S.day),c=condOf(S),F=S.furn||{},p=spOf(S),D=p&&spDef(p.k);
   // 상세(모달)용 HTML
@@ -3736,7 +3768,7 @@ function scnEvCard(S){const E=scnEv(S),L=[];
   if(S.day===10||S.day===SCN_DAYS)L.push('<div class="scev"><b>💰 월급날</b>오늘 정산 때 그동안 정확도에 따라 <b>월 성과급</b>이 들어와요. (정확도 70% 이하 0원 · 85% 15,000원 · 100% 30,000원)</div>');
   return L.join('')}
 
-function scnFlip(cb){const S=scnS();if(scnFlip.on)return;if((S.esc&&hamAlive(S).length)||!S.day){cb();return}scnFlip.on=1;
+function scnFlip(cb){rmPopX();const S=scnS();if(scnFlip.on)return;if((S.esc&&hamAlive(S).length)||!S.day){cb();return}scnFlip.on=1;
   const d=S.day,wx={sun:'☀️ 맑음',cloud:'☁️ 흐림',rain:'🌧 비'}[S.wx]||'',pg=(n,cls)=>`<div class="cfpg ${cls}"><div class="cfrg">${'<i></i>'.repeat(6)}</div><div class="cfmo">${n>0?'시나리오':'시작'}</div><div class="cfn">${n>0?n:'D'}</div><div class="cfd">${n>0?'일차':'-day'}</div></div>`;
   const ov=document.createElement('div');ov.className='cfov';ov.innerHTML=`<div class="cfbx">${pg(d,'cfnew')}${pg(d-1,'cfold')}</div><div class="cfsub">${d===SCN_DAYS?'마지막 날!':`${d} / ${SCN_DAYS}일`} · ${wx}</div><div class="cfgo">출근!</div>`;document.body.appendChild(ov);
   let done=0;const fin=()=>{if(done)return;done=1;ov.classList.add('out');setTimeout(()=>{ov.remove();scnFlip.on=0},220);cb()};
