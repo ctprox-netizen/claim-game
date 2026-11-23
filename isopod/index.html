@@ -482,10 +482,10 @@ const isIso=id=>!XSP[id];
 const galOf=id=>{const g=D.gal&&D.gal[id]||{};return Object.keys(g).map(Number).filter(n=>n>=1&&n<=9).sort((a,b)=>a-b).map(n=>Object.assign({slot:n},g[n])).filter(x=>x.thumb)};
 const covOf=id=>{const c=D.gal&&D.gal[id]&&D.gal[id][0];return c&&c.thumb?c:null};
 const cover=id=>{const c=covOf(id);if(c)return c.thumb;if(IMG[id]&&isIso(id))return IMG[id];const p=photos().find(x=>x.tub===id);return p?p.thumb:IMG[id]};
-const PROF_F=[['birth','생년월일','date'],['sex','성별','sex'],['parents','부모','text'],['adopt','입양일','date'],['breed','종류','text']];
+const PROF_F=[['birth','출생일','date'],['sex','성별','sex'],['parents','부모','text'],['adopt','입양일','date'],['breed','종류','text']];
 const profOf=id=>{try{const m=D.memo&&D.memo['p:'+id];return m&&m.body?JSON.parse(m.body):{}}catch(e){return{}}};
 const hasProf=id=>isPetId(id)&&!PETS[XSP[id].pet].stages;
-const profLab=(id,k)=>k==='birth'&&XSP[id].pet==='ham'?'출생일':PROF_F.find(f=>f[0]===k)[1];
+const profLab=(id,k)=>PROF_F.find(f=>f[0]===k)[1];
 function ageTxt(d){if(!d)return'';const b=new Date(d),n=new Date();let m=(n.getFullYear()-b.getFullYear())*12+n.getMonth()-b.getMonth();if(n.getDate()<b.getDate())m--;if(isNaN(m)||m<0)return'';if(m<1){const dd=Math.floor((n-b)/864e5);return`${dd}일`}return m<24?`${m}개월`:`${Math.floor(m/12)}살 ${m%12?m%12+'개월':''}`.trim()}
 const fmtD=d=>{if(!d)return'';const x=new Date(d+'T00:00');return isNaN(x)?esc(d):`${x.getFullYear()}.${x.getMonth()+1}.${x.getDate()}`};
 const nmOv=id=>{const m=D.memo&&D.memo['n:'+id];return m&&m.body?m.body.trim():''};
