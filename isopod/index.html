@@ -581,7 +581,9 @@ function rmSheet(){if(!needEdit())return;const ids=ALL.filter(id=>SEL.has(id));
       if(!L.length){toast('마릿수를 하나 이상 적어 주세요');return}
       sync();closeSheet();const nm=RKS.find(x=>x[0]===RK);RM=false;SEL.clear();
       toast(`${nm[1]} ${L.length}통 ${nm[2]} 기록했어요`,()=>{L.forEach(l=>delItem(l.cid));render()});render()}})}
-function fitShelf(){const v=$('#shv');if(!v)return;const W=v.clientWidth,top=v.getBoundingClientRect().top+window.scrollY,tabs=($('#tabs').offsetHeight||0)+($('#rmbar')?$('#rmbar').offsetHeight:0),H=window.innerHeight-top-tabs-22-($('#dmbar')?$('#dmbar').offsetHeight+8:0),G=4;
+/* 휴대폰은 스크롤할 때 주소창이 숨었다 나타나며 화면 높이가 바뀌어요. 높이는 폭이 바뀔 때(회전 등)만 다시 재서 사진 크기가 흔들리지 않게 해요 */
+const VP={w:0,h:0};const vpH=()=>{if(innerWidth!==VP.w){VP.w=innerWidth;VP.h=innerHeight}return VP.h};
+function fitShelf(){const v=$('#shv');if(!v)return;const W=v.clientWidth,top=v.getBoundingClientRect().top+window.scrollY,tabs=($('#tabs').offsetHeight||0)+($('#rmbar')?$('#rmbar').offsetHeight:0),H=vpH()-top-tabs-22-($('#dmbar')?$('#dmbar').offsetHeight+8:0),G=4;
   if(v.classList.contains('shelf')){const cols=SHELF.filter(x=>x.id!=='fl'),mx=Math.max(...cols.map(c=>c.tubs.length)),cw=(W-2*6)/3,
       lab=v.querySelector('.shl').offsetHeight,fixed=lab*2+10+12+8+G*mx;
     let h=Math.floor((H-fixed)/(mx+1));h=Math.max(42,Math.min(h,Math.floor(cw*.75)));h=Math.min(Math.round(h*1.5),Math.floor(cw*.9));
@@ -589,7 +591,7 @@ function fitShelf(){const v=$('#shv');if(!v)return;const W=v.clientWidth,top=v.g
   v.style.maxWidth='';{const c=Math.max(3,Math.floor((W+G)/(170+G)));v.style.setProperty('--tw',Math.floor((W-G*(c-1))/c)+'px');return}const gs=[...v.querySelectorAll('.sh2')].map(x=>x.querySelectorAll('.tb2').length),OV=gs.length*30;
   let lo=40,hi=Math.min(220,W);for(let k=0;k<24;k++){const w=(lo+hi)/2,c=Math.max(1,Math.floor((W+G)/(w+G))),rows=gs.reduce((a,n)=>a+Math.ceil(n/c),0);if(rows*(w*.75+G)+OV<=H)lo=w;else hi=w}
   const c=Math.max(1,Math.floor((W+G)/(lo+G))),w=Math.floor((W-G*(c-1))/c);v.style.setProperty('--tw',Math.min(w,Math.floor(lo))+'px')}
-addEventListener('resize',()=>{if(SEC!=='home'&&D.tab==='shelf'&&!CUR)fitShelf()});
+addEventListener('resize',()=>{if(innerWidth===VP.w)return;if(SEC!=='home'&&D.tab==='shelf'&&!CUR)fitShelf()});
 let LF={who:null,kind:null,tub:null};
 function vLog(){const whos=[...new Set(Object.values(D.logs).concat(Object.values(D.photos)).filter(x=>!x.del).map(x=>x.who))];
   const items=mixFeed(x=>(!LF.tub||x.tub===LF.tub)&&(!LF.who||x.who===LF.who)&&(!LF.kind||(LF.kind==='photo'?!x.kind:x.kind===LF.kind)));
