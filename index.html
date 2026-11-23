@@ -35,6 +35,12 @@
 .rmpop.up .rmpa{top:auto;bottom:-8px;transform:rotate(225deg)}
 
 .frin{margin-top:14px;padding-top:10px;border-top:2px dashed #d9d2c6}
+
+.dxt{display:flex!important;flex-direction:column;gap:5px}
+.dxg{display:flex;align-items:stretch;gap:6px}
+.dxl{flex:none;width:44px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:11px;font-weight:800;line-height:1.15;border-radius:8px;background:#f1ece2;color:#5d564e}
+.dxg.sc .dxl{background:#fff4e0;color:#8a4600;border:1.5px dashed #e08a00}
+.dxb{flex:1;display:grid;grid-template-columns:repeat(var(--n),1fr);gap:4px}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700;800;900&family=Nanum+Myeongjo:wght@800&display=swap" rel="stylesheet">
 <style>
@@ -1940,7 +1946,7 @@ function start(){document.body.classList.remove('ingame','scene','endm','subm');
    <p class="intro">처음이라면 <b>튜토리얼 모드</b>부터! 사수와 함께 심사를 하나씩 배워요. 익숙해지면 <b>샌드박스 모드</b>에서 원하는 조건으로 자유롭게 심사해요.</p>
    <button class="begin scnbtn" id="scnbeg">시나리오 모드<small>${CR.scn&&!CR.scn.end?`${CR.scn.day}일차 · 잔고 ${f(CR.scn.money)}원`:'출근해서 번 돈으로 햄스터·콩벌레와 20일 버티기'}</small></button>
    <button class="begin stbtn" id="stbeg">튜토리얼 모드<small>신입 심사자의 성장기 · ${Object.keys(storyDone()).length}/${STORY.length}장 클리어</small></button>
-   <button class="begin sbbtn" id="sbbeg">샌드박스 모드<small>난이도 · 실손 · 접수량 · AI 대결을 직접 골라요${vsRec}</small></button><p class="mobnote">Optimized for mobile · 모바일 세로 화면 기준으로 제작</p><p class="fictnote">이 게임은 가상의 보험금 심사 시뮬레이션으로, 등장하는 인물·기관·상품·심사 기준은 모두 게임용 가상 설정이며 실제 보험사 및 약관·실무와는 무관합니다.</p><p class="bldline"><span class="bld" id="bld">build 231 · 2026.11.23</span></p></section>`;
+   <button class="begin sbbtn" id="sbbeg">샌드박스 모드<small>난이도 · 실손 · 접수량 · AI 대결을 직접 골라요${vsRec}</small></button><p class="mobnote">Optimized for mobile · 모바일 세로 화면 기준으로 제작</p><p class="fictnote">이 게임은 가상의 보험금 심사 시뮬레이션으로, 등장하는 인물·기관·상품·심사 기준은 모두 게임용 가상 설정이며 실제 보험사 및 약관·실무와는 무관합니다.</p><p class="bldline"><span class="bld" id="bld">build 232 · 2026.11.23</span></p></section>`;
   else app.innerHTML=`<section class="paper end start wz"><h2 class="wzh">🧪 샌드박스 모드</h2><p class="wzp">조건을 고르고 아래 버튼을 누르세요.</p>
    <h3 class="wzs">진행 방식</h3>
    <div class="lvs two" role="group" aria-label="진행 방식"><button data-vsm="0" aria-pressed="${!st.vs}">👤 혼자 심사 <small>최고 기록 도전</small></button><button data-vsm="1" aria-pressed="${!!st.vs}">🤖 AI 대결 <small>${CR.vsW||CR.vsL?`전적 ${CR.vsW||0}승 ${CR.vsL||0}패`:'AI 동료와 점수 대결'}</small></button></div>
@@ -2726,7 +2732,7 @@ function dexRender(){const L=document.getElementById('dexl');if(!L)return;if(!DE
   if(!t){L.innerHTML='';return}
   L.innerHTML=R.length?R.slice(0,dexN).map(([e,j])=>`<div class="dexi"><span class="dexc">${e.d}</span><span class="dexb2"><b class="dexnm">${e.nm[0]}</b>${j>0?`<small class="dexal">= ${e.nm[j]}</small>`:''}</span></div>`).join('')+(R.length>dexN?`<button class="dexmore" id="dexmore">더 보기 (${(R.length-dexN).toLocaleString()}개 남음)</button>`:''):'<p class="gmd">검색 결과가 없어요.</p>'}
 const DXT=[['code','🔎 코드'],['cov','📋 담보'],['wn','📝 오답'],['ham','🐹 햄스터'],['iso','🪲 콩벌레'],['sp','🐾 특수'],['end','🎖 엔딩']];
-const dexTabs=k=>`<div class="dxt" role="tablist">${DXT.map(([t,n])=>`<button role="tab" data-dxt="${t}" aria-selected="${t===k}">${n}</button>`).join('')}</div>`;
+const DXS=['ham','iso','sp','end'],dexTabs=k=>{const B=L=>DXT.filter(([t])=>L(t)).map(([t,n])=>`<button role="tab" data-dxt="${t}" aria-selected="${t===k}">${n}</button>`).join('');return`<div class="dxt" role="tablist"><div class="dxg"><span class="dxl">심사</span><div class="dxb" style="--n:3">${B(t=>!DXS.includes(t))}</div></div><div class="dxg sc"><span class="dxl">시나리오<br>전용</span><div class="dxb" style="--n:4">${B(t=>DXS.includes(t))}</div></div></div>`};
 const COVG=[['진단비',['shingles','gout','infect','stone','elbow','cpolyp','gpolyp','burn']],['치료비',['flu','wound','er','rehab','cast','splint']],['통원·입원',['dOutpt','iOutpt','dHosp','iHosp','hosp4','dHospG','dHospS','iHospG','nurse','icu','iso','room1','room23']],['수술비',['dSurg','dSurgS','iSurg','appx','hemo','dGrade','iGrade','fracSurg']],['골절·치아',['frac','fracT','tooth']],['자동차사고',['carinj','carDrv','carNon','carC2C','surch']],['실손',['sil']]];
 const wonK=n=>n>=1e4?(n/1e4)+'만원':f(n)+'원';
 function covAmt(C){if(C.am)return C.am;if(C.sil)return '실제 낸 의료비에서 가입 세대별 공제금액을 빼고 지급';if(C.opts)return C.opts.slice(1).join(' · ');let t=(C.u||'')+wonK(C.amt);if(C.cap)t+=` (최대 ${C.cap}일)`;if(C.hl)t+=C.hl===2?' · 상급종합병원':' · 종합병원 이상';return t}
