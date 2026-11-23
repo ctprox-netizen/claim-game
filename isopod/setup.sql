@@ -243,3 +243,17 @@ grant execute on function iso_gal_del(text, int) to authenticated;
 grant execute on function iso_gal_cover(text, int) to authenticated;
 grant execute on function iso_memo_list(timestamptz) to anon, authenticated;
 grant execute on function iso_memo_set(text, text) to authenticated;
+
+-- ===== 남은 용량 보기 (v5) =====
+create or replace function iso_usage() returns json
+language sql stable security definer set search_path = public as $$
+  select json_build_object(
+    'db', pg_database_size(current_database()),
+    'gal', pg_total_relation_size('iso_gal'),
+    'log', pg_total_relation_size('iso_log') + pg_total_relation_size('iso_photo'),
+    'memo', pg_total_relation_size('iso_memo'),
+    'nphoto', (select count(*) from iso_gal),
+    'ndiary', (select count(*) from iso_log where kind = 'diary' and not del),
+    'nlog', (select count(*) from iso_log where kind <> 'diary' and not del));
+$$;
+grant execute on function iso_usage() to anon, authenticated;
