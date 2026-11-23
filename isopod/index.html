@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#1d1a17">
-<title>우리집 등각류 도감 · 기록지</title>
+<title>우리집 생물 기록지</title>
 <style>
 :root{--ink:#1d1a17;--paper:#fffdf8;--bg:#efe9df;--line:#d9d2c6;--mut:#6b625a;--blue:#1d4ed8;--blueL:#e8eefc;--amb:#e08a00;--ambL:#fff4e0;--ambD:#8a4600}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -133,11 +133,20 @@ details summary{cursor:pointer;font-weight:800}
 .kv:first-child{border-top:0}
 .ro .edonly,.ro [data-q],.ro [data-bulk],.ro [data-start],.ro [data-del],.ro .acts{display:none!important}
 .login input{width:100%;border:2px solid var(--ink);border-radius:10px;padding:8px 10px;margin:4px 0 8px;background:#fff}
+.hub{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
+.hub button{background:var(--paper);border:3px solid var(--ink);border-radius:18px;min-height:190px;padding:16px 10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;box-shadow:0 4px 0 var(--ink)}
+.hub button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.hub .he{font-size:64px;line-height:1}
+.hub .hn{font-size:21px;font-weight:900;letter-spacing:-.03em}
+.hub .hs{font-size:13px;font-weight:700;color:var(--mut)}
+.hub .soon{opacity:.6;border-style:dashed;box-shadow:none}
+.hub .soon .hs{border:1.5px solid var(--mut);border-radius:999px;padding:1px 8px}
+@media(min-width:720px){.hub{grid-template-columns:repeat(4,1fr)}.hub button{min-height:230px}}
 .kv input{width:64px;text-align:center;border:2px solid var(--ink);border-radius:8px;padding:4px}
 </style>
 </head>
 <body>
-<header class="top" id="top" hidden><h1>🪲 우리집 등각류</h1><button class="chip" id="whoChip">🔒 로그인</button><span class="chip sync" id="syncChip">…</span></header>
+<header class="top" id="top" hidden><button class="chip" id="homeBtn" aria-label="메인 화면으로">🏠</button><h1 id="ttl">🪲 우리집 등각류</h1><button class="chip" id="whoChip">🔒 로그인</button><span class="chip sync" id="syncChip">…</span></header>
 <div class="wrap" id="app"></div>
 <nav class="tabs" id="tabs" hidden>
  <button data-tab="today"><b>📋</b>오늘</button>
@@ -436,8 +445,14 @@ const dueFeed=id=>{const l=lastOf(id,'feed');return!!l&&daysAgo(l.at)>=D.iv.feed
 const valTxt=l=>{const v=l.val||{};if(l.kind==='baby')return`${v.n||0}마리`;if(l.kind==='count')return`${v.n||0}마리`;if(l.kind==='env')return[v.t!=null&&v.t!==''?v.t+'℃':'',v.h!=null&&v.h!==''?v.h+'%':''].filter(Boolean).join(' · ');return''};
 /* --- 화면 --- */
 function toast(t,undo){document.querySelectorAll('.toast').forEach(e=>e.remove());const e=document.createElement('div');e.className='toast';e.innerHTML=`<span>${t}</span>${undo?'<button>되돌리기</button>':''}`;document.body.appendChild(e);if(undo)e.querySelector('button').onclick=()=>{undo();e.remove()};setTimeout(()=>e.remove(),undo?5000:2600)}
-function render(){$('#top').hidden=false;$('#tabs').hidden=false;document.body.classList.toggle('ro',!canEdit());$('#whoChip').textContent=canEdit()?`✏️ ${D.ed}`:AU?'🔒 권한 없음':'🔒 로그인';setSync();
+let SEC='home';
+const HUB=[{id:'iso',e:'🪲',n:'등각류'},{id:'dorm',e:'🐿️',n:'피그미다람쥐'},{id:'ham',e:'🐹',n:'햄스터'},{id:'worm',e:'🐛',n:'슈퍼밀웜'}];
+function vHome(){const due=ALL.filter(id=>dueMist(id)||dueFeed(id)).length;
+  $('#app').innerHTML=`<div class="hub">${HUB.map(h=>h.id==='iso'?`<button data-sec="iso"><span class="he">${h.e}</span><span class="hn">${h.n}</span><span class="hs">${ISPC.length}종${due&&canEdit()?` · 할 일 ${due}통`:''}</span></button>`:`<button class="soon" data-sec="${h.id}"><span class="he">${h.e}</span><span class="hn">${h.n}</span><span class="hs">준비 중</span></button>`).join('')}</div>`;
+  document.querySelectorAll('[data-sec]').forEach(b=>b.onclick=()=>{if(b.dataset.sec!=='iso'){toast(`${b.querySelector('.hn').textContent} 기록지는 준비 중이에요`);return}SEC='iso';history.pushState({sec:'iso'},'');window.scrollTo({top:0});render()})}
+function render(){const home=SEC==='home';$('#top').hidden=false;$('#tabs').hidden=home;$('#homeBtn').hidden=home;$('#ttl').textContent=home?'🏠 우리집 생물 기록지':'🪲 우리집 등각류';document.body.classList.toggle('ro',!canEdit());$('#whoChip').textContent=canEdit()?`✏️ ${D.ed}`:AU?'🔒 권한 없음':'🔒 로그인';setSync();
   document.querySelectorAll('#tabs [data-tab]').forEach(b=>b.setAttribute('aria-current',b.dataset.tab===D.tab?'page':'false'));
+  if(home){vHome();return}
   ({today:vToday,shelf:vShelf,log:vLog,set:vSet}[D.tab]||vToday)()}
 function welcome(){$('#top').hidden=true;$('#tabs').hidden=true;
   if(!D.k){$('#app').innerHTML=`<div class="welcome card"><div style="font-size:46px">🪲</div><h1>우리집 등각류 도감 · 기록지</h1><p class="mut">선반의 통마다 분무·먹이·탈피·새끼·사진을 기록하고,<br>가족이 같은 링크로 함께 볼 수 있어요.</p><button class="btn pri big" id="mk" style="width:100%;margin-top:8px">새 기록지 만들기</button><p class="mut" style="font-size:13px;margin-top:12px">가족이 보내 준 공유 링크가 있다면 그 링크로 열어 주세요.</p></div>`;
@@ -497,12 +512,13 @@ function bindCommon(){document.querySelectorAll('#app [data-open]').forEach(b=>b
   document.querySelectorAll('#app [data-del]').forEach(b=>b.onclick=()=>{if(confirm('이 기록을 지울까요? 가족 화면에서도 지워져요.')){delItem(b.dataset.del);render()}});
   document.querySelectorAll('#app [data-ph]').forEach(b=>b.onclick=()=>viewPhoto(b.dataset.ph))}
 document.querySelectorAll('#tabs [data-tab]').forEach(b=>b.onclick=()=>{D.tab=b.dataset.tab;save();window.scrollTo({top:0});render()});
-$('#whoChip').onclick=()=>{D.tab='set';save();render()};$('#syncChip').onclick=()=>sync(true);
+$('#whoChip').onclick=()=>{if(SEC==='home'){SEC='iso';history.pushState({sec:'iso'},'')}D.tab='set';save();render()};$('#syncChip').onclick=()=>sync(true);
 /* --- 통 상세 --- */
 let CUR=null,VM='tub',RAF=0;
 function openTub(id){CUR=id;VM='tub';const d=$('#detail');d.hidden=false;document.body.style.overflow='hidden';refreshDetail(true);history.pushState({tub:id},'')}
 function closeTub(){CUR=null;cancelAnimationFrame(RAF);$('#detail').hidden=true;document.body.style.overflow='';render()}
-addEventListener('popstate',()=>{if(CUR)closeTub()});
+addEventListener('popstate',()=>{if(CUR){closeTub();return}if(SEC!=='home'){SEC='home';render()}});
+$('#homeBtn').onclick=()=>{if(history.state&&history.state.sec)history.back();else{SEC='home';render()}};
 function refreshDetail(first){const id=CUR;if(!id)return;const sp=spOf(id),E=envOf(id),c=countOf(id),last=k=>lastOf(id,k),ev=last('env'),P=photos().filter(p=>p.tub===id),d=$('#detail');
   let envChk='';if(ev&&ev.val){const v=ev.val,o=[];if(E.t&&v.t!=null&&v.t!==''){o.push(+v.t<E.t[0]?'<span class="warn">⚠ 온도 낮음</span>':+v.t>E.t[1]?'<span class="warn">⚠ 온도 높음</span>':'<span class="ok">✓ 온도 적정</span>')}if(E.h&&v.h!=null&&v.h!==''){o.push(+v.h<E.h[0]?'<span class="warn">⚠ 습도 낮음</span>':+v.h>E.h[1]?'<span class="warn">⚠ 습도 높음</span>':'<span class="ok">✓ 습도 적정</span>')}envChk=o.join(' · ')}
   const keepCv=!first&&d.querySelector('#vcv');
