@@ -257,3 +257,31 @@ language sql stable security definer set search_path = public as $$
     'nlog', (select count(*) from iso_log where kind <> 'diary' and not del));
 $$;
 grant execute on function iso_usage() to anon, authenticated;
+
+-- ===== 기록하는 사람 이름 (v6) =====
+-- 기본 이름: 나 → 재빈, 아빠 → 철사맨 (이미 바꿨다면 아무 일도 안 해요)
+update iso_editor set name = '재빈' where name = '나';
+update iso_editor set name = '철사맨' where name = '아빠';
+update iso_log   set who = case who when '나' then '재빈' else '철사맨' end, upd = now() where who in ('나', '아빠');
+update iso_photo set who = case who when '나' then '재빈' else '철사맨' end, upd = now() where who in ('나', '아빠');
+update iso_gal   set who = case who when '나' then '재빈' else '철사맨' end, upd = now() where who in ('나', '아빠');
+update iso_memo  set who = case who when '나' then '재빈' else '철사맨' end, upd = now() where who in ('나', '아빠');
+
+-- 로그인한 가족이 설정에서 자기 이름을 바꿀 때 쓰는 함수 (지난 기록의 이름도 함께 바뀌어요)
+create or replace function iso_rename(n text) returns text
+language plpgsql security definer set search_path = public as $$
+declare me text := iso_me(); nn text := btrim(coalesce(n, ''));
+begin
+  if me is null then raise exception 'not allowed' using errcode = '42501'; end if;
+  if length(nn) < 1 or length(nn) > 12 then raise exception 'bad name'; end if;
+  if nn = me then return nn; end if;
+  if exists (select 1 from iso_editor where name = nn) then raise exception 'name taken'; end if;
+  update iso_editor set name = nn where lower(email) = lower(coalesce(auth.jwt()->>'email', ''));
+  update iso_log   set who = nn, upd = now() where who = me;
+  update iso_photo set who = nn, upd = now() where who = me;
+  update iso_gal   set who = nn, upd = now() where who = me;
+  update iso_memo  set who = nn, upd = now() where who = me;
+  return nn;
+end $$;
+revoke execute on function iso_rename(text) from public, anon;
+grant execute on function iso_rename(text) to authenticated;
