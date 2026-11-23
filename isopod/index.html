@@ -840,7 +840,7 @@ function act(k){if(!needEdit())return;const id=CUR;
 function sheet(html,bind){closeSheet();const s=document.createElement('div');s.className='sheet';s.innerHTML=`<div class="sb" role="dialog">${html}</div>`;document.body.appendChild(s);s.onclick=e=>{if(e.target===s||e.target.closest('[data-x]'))closeSheet()};bind&&bind(s);const f=s.querySelector('input,textarea');f&&setTimeout(()=>f.focus(),60)}
 function closeSheet(){document.querySelectorAll('.sheet').forEach(e=>e.remove())}
 /* --- 사진 --- */
-function pickPhoto(id){if(!needEdit())return;const i=document.createElement('input');i.type='file';i.accept='image/*';i.onchange=()=>{const f=i.files[0];if(!f)return;
+function pickPhoto(id){if(!needEdit())return;const i=pickerInput();i.onchange=()=>{const f=i.files[0];if(!f)return;
   shrink(f,1280,.72).then(data=>shrink(f,240,.7).then(thumb=>{sheet(`<h3>📷 ${esc(tubNm(id))} 사진</h3><img src="${data}" alt="" style="width:100%;border-radius:10px;border:2px solid var(--ink)"><label>메모 (선택)</label><textarea id="pnote" placeholder="예: 탈피 직후"></textarea><div class="sbb"><button class="btn" data-x>취소</button><button class="btn pri" id="pok">올리기</button></div>`,s=>{
     s.querySelector('#pok').onclick=async()=>{const cid=uid(),m={cid,tub:id,who:D.who,note:s.querySelector('#pnote').value.trim(),thumb,at:new Date().toISOString()};try{await IDB.put(cid,data)}catch(e){toast('⚠ 사진을 저장하지 못했어요');return}D.photos[cid]=m;D.pendP.push(cid);save();closeSheet();toast('📷 사진을 기록했어요');refreshDetail();sync()}})})).catch(e=>toast(photoErr(f,e)))};i.click()}
 /* 사진 읽기: 휴대폰마다 형식이 달라서(HEIC 등) 여러 방법을 차례로 시도해요 */
@@ -848,21 +848,27 @@ const loadImg=b=>new Promise((ok,no)=>{const u=URL.createObjectURL(b),im=new Ima
 let HEIC=null;const loadHeic=()=>HEIC||(HEIC=new Promise((ok,no)=>{const sc=document.createElement('script');sc.src='https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js';sc.onload=()=>window.heic2any?ok(window.heic2any):no(new Error('heic lib'));sc.onerror=()=>{HEIC=null;no(new Error('heic lib'))};document.head.appendChild(sc)}));
 const isHeic=f=>/hei[cf]/i.test(f.type||'')||/\.hei[cf]$/i.test(f.name||'');
 /* 파일 앞부분을 직접 읽어서 진짜 형식을 알아내요 (이름·형식 정보가 틀리거나 비어 있는 경우 대비) */
+function pickerInput(){document.querySelectorAll('input.pick').forEach(e=>e.remove());const i=document.createElement('input');i.type='file';i.accept='image/*';i.className='pick';i.style.cssText='position:fixed;left:-9999px;width:1px;height:1px;opacity:0';document.body.appendChild(i);return i}
+function busy(t){document.querySelectorAll('.toast').forEach(e=>e.remove());const e=document.createElement('div');e.className='toast';e.innerHTML=`<span>${t}</span>`;document.body.appendChild(e);return()=>e.remove()}
+const within=(p,ms,tag)=>Promise.race([p,new Promise((_,no)=>setTimeout(()=>no(Object.assign(new Error('timeout'),{name:'Timeout:'+tag})),ms))]);
+const readAll=f=>new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=()=>no(r.error||new Error('read'));r.readAsArrayBuffer(f)});
 const readHead=f=>new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=()=>no(r.error);r.readAsArrayBuffer(f.slice(0,32))});
-async function sniff(file){try{let ab;try{ab=await readHead(file)}catch(e){await new Promise(r=>setTimeout(r,300));ab=await readHead(file)}const b=new Uint8Array(ab);if(!b.length)return'empty';
+async function sniff(file){try{let ab;try{ab=await within(readHead(file),2000,'head')}catch(e){await new Promise(r=>setTimeout(r,200));ab=await within(readHead(file),2000,'head')}const b=new Uint8Array(ab);if(!b.length)return'empty';
   if(b[0]===0xFF&&b[1]===0xD8)return'jpeg';if(b[0]===0x89&&b[1]===0x50)return'png';if(b[0]===0x47&&b[1]===0x49)return'gif';
   const t=String.fromCharCode(...b.slice(4,12));if(t.startsWith('ftyp')){const br=t.slice(4);return/hei|hev|mif|msf|avif/i.test(br)?(br.startsWith('avif')?'avif':'heic'):'ftyp:'+br}
   if(String.fromCharCode(...b.slice(0,4))==='RIFF')return'webp';return'unknown'}catch(e){return'unreadable:'+((e&&e.name)||'err')}}
 const DEC=new WeakMap();
-function decodeImg(file){if(DEC.has(file))return DEC.get(file);const p=(async()=>{
+function decodeImg(orig){if(DEC.has(orig))return DEC.get(orig);const p=(async()=>{let file=orig,rerr='';
+  /* 먼저 파일 전체를 메모리로 복사해 두면 이후 단계에서 휴대폰이 파일 접근을 막아도 괜찮아요 */
+  try{const buf=await within(readAll(orig),6000,'read');file=new File([buf],orig.name||'photo',{type:orig.type||''})}catch(e){rerr=(e&&e.name)||'read'}
   if(!file.size)throw new Error('empty');
   const kind=await sniff(file);if(kind==='empty'){const e=new Error(kind);e.kind=kind;throw e}
   const mime={jpeg:'image/jpeg',png:'image/png',gif:'image/gif',webp:'image/webp',avif:'image/avif'}[kind];
   const blob=mime&&file.type!==mime?new Blob([file],{type:mime}):file;
-  if(kind!=='heic'){for(const bb of (blob===file?[file]:[blob,file])){if(window.createImageBitmap){for(const o of [{resizeWidth:2048,resizeQuality:'high',imageOrientation:'from-image'},{resizeWidth:1280,resizeQuality:'medium'},{imageOrientation:'from-image'},undefined]){try{return await (o?createImageBitmap(bb,o):createImageBitmap(bb))}catch(e){}}}
-    try{return await loadImg(bb)}catch(e){}}}
-  if(kind==='heic'||isHeic(file)||kind.startsWith('ftyp')||kind.startsWith('unreadable')){try{const h=await loadHeic(),r=await h({blob:new Blob([file],{type:'image/heic'}),toType:'image/jpeg',quality:.9});return await loadImg(Array.isArray(r)?r[0]:r)}catch(e){}}
-  const e=new Error('decode');e.kind=kind;throw e})();DEC.set(file,p);return p}
+  if(kind!=='heic'){for(const bb of (blob===file?[file]:[blob,file])){if(window.createImageBitmap){for(const o of [{resizeWidth:2048,resizeQuality:'high',imageOrientation:'from-image'},{resizeWidth:1280,resizeQuality:'medium'},{imageOrientation:'from-image'},undefined]){try{return await within(o?createImageBitmap(bb,o):createImageBitmap(bb),12000,'bitmap')}catch(e){}}}
+    try{return await within(loadImg(bb),12000,'img')}catch(e){}}}
+  if(kind==='heic'||isHeic(file)||kind.startsWith('ftyp')||kind.startsWith('unreadable')){try{const h=await within(loadHeic(),15000,'heiclib'),r=await within(h({blob:new Blob([file],{type:'image/heic'}),toType:'image/jpeg',quality:.9}),30000,'heic');return await within(loadImg(Array.isArray(r)?r[0]:r),12000,'img')}catch(e){}}
+  const e=new Error('decode');e.kind=rerr&&!kind.startsWith('unreadable')?kind+' · 읽기 '+rerr:kind;throw e})();const q=within(p,40000,'all').catch(e=>{if(e&&e.message==='timeout'&&!e.kind)e.kind='시간 초과';throw e});DEC.set(orig,q);return q}
 async function shrink(file,max,q){const im=await decodeImg(file),w=im.width,h=im.height,s=Math.min(1,max/Math.max(w,h)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(w*s));c.height=Math.max(1,Math.round(h*s));c.getContext('2d').drawImage(im,0,0,c.width,c.height);return c.toDataURL('image/jpeg',q)}
 const photoErr=(f,e)=>{const k=e&&e.kind,sz=f.size?Math.round(f.size/1024/102.4)/10+'MB':'0MB';if(e&&(e.message==='empty'||k==='empty'))return'⚠ 사진 파일이 비어 있어요. 클라우드에만 있는 사진이면 먼저 휴대폰에 내려받아 주세요';if(k&&k.startsWith('unreadable'))return'⚠ 휴대폰이 이 사진 파일을 넘겨주지 않았어요. 갤러리 앱(사진 선택 화면의 다른 앱)으로 다시 골라 주세요 ('+k.slice(11)+' · '+sz+')';return`⚠ 사진을 읽을 수 없어요 (${f.type||(f.name||'').split('.').pop()||'형식 모름'} · 실제 ${k||'?'} · ${sz})`};
 async function viewPhoto(cid){const m=D.photos[cid];if(!m)return;const v=document.createElement('div');v.className='photoview';v.innerHTML=`<img src="${m.thumb}" alt="사진"><p>${esc(tubNm(m.tub))} · ${esc(m.who)} · ${dayLab(m.at)} ${hm(m.at)}${m.note?'<br>'+esc(m.note):''}</p><p style="opacity:.7">화면을 누르면 닫혀요</p>`;v.onclick=()=>v.remove();document.body.appendChild(v);
@@ -896,8 +902,8 @@ function covMenu(t){if(!needEdit())return;const c=covOf(t);if(!c){galPick(t,0);r
     <div class="gact"><button class="btn" id="cn">🔄 새 사진으로 바꾸기</button><button class="btn" id="cd">↩ 기본 사진으로</button></div><div class="sbb"><button class="btn" data-x>닫기</button></div>`,s=>{
     s.querySelector('#cn').onclick=()=>{closeSheet();galPick(t,0)};
     s.querySelector('#cd').onclick=()=>{if(confirm('대표 사진을 지우고 기본 사진으로 되돌릴까요?')){closeSheet();galRun(rpc('iso_gal_del',{t,s:0}),'↩ 기본 사진으로 되돌렸어요')}}})}
-function galPick(t,n){if(!needEdit())return;const i=document.createElement('input');i.type='file';i.accept='image/*';i.onchange=()=>{const f=i.files[0];if(!f)return;
-  if(n===0){toast('📷 사진을 여는 중…');decodeImg(f).then(im=>{document.querySelectorAll('.toast').forEach(e=>e.remove());cropSheet(t,im)}).catch(e=>toast(photoErr(f,e)));return}
+function galPick(t,n){if(!needEdit())return;const i=pickerInput();i.onchange=()=>{const f=i.files[0];if(!f)return;
+  if(n===0){const done=busy('📷 사진을 여는 중… 잠시만요');decodeImg(f).then(im=>{done();cropSheet(t,im)}).catch(e=>{done();toast(photoErr(f,e))});return}
   toast('📷 사진을 올리는 중…');
   shrink(f,1024,.72).then(d=>shrink(f,360,.7).then(th=>galRun(rpc('iso_gal_set',{t,s:n,th,d}),n===0?'📷 대표 사진을 바꿨어요':'📷 사진을 올렸어요'))).catch(e=>toast(photoErr(f,e)))};i.click()}
 async function galRun(p,ok){try{await p;await syncGal();toast(ok)}catch(e){toast(/too large/.test(e.message)?'⚠ 사진이 너무 커요':/not allowed/.test(e.message)?'🔒 기록 권한이 없어요':'⚠ 사진을 올리지 못했어요. 인터넷을 확인해 주세요')}
