@@ -576,7 +576,7 @@ function fitShelf(){const v=$('#shv');if(!v)return;const W=v.clientWidth,top=v.g
       lab=v.querySelector('.shl').offsetHeight,fixed=lab*2+10+12+8+G*mx;
     let h=Math.floor((H-fixed)/(mx+1));h=Math.max(42,Math.min(h,Math.floor(cw*.75)));
     const cwe=Math.min(cw,Math.round(h*2.4));v.style.setProperty('--th',h+'px');v.style.maxWidth=Math.round(cwe*3+12)+'px';v.style.setProperty('--tw',Math.round(cwe)+'px');return}
-  v.style.maxWidth='';const gs=[...v.querySelectorAll('.sh2')].map(x=>x.querySelectorAll('.tb2').length),OV=gs.length*30;
+  v.style.maxWidth='';{const c=Math.max(3,Math.floor((W+G)/(170+G)));v.style.setProperty('--tw',Math.floor((W-G*(c-1))/c)+'px');return}const gs=[...v.querySelectorAll('.sh2')].map(x=>x.querySelectorAll('.tb2').length),OV=gs.length*30;
   let lo=40,hi=Math.min(220,W);for(let k=0;k<24;k++){const w=(lo+hi)/2,c=Math.max(1,Math.floor((W+G)/(w+G))),rows=gs.reduce((a,n)=>a+Math.ceil(n/c),0);if(rows*(w*.75+G)+OV<=H)lo=w;else hi=w}
   const c=Math.max(1,Math.floor((W+G)/(lo+G))),w=Math.floor((W-G*(c-1))/c);v.style.setProperty('--tw',Math.min(w,Math.floor(lo))+'px')}
 addEventListener('resize',()=>{if(SEC!=='home'&&D.tab==='shelf'&&!CUR)fitShelf()});
