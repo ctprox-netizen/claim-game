@@ -153,14 +153,14 @@ details summary{cursor:pointer;font-weight:800}
 .shh{display:flex;align-items:center;gap:8px;margin:6px 2px 0;min-height:32px}
 .shh b{font-size:16px}.shh small{color:var(--mut);font-weight:700;font-size:12.5px}.shh .btn{margin-left:auto}
 .tb2 .ck{display:none}
-.rm .shl{cursor:pointer}.rm .shl b::after{content:' · 칸 전체';font-size:11.5px;color:var(--mut);font-weight:700}
+.rm .shl{cursor:pointer;text-decoration:underline dotted}
 .rm .tb2.on{outline:4px solid var(--ink);outline-offset:-4px}
 .rm .tb2.on img{opacity:.4}
 .rm .tb2.on .ck{display:flex;position:absolute;right:4px;bottom:4px;width:28px;height:28px;border-radius:50%;background:#fff;border:2.5px solid var(--ink);font-style:normal;font-weight:900;align-items:center;justify-content:center;font-size:17px}
 .rmbar{position:fixed;left:0;right:0;bottom:64px;z-index:25;background:var(--paper);border-top:2px solid var(--ink);display:flex;align-items:center;gap:8px;padding:8px 12px;justify-content:center}
 .rmbar span{font-weight:800;margin-right:auto;max-width:520px}.rmbar .btn[disabled]{opacity:.4}
-.kpick{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-.kpick button{border:2px solid var(--ink);background:#fff;border-radius:12px;padding:10px 2px;font-weight:800;font-size:13px;display:flex;flex-direction:column;align-items:center;gap:2px}
+.kpick{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+.kpick button{border:2px solid var(--ink);background:#fff;border-radius:12px;padding:9px 1px;font-weight:800;font-size:12.5px;word-break:keep-all;display:flex;flex-direction:column;align-items:center;gap:2px}
 .kpick button b{font-size:24px;line-height:1.1}.kpick button[aria-pressed=true]{background:var(--ink);color:#fff}
 .nrow{display:flex;align-items:center;gap:8px;padding:5px 0;border-top:1px solid var(--line)}.nrow:first-child{border-top:0}
 .nrow>span{flex:1;font-weight:800;min-width:0}.nrow .step{gap:5px}.sheet .nrow .step input{width:64px;padding:6px 2px;font-size:18px}.nrow .step button{width:38px;height:38px;font-size:19px}
@@ -170,6 +170,20 @@ details summary{cursor:pointer;font-weight:800}
 .tubf span{display:block;padding:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tubf button[aria-pressed=true]{outline:3px solid var(--ink);outline-offset:1px}.tubf button[aria-pressed=true] span{background:var(--ink);color:#fff}
 .tubf .all{min-height:68px;font-size:13px}
+.seg{display:flex;border:2px solid var(--ink);border-radius:10px;overflow:hidden;flex:none}
+.seg button{border:0;background:#fff;padding:5px 10px;font-weight:800;font-size:13px;white-space:nowrap}
+.seg button+button{border-left:2px solid var(--ink)}.seg button[aria-pressed=true]{background:var(--ink);color:#fff}
+.rmh{margin:4px 2px 0;font-size:12.5px;color:var(--mut);font-weight:700}
+.shv.shelf{margin-left:auto;margin-right:auto;width:100%}
+.cols{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.col{display:flex;flex-direction:column;min-width:0}
+.shv.shelf .shl{display:flex;flex-direction:column;align-items:flex-start;gap:0;height:auto;line-height:1.15;padding:0 2px 4px}
+.shv.shelf .shl small{font-size:11px}
+.stk2{flex:1;display:flex;flex-direction:column-reverse;gap:4px;padding-bottom:4px;border-bottom:6px solid var(--ink)}
+.shv.shelf .tb2{width:100%;height:var(--th,64px);aspect-ratio:auto}
+.flr{margin-top:8px}.flr .shl{flex-direction:row!important;align-items:baseline!important;gap:8px!important}
+.frow{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding-bottom:4px;border-bottom:7px double var(--ink)}
+.shv.tax .shl b i{font-weight:900}
 .kv input{width:64px;text-align:center;border:2px solid var(--ink);border-radius:8px;padding:4px}
 </style>
 </head>
@@ -400,7 +414,7 @@ const cover=id=>{if(IMG[id]&&isIso(id))return IMG[id];const p=photos().find(x=>x
 const tubNm=id=>id==='12'?'데어리카우 성체':id==='12b'?'데어리카우 새끼':spOf(id).n;
 const famOf=id=>{if(XSP[id])return XSP[id].fam;const sp=parseInt(id),g=IGRP.find(x=>x[2].includes(sp));return g?`${g[0]} · ${g[1]}`:''};
 const envOf=id=>{const e=spOf(id).env,m=e.match(/(\d+)–(\d+)℃/),h=e.match(/(\d+)(?:–(\d+))?%/);return{t:m?[+m[1],+m[2]]:null,h:h?[+h[1],h[2]?+h[2]:100]:null,txt:e}};
-const KIND={mist:['💧','분무'],feed:['🍂','먹이'],ca:['🦴','칼슘'],clean:['🧹','청소·흙 교체'],baby:['🐣','새끼 발견'],count:['🔢','마릿수'],molt:['🦐','탈피'],env:['🌡','온습도'],note:['📝','메모'],photo:['📷','사진']};
+const KIND={mist:['💧','분무'],feed:['🍂','먹이'],ca:['🦴','칼슘'],clean:['🧹','청소·흙 교체'],baby:['🐣','새끼 발견'],count:['🔢','마릿수'],molt:['🦐','탈피'],env:['🌡','온습도'],note:['📝','메모'],etc:['📝','기타'],photo:['📷','사진']};
 const ACTS=['mist','feed','ca','clean','molt','baby','count','env','note','photo'];
 const $=s=>document.querySelector(s);
 const esc=t=>String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -506,44 +520,61 @@ function mixFeed(filter){const a=logs().map(l=>({t:'l',x:l,at:l.at})),b=photos()
 function feedHTML(items,showDel,noTub){return`<ul class="feed">${items.map(e=>{const x=e.x,k=e.t==='p'?KIND.photo:KIND[x.kind]||['•',x.kind],v=e.t==='p'?'':valTxt(x);
   return`<li><span class="ic">${k[0]}</span><div class="fx"><div>${noTub?'':`<b data-open="${x.tub}" style="cursor:pointer">${esc(tubNm(x.tub))}</b> · `}${k[1]}${v?` <b>${esc(v)}</b>`:''}<span class="who ${x.who===D.who?'me':''}">${esc(x.who)}</span></div>${x.note?`<small>${esc(x.note)}</small>`:''}<small>${dayLab(x.at)} ${hm(x.at)}${x.sv?'':' · ⏳ 공유 대기'}</small></div>${e.t==='p'?`<img class="thumb" src="${x.thumb}" alt="사진" data-ph="${x.cid}">`:''}${showDel?`<button class="del" data-del="${x.cid}" aria-label="삭제">✕</button>`:''}</li>`}).join('')}</ul>`}
 let RM=false;const SEL=new Set();
-function vShelf(){if(!canEdit()){RM=false;SEL.clear()}
-  $('#app').innerHTML=`<div class="shh"><b>선반</b>${RM?'<small>통을 눌러 고르세요</small>':''}<button class="btn sm edonly ${RM?'pri':''}" id="rmBtn">${RM?'✕ 기록 모드 끄기':'✏️ 기록 모드'}</button></div>
-   <div class="shv ${RM?'rm':''}" id="shv">${SHELF.map(s=>`<section class="sh2 ${s.id==='fl'?'floor':''}"><div class="shl" ${RM?`data-ss="${s.id}" role="button"`:''}><b>${s.n}</b><small>${s.d}</small></div><div class="stk">${s.tubs.map(id=>`<button class="tb2 ${RM&&SEL.has(id)?'on':''}" ${RM?`data-pick="${id}" aria-pressed="${SEL.has(id)}"`:`data-open="${id}"`}><img src="${cover(id)}" alt="" loading="lazy"><span>${esc(tubNm(id))}</span><i class="ck">✓</i></button>`).join('')}</div></section>`).join('')}</div>
+/* 계통별 묶음 (IGRP 순서) + 톡토기 */
+function taxGroups(){const g=IGRP.map(([f,gn,sp])=>({k:gn,t:`<i>${gn}</i>`,d:f,ids:sp.flatMap(n=>ALL.filter(id=>!XSP[id]&&parseInt(id)===n))})).filter(x=>x.ids.length);
+  Object.keys(XSP).forEach(id=>{if(ALL.includes(id))g.push({k:id,t:esc(XSP[id].n),d:XSP[id].fam,ids:[id]})});return g}
+const tileH=id=>`<button class="tb2 ${RM&&SEL.has(id)?'on':''}" ${RM?`data-pick="${id}" aria-pressed="${SEL.has(id)}"`:`data-open="${id}"`}><img src="${cover(id)}" alt="" loading="lazy"><span>${esc(tubNm(id))}</span><i class="ck">✓</i></button>`;
+const grpAttr=ids=>RM?`data-grp="${ids.join(',')}" role="button"`:'';
+function vShelf(){if(!canEdit()){RM=false;SEL.clear()}const sv=D.sv==='tax'?'tax':'shelf';
+  const cols=SHELF.filter(x=>x.id!=='fl'),fl=SHELF.find(x=>x.id==='fl');
+  const body=sv==='shelf'
+   ?`<div class="cols">${cols.map(c=>`<section class="col"><div class="shl" ${grpAttr(c.tubs)}><b>${c.n}</b><small>${c.d}</small></div><div class="stk2">${c.tubs.map(tileH).join('')}</div></section>`).join('')}</div>
+     <section class="flr"><div class="shl" ${grpAttr(fl.tubs)}><b>${fl.n}</b><small>${fl.d}</small></div><div class="frow">${fl.tubs.map(tileH).join('')}</div></section>`
+   :taxGroups().map(g=>`<section class="sh2"><div class="shl" ${grpAttr(g.ids)}><b>${g.t}</b><small>${esc(g.d)} · ${g.ids.length}통</small></div><div class="stk">${g.ids.map(tileH).join('')}</div></section>`).join('');
+  $('#app').innerHTML=`<div class="shh"><div class="seg"><button data-sv="shelf" aria-pressed="${sv==='shelf'}">🗄 선반 배열</button><button data-sv="tax" aria-pressed="${sv==='tax'}">🧬 계통별</button></div><button class="btn sm edonly ${RM?'pri':''}" id="rmBtn">${RM?'✕ 기록 모드 끄기':'✏️ 기록 모드'}</button></div>
+   ${RM?'<p class="rmh">통을 눌러 고르세요 · 칸·묶음 이름을 누르면 한꺼번에 골라져요</p>':''}
+   <div class="shv ${sv} ${RM?'rm':''}" id="shv">${body}</div>
    ${RM?`<div class="rmbar" id="rmbar"><span id="rmN"></span><button class="btn sm" id="rmClr">선택 해제</button><button class="btn pri" id="rmGo">기록하기</button></div>`:''}`;
+  document.querySelectorAll('[data-sv]').forEach(b=>b.onclick=()=>{D.sv=b.dataset.sv;save();vShelf()});
   $('#rmBtn').onclick=()=>{if(!needEdit())return;RM=!RM;SEL.clear();vShelf()};
   if(RM){const bar=$('#rmbar');bar.style.bottom=($('#tabs').offsetHeight||64)+'px';
     const upd=()=>{document.querySelectorAll('[data-pick]').forEach(b=>{const on=SEL.has(b.dataset.pick);b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)});$('#rmN').innerHTML=SEL.size?`<b>${SEL.size}</b>통 골랐어요`:'<span class="mut">고른 통 없음</span>';$('#rmGo').disabled=!SEL.size;$('#rmClr').disabled=!SEL.size};
     document.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>{const id=b.dataset.pick;SEL.has(id)?SEL.delete(id):SEL.add(id);upd()});
-    document.querySelectorAll('[data-ss]').forEach(b=>b.onclick=()=>{const t=SHELF.find(x=>x.id===b.dataset.ss).tubs,all=t.every(id=>SEL.has(id));t.forEach(id=>all?SEL.delete(id):SEL.add(id));upd()});
+    document.querySelectorAll('[data-grp]').forEach(b=>b.onclick=()=>{const t=b.dataset.grp.split(','),all=t.every(id=>SEL.has(id));t.forEach(id=>all?SEL.delete(id):SEL.add(id));upd()});
     $('#rmClr').onclick=()=>{SEL.clear();upd()};$('#rmGo').onclick=()=>{if(SEL.size)rmSheet()};upd()}
   bindCommon();fitShelf()}
 let RK='feed';
-const RKS=[['feed','🍂','먹이'],['mist','💧','분무'],['baby','🐣','새끼 발견'],['count','🔢','마릿수']];
+const RKS=[['feed','🍂','먹이'],['mist','💧','분무'],['baby','🐣','새끼 발견'],['count','🔢','마릿수'],['etc','📝','기타']];
 function rmSheet(){if(!needEdit())return;const ids=ALL.filter(id=>SEL.has(id));
   const nowL=(()=>{const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,16)})();
   sheet(`<h3>✏️ ${ids.length}통 한 번에 기록</h3><p class="mut" style="margin:-4px 0 8px;font-size:13px">${ids.map(id=>esc(tubNm(id))).join(', ')}</p>
    <div class="kpick">${RKS.map(([k,e,n])=>`<button data-k="${k}" aria-pressed="${k===RK}"><b>${e}</b>${n}</button>`).join('')}</div>
-   <div id="rnums"></div><label>메모 (선택)</label><textarea id="rnote" placeholder="고른 통 모두에 같은 메모가 남아요"></textarea>
+   <div id="rnums"></div><label id="rnl">메모 (선택)</label><textarea id="rnote" placeholder="고른 통 모두에 같은 메모가 남아요"></textarea>
    <label>언제</label><input id="rat" type="datetime-local" value="${nowL}">
    <div class="sbb"><button class="btn" data-x>취소</button><button class="btn pri" id="rok">기록하기</button></div>`,sh=>{
-    const nums=()=>{const box=sh.querySelector('#rnums');if(RK!=='baby'&&RK!=='count'){box.innerHTML='';return}
+    const nums=()=>{sh.querySelector('#rnl').textContent=RK==='etc'?'메모 (꼭 적어 주세요)':'메모 (선택)';sh.querySelector('#rnote').placeholder=RK==='etc'?'예: 흙 절반 교체, 이끼 추가, 탈피 봄':'고른 통 모두에 같은 메모가 남아요';const box=sh.querySelector('#rnums');if(RK!=='baby'&&RK!=='count'){box.innerHTML='';return}
       box.innerHTML=`<label>${RK==='baby'?'새로 본 새끼 수':'지금 마릿수 (다 자란 개체)'}</label>${RK==='count'?'<p class="mut" style="margin:-2px 0 6px;font-size:12.5px">빈칸으로 둔 통은 기록하지 않아요.</p>':''}<div class="card" style="margin:0;padding:4px 10px">${ids.map(id=>{const c=countOf(id),v=RK==='count'?(c.n!=null?c.n+c.b:''):1;return`<div class="nrow"><span>${esc(tubNm(id))}</span><div class="step"><button data-st="-1">−</button><input data-n="${id}" type="number" inputmode="numeric" min="0" value="${v}" placeholder="?"><button data-st="1">+</button></div></div>`}).join('')}</div>`;
       box.querySelectorAll('[data-st]').forEach(b=>b.onclick=()=>{const i=b.parentNode.querySelector('input');i.value=Math.max(0,(+i.value||0)+ +b.dataset.st)})};
     sh.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{RK=b.dataset.k;sh.querySelectorAll('[data-k]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.k===RK));nums()});nums();
-    sh.querySelector('#rok').onclick=()=>{const note=sh.querySelector('#rnote').value.trim(),av=sh.querySelector('#rat').value,at=av?new Date(av).toISOString():null;
+    sh.querySelector('#rok').onclick=()=>{const note=sh.querySelector('#rnote').value.trim();if(RK==='etc'&&!note){toast('기타는 메모를 적어 주세요');sh.querySelector('#rnote').focus();return}const av=sh.querySelector('#rat').value,at=av?new Date(av).toISOString():null;
       const L=[];for(const id of ids){let val=null;if(RK==='baby'||RK==='count'){const i=sh.querySelector(`[data-n="${id}"]`);if(i.value.trim()==='')continue;val={n:Math.max(0,+i.value||0)}}L.push(addLog(id,RK,val,note,at,true))}
       if(!L.length){toast('마릿수를 하나 이상 적어 주세요');return}
       sync();closeSheet();const nm=RKS.find(x=>x[0]===RK);RM=false;SEL.clear();
       toast(`${nm[1]} ${L.length}통 ${nm[2]} 기록했어요`,()=>{L.forEach(l=>delItem(l.cid));render()});render()}})}
-function fitShelf(){const v=$('#shv');if(!v)return;const W=v.clientWidth,top=v.getBoundingClientRect().top+window.scrollY,tabs=($('#tabs').offsetHeight||0)+($('#rmbar')?$('#rmbar').offsetHeight:0),H=window.innerHeight-top-tabs-18,G=4,OV=SHELF.length*34;
-  let lo=40,hi=Math.min(220,W);for(let k=0;k<24;k++){const w=(lo+hi)/2,c=Math.max(1,Math.floor((W+G)/(w+G))),rows=SHELF.reduce((a,s)=>a+Math.ceil(s.tubs.length/c),0);if(rows*(w*.75+G)+OV<=H)lo=w;else hi=w}
+function fitShelf(){const v=$('#shv');if(!v)return;const W=v.clientWidth,top=v.getBoundingClientRect().top+window.scrollY,tabs=($('#tabs').offsetHeight||0)+($('#rmbar')?$('#rmbar').offsetHeight:0),H=window.innerHeight-top-tabs-22,G=4;
+  if(v.classList.contains('shelf')){const cols=SHELF.filter(x=>x.id!=='fl'),mx=Math.max(...cols.map(c=>c.tubs.length)),cw=(W-2*6)/3,
+      lab=v.querySelector('.shl').offsetHeight,fixed=lab*2+10+12+8+G*mx;
+    let h=Math.floor((H-fixed)/(mx+1));h=Math.max(42,Math.min(h,Math.floor(cw*.75)));
+    const cwe=Math.min(cw,Math.round(h*2.4));v.style.setProperty('--th',h+'px');v.style.maxWidth=Math.round(cwe*3+12)+'px';v.style.setProperty('--tw',Math.round(cwe)+'px');return}
+  v.style.maxWidth='';const gs=[...v.querySelectorAll('.sh2')].map(x=>x.querySelectorAll('.tb2').length),OV=gs.length*30;
+  let lo=40,hi=Math.min(220,W);for(let k=0;k<24;k++){const w=(lo+hi)/2,c=Math.max(1,Math.floor((W+G)/(w+G))),rows=gs.reduce((a,n)=>a+Math.ceil(n/c),0);if(rows*(w*.75+G)+OV<=H)lo=w;else hi=w}
   const c=Math.max(1,Math.floor((W+G)/(lo+G))),w=Math.floor((W-G*(c-1))/c);v.style.setProperty('--tw',Math.min(w,Math.floor(lo))+'px')}
 addEventListener('resize',()=>{if(SEC!=='home'&&D.tab==='shelf'&&!CUR)fitShelf()});
 let LF={who:null,kind:null,tub:null};
 function vLog(){const whos=[...new Set(Object.values(D.logs).concat(Object.values(D.photos)).filter(x=>!x.del).map(x=>x.who))];
   const items=mixFeed(x=>(!LF.tub||x.tub===LF.tub)&&(!LF.who||x.who===LF.who)&&(!LF.kind||(LF.kind==='photo'?!x.kind:x.kind===LF.kind)));
   let html='',cur='';items.slice(0,300).forEach(e=>{const d=dayLab(e.at);if(d!==cur){if(cur)html+='</div>';html+=`<div class="day">${d}</div><div class="card">`;cur=d}html+=feedHTML([e],true)});if(cur)html+='</div>';
-  const kinds=['feed','mist','baby','count'].concat(ACTS.filter(k=>!['feed','mist','baby','count'].includes(k)&&(k==='photo'?photos().length:logs().some(l=>l.kind===k))));
+  const kinds=['feed','mist','baby','count','etc'].concat(ACTS.filter(k=>!['feed','mist','baby','count','etc'].includes(k)&&(k==='photo'?photos().length:logs().some(l=>l.kind===k))));
   $('#app').innerHTML=`<h2 class="sec">기록 <small>${LF.tub?esc(tubNm(LF.tub))+' · ':''}${items.length}개 · 최신순</small></h2>
    <div class="tubf"><button class="all" data-ft="" aria-pressed="${!LF.tub}">전체<br>사육통</button>${ALL.map(id=>`<button data-ft="${id}" aria-pressed="${LF.tub===id}"><img src="${cover(id)}" alt="" loading="lazy"><span>${esc(tubNm(id))}</span></button>`).join('')}</div><div class="filters"><button data-fw="" aria-pressed="${!LF.who}">모두</button>${whos.map(w=>`<button data-fw="${esc(w)}" aria-pressed="${LF.who===w}">${esc(w)}</button>`).join('')}</div>
    <div class="filters"><button data-fk="" aria-pressed="${!LF.kind}">전체</button>${kinds.map(k=>`<button data-fk="${k}" aria-pressed="${LF.kind===k}">${KIND[k][0]} ${KIND[k][1]}</button>`).join('')}</div>${html||'<div class="card empty">기록이 없어요.</div>'}`;
