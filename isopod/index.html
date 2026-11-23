@@ -242,6 +242,10 @@ body:has(#float .fab) #app .petg{padding-bottom:64px}
 .crop{position:relative;width:100%;aspect-ratio:4/3;border:2px solid var(--ink);border-radius:12px;overflow:hidden;background:#222;touch-action:none;cursor:grab}
 .crop canvas{display:block}
 .cgrid{position:absolute;inset:0;pointer-events:none;background:linear-gradient(to right,transparent 33.2%,rgba(255,255,255,.45) 33.3%,transparent 33.5%,transparent 66.5%,rgba(255,255,255,.45) 66.6%,transparent 66.8%),linear-gradient(to bottom,transparent 33.2%,rgba(255,255,255,.45) 33.3%,transparent 33.5%,transparent 66.5%,rgba(255,255,255,.45) 66.6%,transparent 66.8%)}
+.lsg{margin:8px 0 2px;grid-template-columns:1fr 1fr}
+.dia{padding:10px 12px}.dh2{display:flex;align-items:center;gap:8px;margin-bottom:6px}.dh2 .who{font-size:12px;font-weight:800;border:1.5px solid var(--ink);border-radius:6px;padding:0 6px}.dh2 .who.me{background:var(--blue);border-color:var(--blue);color:#fff}
+.dh2 .del{margin-left:auto;border:0;background:none;font-size:16px;padding:2px 4px}
+.dtx{white-space:pre-wrap;word-break:break-word;line-height:1.6;font-size:15px}
 .kv input{width:64px;text-align:center;border:2px solid var(--ink);border-radius:8px;padding:4px}
 </style>
 </head>
@@ -577,7 +581,8 @@ function setSync(ing){const c=$('#syncChip');if(!c)return;const n=D.pend.length+
   else if(SY.st==='off'){c.className='chip sync warn';c.textContent=`📴 오프라인${n?` · ${n}개 대기`:''}`}
   else{c.className='chip sync';c.textContent='…'}}
 /* --- 기록 --- */
-const logs=()=>Object.values(D.logs).filter(l=>!l.del).sort((a,b)=>new Date(b.at)-new Date(a.at));
+const diaries=sec=>Object.values(D.logs).filter(l=>!l.del&&l.kind==='diary'&&l.tub==='J:'+sec).sort((a,b)=>new Date(b.at)-new Date(a.at));
+const logs=()=>Object.values(D.logs).filter(l=>!l.del&&l.kind!=='diary').sort((a,b)=>new Date(b.at)-new Date(a.at));
 const photos=()=>Object.values(D.photos).filter(p=>!p.del).sort((a,b)=>new Date(b.at)-new Date(a.at));
 const lastOf=(id,k)=>logs().find(l=>l.tub===id&&l.kind===k);
 function addLog(tub,kind,val,note,at,quiet){if(!canEdit())return{cid:null};const l={cid:uid(),tub,who:D.who||'?',kind,val:val||null,note:note||'',at:at||new Date().toISOString()};D.logs[l.cid]=l;D.pend.push(l.cid);save();if(!quiet)sync();return l}
@@ -712,15 +717,30 @@ function fitShelf(){const v=$('#shv');if(!v)return;const W=v.clientWidth,top=v.g
   const c=Math.max(1,Math.floor((W+G)/(lo+G))),w=Math.floor((W-G*(c-1))/c);v.style.setProperty('--tw',Math.min(w,Math.floor(lo))+'px')}
 addEventListener('resize',()=>{if(innerWidth===VP.w)return;if(SEC!=='home'&&D.tab==='shelf'&&!CUR)fitShelf()});
 let LF={who:null,kind:null,tub:null};
-function vLog(){const whos=[...new Set(Object.values(D.logs).concat(Object.values(D.photos)).filter(x=>!x.del).map(x=>x.who))];
+let LOGM='log';
+function logSeg(){return`<div class="sg lsg"><button data-lm="log" aria-pressed="${LOGM==='log'}">📜 기록</button><button data-lm="diary" aria-pressed="${LOGM==='diary'}">📔 일지</button></div>`}
+function bindLogSeg(){document.querySelectorAll('[data-lm]').forEach(b=>b.onclick=()=>{LOGM=b.dataset.lm;PGN.log=60;window.scrollTo({top:0});vLog()})}
+function vDiary(){const L=diaries(SEC);let html='',cur='';
+  L.forEach(l=>{const d=dayLab(l.at);if(d!==cur){html+=`<div class="day">${d}</div>`;cur=d}
+    html+=`<div class="card dia"><div class="dh2"><span class="who ${l.who===D.who?'me':''}">${esc(l.who)}</span><small class="mut">${hm(l.at)}${l.sv?'':' · ⏳ 공유 대기'}</small>${canEdit()?`<button class="del" data-ddel="${l.cid}" aria-label="일지 지우기">🗑</button>`:''}</div><div class="dtx">${esc(l.note)}</div></div>`});
+  $('#app').innerHTML=`${logSeg()}<h2 class="sec">일지 <small>${L.length}개 · 최신순</small></h2>${canEdit()?'<button class="btn pri big" id="dNew" style="width:100%">✏️ 일지 쓰기</button>':''}${html||'<div class="card empty">아직 쓴 일지가 없어요.</div>'}`;
+  bindLogSeg();if($('#dNew'))$('#dNew').onclick=diarySheet;
+  document.querySelectorAll('[data-ddel]').forEach(b=>b.onclick=()=>{if(confirm('이 일지를 지울까요? 가족 화면에서도 지워져요.')){delItem(b.dataset.ddel);toast('🗑 일지를 지웠어요');vDiary()}})}
+function diarySheet(){if(!needEdit())return;const today=(()=>{const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)})();
+  sheet(`<h3>📔 ${PETS[SEC]?PETS[SEC].full:'등각류'} 일지</h3><label>날짜</label><input id="dd" type="date" value="${today}"><label>내용</label><textarea id="dt" style="min-height:200px" maxlength="2000" placeholder="오늘 있었던 일을 자유롭게 적어 보세요"></textarea><p class="mut" style="font-size:12.5px;margin:4px 0 0">최대 2000자까지 쓸 수 있어요.</p>
+   <div class="sbb"><button class="btn" data-x>취소</button><button class="btn pri" id="dok">저장</button></div>`,sh=>{
+    sh.querySelector('#dok').onclick=()=>{const t=sh.querySelector('#dt').value.trim();if(!t){toast('내용을 적어 주세요');return}const dv=sh.querySelector('#dd').value,n=new Date();
+      let at=n.toISOString();if(dv&&dv!==today){const d=new Date(dv+'T00:00');d.setHours(n.getHours(),n.getMinutes(),n.getSeconds());at=d.toISOString()}
+      addLog('J:'+SEC,'diary',null,t.slice(0,2000),at);closeSheet();toast('📔 일지를 저장했어요');vDiary()}})}
+function vLog(){if(LOGM==='diary')return vDiary();const whos=[...new Set(logs().concat(photos()).map(x=>x.who))];
   if(LF.tub&&!secIds().includes(LF.tub))LF.tub=null;
   const items=mixFeed(x=>secOf(x.tub)===SEC&&(!LF.tub||x.tub===LF.tub)&&(!LF.who||x.who===LF.who)&&(!LF.kind||(LF.kind==='photo'?!x.kind:x.kind===LF.kind)));
   const html=dayFeed(items,'log',e=>feedHTML([e],true));
   const base=SEC==='worm'?['wfeed','bed','count','pupa','etc']:PETS[SEC]?['etc']:['feed','mist','baby','count','etc'];const kinds=base.concat(ACTS.filter(k=>!base.includes(k)&&!PETS[SEC]&&(k==='photo'?photos().length:logs().some(l=>l.kind===k))));
-  $('#app').innerHTML=`<h2 class="sec">기록 <small>${LF.tub?esc(tubNm(LF.tub))+' · ':''}${items.length}개 · 최신순</small></h2>
+  $('#app').innerHTML=`${logSeg()}<h2 class="sec">기록 <small>${LF.tub?esc(tubNm(LF.tub))+' · ':''}${items.length}개 · 최신순</small></h2>
    <div class="tubf"><button class="all" data-ft="" aria-pressed="${!LF.tub}">전체<br>${PETS[SEC]?PETS[SEC].n:'사육통'}</button>${secIds().map(id=>`<button data-ft="${id}" aria-pressed="${LF.tub===id}"><img src="${cover(id)}" alt="" loading="lazy"><span>${esc(tubNm(id))}</span></button>`).join('')}</div><div class="filters"><button data-fw="" aria-pressed="${!LF.who}">모두</button>${whos.map(w=>`<button data-fw="${esc(w)}" aria-pressed="${LF.who===w}">${esc(w)}</button>`).join('')}</div>
    <div class="filters"><button data-fk="" aria-pressed="${!LF.kind}">전체</button>${kinds.map(k=>`<button data-fk="${k}" aria-pressed="${LF.kind===k}">${KIND[k][0]} ${KIND[k][1]}</button>`).join('')}</div>${html||'<div class="card empty">기록이 없어요.</div>'}`;
-  watchMore('log',vLog);document.querySelectorAll('[data-fw]').forEach(b=>b.onclick=()=>{LF.who=b.dataset.fw||null;PGN.log=60;vLog()});document.querySelectorAll('[data-fk]').forEach(b=>b.onclick=()=>{LF.kind=b.dataset.fk||null;PGN.log=60;vLog()});
+  watchMore('log',vLog);bindLogSeg();document.querySelectorAll('[data-fw]').forEach(b=>b.onclick=()=>{LF.who=b.dataset.fw||null;PGN.log=60;vLog()});document.querySelectorAll('[data-fk]').forEach(b=>b.onclick=()=>{LF.kind=b.dataset.fk||null;PGN.log=60;vLog()});
   document.querySelectorAll('[data-ft]').forEach(b=>b.onclick=()=>{const x=$('.tubf').scrollLeft;LF.tub=b.dataset.ft||null;PGN.log=60;vLog();$('.tubf').scrollLeft=x});bindCommon()}
 function vSet(){const n=D.pend.length+D.pendP.length;
   $('#app').innerHTML=`<h2 class="sec">설정 <small>모든 동물 기록지에 함께 적용돼요</small></h2>
