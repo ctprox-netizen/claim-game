@@ -206,6 +206,15 @@ details summary{cursor:pointer;font-weight:800}
 .stk.mv .tb2{border-style:dashed}
 .stk.mv .tb2.pk{outline:4px solid var(--ink);outline-offset:-4px;border-style:solid}.stk.mv .tb2.pk img{opacity:.4}
 .stk.mv .tb2.pk::after{content:'옮기는 중';position:absolute;left:50%;bottom:6px;transform:translateX(-50%);background:#fff;border:2px solid var(--ink);border-radius:999px;padding:1px 8px;font-size:12px;font-weight:900;white-space:nowrap}
+.ctl{background:var(--paper);border:2px solid var(--ink);border-radius:14px;padding:7px 8px;margin:8px 0 6px;display:grid;grid-template-columns:auto 1fr;gap:6px 9px;align-items:center}
+.ctl>span{font-size:12px;font-weight:900;color:var(--mut);padding-left:2px}
+.sg{display:grid;grid-template-columns:repeat(3,1fr);background:var(--bg);border-radius:10px;padding:3px;gap:3px}
+.sg button{border:0;background:none;border-radius:8px;padding:7px 2px;font-weight:800;font-size:13.5px;white-space:nowrap;color:var(--mut);letter-spacing:-.02em}
+.sg button[aria-pressed=true]{background:var(--ink);color:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.fab{position:fixed;right:14px;bottom:78px;z-index:24;background:var(--ink);color:#fff;border:2px solid #fff;border-radius:999px;padding:12px 18px;font-weight:900;font-size:15px;box-shadow:0 6px 18px rgba(0,0,0,.3)}
+.rmbar .rmx{border:2px solid var(--ink);background:#fff;border-radius:999px;width:34px;height:34px;font-weight:900;flex:none}
+.rmh{margin:0 2px 6px!important}
+#app:has(.fab) .shv{padding-bottom:64px}
 .kv input{width:64px;text-align:center;border:2px solid var(--ink);border-radius:8px;padding:4px}
 </style>
 </head>
@@ -561,7 +570,7 @@ function taxGroups(){const g=IGRP.map(([f,gn,sp])=>({k:gn,t:`<i>${gn}</i>`,d:f,i
   Object.keys(XSP).forEach(id=>{if(ALL.includes(id))g.push({k:id,t:esc(XSP[id].n),d:XSP[id].fam,ids:[id]})});return g}
 const tileH=id=>`<button class="tb2 ${RM&&SEL.has(id)?'on':''}" ${RM?`data-pick="${id}" aria-pressed="${SEL.has(id)}"`:`data-open="${id}"`}><img src="${cover(id)}" alt="" loading="lazy"><span>${esc(tubNm(id))}</span><i class="ck">✓</i></button>`;
 const grpAttr=ids=>RM?`data-grp="${ids.join(',')}" role="button"`:'';
-const DMS=[['photo','사진으로 보기'],['name','이름으로 보기'],['both','같이 보기']];
+const DMS=[['photo','사진만'],['name','이름만'],['both','사진+이름']];
 let MV=false,MVP=null;
 const cuOrder=()=>{const o=(D.co||[]).filter(id=>ALL.includes(id));ALL.forEach(id=>{if(!o.includes(id))o.push(id)});return o};
 function vShelf(){if(!canEdit()){RM=false;SEL.clear()}const sv=['tax','cu'].includes(D.sv)?D.sv:'shelf';if(sv!=='cu')MV=false;if(MV)RM=false;
@@ -572,18 +581,20 @@ function vShelf(){if(!canEdit()){RM=false;SEL.clear()}const sv=['tax','cu'].incl
    :sv==='cu'?`<section class="sh2"><div class="shl cuh"><b>사용자 지정</b><small>${MV?(MVP?`<b>${esc(tubNm(MVP))}</b> → 옮길 자리를 누르세요`:'옮길 통을 먼저 누르세요'):'이 기기에 저장돼요'}</small>${MV?'<button class="btn sm" id="cuReset">처음 순서로</button>':''}<button class="btn sm ${MV?'pri':''}" id="cuMv">${MV?'✓ 다 했어요':'↕ 순서 바꾸기'}</button></div>
        <div class="stk cu ${MV?'mv':''}">${cuOrder().map(id=>MV?`<button class="tb2 ${MVP===id?'pk':''}" data-mv="${id}"><img src="${cover(id)}" alt="" loading="lazy"><span>${esc(tubNm(id))}</span></button>`:tileH(id)).join('')}</div></section>`
    :taxGroups().map(g=>`<section class="sh2"><div class="shl" ${grpAttr(g.ids)}><b>${g.t}</b><small>${esc(g.d)} · ${g.ids.length}통</small></div><div class="stk">${g.ids.map(tileH).join('')}</div></section>`).join('');
-  $('#app').innerHTML=`<div class="shh"><div class="seg"><button data-sv="shelf" aria-pressed="${sv==='shelf'}">🗄 선반 배열</button><button data-sv="tax" aria-pressed="${sv==='tax'}">🧬 계통별</button><button data-sv="cu" aria-pressed="${sv==='cu'}">✋ 사용자 지정</button></div><button class="btn sm edonly ${RM?'pri':''}" id="rmBtn">${RM?'✕ 기록 모드 끄기':'✏️ 기록 모드'}</button></div>
-   <div class="dmbar seg" id="dmbar">${DMS.map(([k,n])=>`<button data-dm="${k}" aria-pressed="${(DMS.some(x=>x[0]===D.dm)?D.dm:'both')===k}">${n}</button>`).join('')}</div>
+  const dm=DMS.some(x=>x[0]===D.dm)?D.dm:'both';
+  $('#app').innerHTML=`<div class="ctl"><span>배열</span><div class="sg">${[['shelf','선반 배열'],['tax','계통별'],['cu','사용자 지정']].map(([k,n])=>`<button data-sv="${k}" aria-pressed="${sv===k}">${n}</button>`).join('')}</div>
+     <span>보기</span><div class="sg">${DMS.map(([k,n])=>`<button data-dm="${k}" aria-pressed="${dm===k}">${n}</button>`).join('')}</div></div>
    ${RM?'<p class="rmh">통을 눌러 고르세요 · 칸·묶음 이름을 누르면 한꺼번에 골라져요</p>':''}
    <div class="shv ${sv} dm-${DMS.some(x=>x[0]===D.dm)?D.dm:'both'} ${RM?'rm':''}" id="shv">${body}</div>
-   ${RM?`<div class="rmbar" id="rmbar"><span id="rmN"></span><button class="btn sm" id="rmClr">선택 해제</button><button class="btn pri" id="rmGo">기록하기</button></div>`:''}`;
+   ${RM?`<div class="rmbar" id="rmbar"><button class="rmx" id="rmBtn" aria-label="기록 모드 끄기">✕</button><span id="rmN"></span><button class="btn sm" id="rmClr">선택 해제</button><button class="btn pri" id="rmGo">기록하기</button></div>`:MV?'':`<button class="fab edonly" id="rmBtn">✏️ 기록 모드</button>`}`;
   document.querySelectorAll('[data-sv]').forEach(b=>b.onclick=()=>{D.sv=b.dataset.sv;MV=false;MVP=null;save();vShelf()});
   if($('#cuMv'))$('#cuMv').onclick=()=>{MV=!MV;MVP=null;if(MV){RM=false;SEL.clear()}vShelf()};
   if($('#cuReset'))$('#cuReset').onclick=()=>{if(confirm('처음 순서(선반 배열 순서)로 되돌릴까요?')){D.co=null;MVP=null;save();vShelf()}};
   document.querySelectorAll('[data-mv]').forEach(b=>b.onclick=()=>{const id=b.dataset.mv;if(!MVP){MVP=id;vShelf();return}if(MVP===id){MVP=null;vShelf();return}
     const o=cuOrder(),from=o.indexOf(MVP);o.splice(from,1);o.splice(o.indexOf(id)+(from<=o.indexOf(id)?1:0),0,MVP);D.co=o;MVP=null;save();vShelf()});
   document.querySelectorAll('[data-dm]').forEach(b=>b.onclick=()=>{D.dm=b.dataset.dm;save();vShelf()});
-  $('#rmBtn').onclick=()=>{if(!needEdit())return;RM=!RM;SEL.clear();if(RM){MV=false;MVP=null}vShelf()};
+  {const f=$('.fab');if(f)f.style.bottom=(($('#tabs').offsetHeight||64)+14)+'px'}
+  if($('#rmBtn'))$('#rmBtn').onclick=()=>{if(!needEdit())return;RM=!RM;SEL.clear();if(RM){MV=false;MVP=null}vShelf()};
   if(RM){const bar=$('#rmbar');bar.style.bottom=($('#tabs').offsetHeight||64)+'px';
     const upd=()=>{document.querySelectorAll('[data-pick]').forEach(b=>{const on=SEL.has(b.dataset.pick);b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)});$('#rmN').innerHTML=SEL.size?`<b>${SEL.size}</b>통 골랐어요`:'<span class="mut">고른 통 없음</span>';$('#rmGo').disabled=!SEL.size;$('#rmClr').disabled=!SEL.size};
     document.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>{const id=b.dataset.pick;SEL.has(id)?SEL.delete(id):SEL.add(id);upd()});
