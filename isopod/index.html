@@ -184,7 +184,7 @@ details summary{cursor:pointer;font-weight:800}
 .flr{margin-top:8px}.flr .shl{flex-direction:row!important;align-items:baseline!important;gap:8px!important}
 .frow{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding-bottom:4px;border-bottom:7px double var(--ink)}
 .shv.tax .shl b i{font-weight:900}
-.dmbar{display:flex;margin:8px auto 0;max-width:520px}
+.dmbar{display:flex;margin:6px 0 4px;max-width:520px}
 .dmbar button{flex:1;padding:7px 2px;font-size:12.5px}
 .dm-photo .tb2 span{display:none}
 .dm-name .tb2{background:var(--paper)}
@@ -573,9 +573,9 @@ function vShelf(){if(!canEdit()){RM=false;SEL.clear()}const sv=['tax','cu'].incl
        <div class="stk cu ${MV?'mv':''}">${cuOrder().map(id=>MV?`<button class="tb2 ${MVP===id?'pk':''}" data-mv="${id}"><img src="${cover(id)}" alt="" loading="lazy"><span>${esc(tubNm(id))}</span></button>`:tileH(id)).join('')}</div></section>`
    :taxGroups().map(g=>`<section class="sh2"><div class="shl" ${grpAttr(g.ids)}><b>${g.t}</b><small>${esc(g.d)} · ${g.ids.length}통</small></div><div class="stk">${g.ids.map(tileH).join('')}</div></section>`).join('');
   $('#app').innerHTML=`<div class="shh"><div class="seg"><button data-sv="shelf" aria-pressed="${sv==='shelf'}">🗄 선반 배열</button><button data-sv="tax" aria-pressed="${sv==='tax'}">🧬 계통별</button><button data-sv="cu" aria-pressed="${sv==='cu'}">✋ 사용자 지정</button></div><button class="btn sm edonly ${RM?'pri':''}" id="rmBtn">${RM?'✕ 기록 모드 끄기':'✏️ 기록 모드'}</button></div>
+   <div class="dmbar seg" id="dmbar">${DMS.map(([k,n])=>`<button data-dm="${k}" aria-pressed="${(DMS.some(x=>x[0]===D.dm)?D.dm:'both')===k}">${n}</button>`).join('')}</div>
    ${RM?'<p class="rmh">통을 눌러 고르세요 · 칸·묶음 이름을 누르면 한꺼번에 골라져요</p>':''}
    <div class="shv ${sv} dm-${DMS.some(x=>x[0]===D.dm)?D.dm:'both'} ${RM?'rm':''}" id="shv">${body}</div>
-   <div class="dmbar seg" id="dmbar">${DMS.map(([k,n])=>`<button data-dm="${k}" aria-pressed="${(DMS.some(x=>x[0]===D.dm)?D.dm:'both')===k}">${n}</button>`).join('')}</div>
    ${RM?`<div class="rmbar" id="rmbar"><span id="rmN"></span><button class="btn sm" id="rmClr">선택 해제</button><button class="btn pri" id="rmGo">기록하기</button></div>`:''}`;
   document.querySelectorAll('[data-sv]').forEach(b=>b.onclick=()=>{D.sv=b.dataset.sv;MV=false;MVP=null;save();vShelf()});
   if($('#cuMv'))$('#cuMv').onclick=()=>{MV=!MV;MVP=null;if(MV){RM=false;SEL.clear()}vShelf()};
@@ -610,7 +610,7 @@ function rmSheet(){if(!needEdit())return;const ids=ALL.filter(id=>SEL.has(id));
       toast(`${nm[1]} ${L.length}통 ${nm[2]} 기록했어요`,()=>{L.forEach(l=>delItem(l.cid));render()});render()}})}
 /* 휴대폰은 스크롤할 때 주소창이 숨었다 나타나며 화면 높이가 바뀌어요. 높이는 폭이 바뀔 때(회전 등)만 다시 재서 사진 크기가 흔들리지 않게 해요 */
 const VP={w:0,h:0};const vpH=()=>{if(innerWidth!==VP.w){VP.w=innerWidth;VP.h=innerHeight}return VP.h};
-function fitShelf(){const v=$('#shv');if(!v)return;const W=v.clientWidth,top=v.getBoundingClientRect().top+window.scrollY,tabs=($('#tabs').offsetHeight||0)+($('#rmbar')?$('#rmbar').offsetHeight:0),H=vpH()-top-tabs-22-($('#dmbar')?$('#dmbar').offsetHeight+8:0),G=4;
+function fitShelf(){const v=$('#shv');if(!v)return;const W=v.clientWidth,top=v.getBoundingClientRect().top+window.scrollY,tabs=($('#tabs').offsetHeight||0)+($('#rmbar')?$('#rmbar').offsetHeight:0),H=vpH()-top-tabs-22,G=4;
   if(v.classList.contains('shelf')){const cols=SHELF.filter(x=>x.id!=='fl'),mx=Math.max(...cols.map(c=>c.tubs.length)),cw=(W-2*6)/3,
       lab=v.querySelector('.shl').offsetHeight,fixed=lab*2+10+12+8+G*mx;
     let h=Math.floor((H-fixed)/(mx+1));h=Math.max(42,Math.min(h,Math.floor(cw*.75)));h=Math.min(Math.round(h*1.5),Math.floor(cw*.9));
@@ -663,6 +663,14 @@ $('#whoChip').onclick=()=>{if(SEC==='home'){SEC='iso';history.pushState({sec:'is
 let CUR=null,VM='tub',RAF=0;
 function openTub(id){CUR=id;VM='tub';const d=$('#detail');d.hidden=false;document.body.style.overflow='hidden';refreshDetail(true);history.pushState({tub:id},'')}
 function closeTub(){CUR=null;cancelAnimationFrame(RAF);$('#detail').hidden=true;document.body.style.overflow='';render()}
+/* 통 화면에서 왼쪽 → 오른쪽으로 밀면 뒤로 */
+(function(){const d=$('#detail');let sx=0,sy=0,dx=0,on=false,lock=null;
+  d.addEventListener('touchstart',e=>{if(e.touches.length!==1||e.target.closest('.album,.tubf,.filters,input,textarea')){on=false;return}sx=e.touches[0].clientX;sy=e.touches[0].clientY;dx=0;on=true;lock=null;d.style.transition='none'},{passive:true});
+  d.addEventListener('touchmove',e=>{if(!on)return;const x=e.touches[0].clientX-sx,y=e.touches[0].clientY-sy;if(lock===null&&(Math.abs(x)>10||Math.abs(y)>10))lock=Math.abs(x)>Math.abs(y)*1.2&&x>0?'h':'v';
+    if(lock==='h'){dx=Math.max(0,x);d.style.transform=`translateX(${dx}px)`}},{passive:true});
+  d.addEventListener('touchend',()=>{if(!on||lock!=='h'){on=false;return}on=false;d.style.transition='transform .18s ease-out';
+    if(dx>Math.min(110,innerWidth*.28)){d.style.transform='translateX(100%)';setTimeout(()=>{history.back();setTimeout(()=>{d.style.transition='none';d.style.transform=''},60)},170)}else d.style.transform=''});
+  d.addEventListener('touchcancel',()=>{on=false;d.style.transition='transform .18s';d.style.transform=''})})();
 addEventListener('popstate',()=>{if(CUR){closeTub();return}if(SEC!=='home'){SEC='home';render()}});
 $('#homeBtn').onclick=()=>{if(history.state&&history.state.sec)history.back();else{SEC='home';render()}};
 function refreshDetail(first){const id=CUR;if(!id)return;const sp=spOf(id),E=envOf(id),c=countOf(id),last=k=>lastOf(id,k),ev=last('env'),P=photos().filter(p=>p.tub===id),d=$('#detail');
