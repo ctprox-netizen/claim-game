@@ -1946,7 +1946,7 @@ function start(){document.body.classList.remove('ingame','scene','endm','subm');
    <p class="intro">처음이라면 <b>튜토리얼 모드</b>부터! 사수와 함께 심사를 하나씩 배워요. 익숙해지면 <b>샌드박스 모드</b>에서 원하는 조건으로 자유롭게 심사해요.</p>
    <button class="begin scnbtn" id="scnbeg">시나리오 모드<small>${CR.scn&&!CR.scn.end?`${CR.scn.day}일차 · 잔고 ${f(CR.scn.money)}원`:'출근해서 번 돈으로 햄스터·콩벌레와 20일 버티기'}</small></button>
    <button class="begin stbtn" id="stbeg">튜토리얼 모드<small>신입 심사자의 성장기 · ${Object.keys(storyDone()).length}/${STORY.length}장 클리어</small></button>
-   <button class="begin sbbtn" id="sbbeg">샌드박스 모드<small>난이도 · 실손 · 접수량 · AI 대결을 직접 골라요${vsRec}</small></button><p class="mobnote">Optimized for mobile · 모바일 세로 화면 기준으로 제작</p><p class="fictnote">이 게임은 가상의 보험금 심사 시뮬레이션으로, 등장하는 인물·기관·상품·심사 기준은 모두 게임용 가상 설정이며 실제 보험사 및 약관·실무와는 무관합니다.</p><p class="bldline"><span class="bld" id="bld">build 232 · 2026.11.23</span></p></section>`;
+   <button class="begin sbbtn" id="sbbeg">샌드박스 모드<small>난이도 · 실손 · 접수량 · AI 대결을 직접 골라요${vsRec}</small></button><p class="mobnote">Optimized for mobile · 모바일 세로 화면 기준으로 제작</p><p class="fictnote">이 게임은 가상의 보험금 심사 시뮬레이션으로, 등장하는 인물·기관·상품·심사 기준은 모두 게임용 가상 설정이며 실제 보험사 및 약관·실무와는 무관합니다.</p><p class="bldline"><span class="bld" id="bld">build 233 · 2026.11.23</span></p></section>`;
   else app.innerHTML=`<section class="paper end start wz"><h2 class="wzh">🧪 샌드박스 모드</h2><p class="wzp">조건을 고르고 아래 버튼을 누르세요.</p>
    <h3 class="wzs">진행 방식</h3>
    <div class="lvs two" role="group" aria-label="진행 방식"><button data-vsm="0" aria-pressed="${!st.vs}">👤 혼자 심사 <small>최고 기록 도전</small></button><button data-vsm="1" aria-pressed="${!!st.vs}">🤖 AI 대결 <small>${CR.vsW||CR.vsL?`전적 ${CR.vsW||0}승 ${CR.vsL||0}패`:'AI 동료와 점수 대결'}</small></button></div>
@@ -3227,7 +3227,8 @@ const IGRP=[['Armadillidiidae','Armadillidium',[8,14,18,9,10,11,13,17,22,16,15]]
 const ITUBS=[[0,1,2,3,4,5],[6,7,8,9,10,11,12,'12b'],[13,14,15,16,17,18,19],[20,21,22]];
 const ITUBL=ITUBS.flat(),ITIER=[3000,5000,9000],ITIERN=['보통','인기','희귀 ✨'],ISELL=10,IUNIT=5,IG=.16,IGC=.21;
 const tubSp=t=>typeof t==='string'?parseInt(t):t,tubName=t=>ISPC[tubSp(t)].n+(typeof t==='string'?' 새끼':'');
-const ISHOP=ITUBL.filter(t=>typeof t==='number'),INEW=12000;
+const ISHOP=ITUBL.filter(t=>typeof t==='number'),INEW=12000,IRW=[10,5,2];
+function isoRoll(pool){let r=pool.reduce((a,t)=>a+IRW[ISPC[t].t],0)*Math.random();for(const t of pool){r-=IRW[ISPC[t].t];if(r<0)return t}return pool[pool.length-1]}
 function isoStart(){const t=22;return{tubs:[{t,n:2}],dry:0,sold:0}}
 const isoTotal=I=>(I.tubs||[]).reduce((a,x)=>a+x.n+(x.b||0),0);
 function isoFixState(S){const I=S.iso||{};if(!I.tubs){S.iso=isoStart()}return S}
@@ -3821,7 +3822,7 @@ function scnItems(S){const H=scnHamAgg(S),I=S.iso,L=[];
   if((S.evn||{})[S.day]==='din'){L.push({k:'din',n:'🍻 팀 회식 가기',a:0,d:'저녁값 굳어요 · 내일 경고 1장 봐줌 · 대신 내일 근무 시간 −15%',def:0});L.push({k:'ot',n:'🌙 야근하기',a:-8000,d:'수당 +8,000원 · 대신 오늘 밤 햄스터를 못 돌봐요',def:0})}
   if(S.cold===S.day)L.push({k:'heat',n:'🔥 난방·보온 (한파)',a:S.nbr?2000:4000,d:S.nbr?'옆집 이웃이 난방비를 반 내 줬어요 🏪':'안 하면 콩벌레가 얼고 햄스터가 감기에 걸려요',def:1});
   {const t=scnE0(S);if(t==='nbr')L.push({k:'nbr',n:'🎁 이웃에게 답례 음료수',a:3000,d:'안 해도 손해는 없어요',def:0});if(t==='pkg')L.push({k:'pkg',n:'📦 택배 돌려주기',a:0,d:'옆 동에 가져다줘요',def:0})}
-  {const own=I.tubs.map(x=>x.t);if(ISHOP.some(t=>!own.includes(t)))L.push({k:'inew',n:'🪲 새 콩벌레 들이기',a:spOn(S,'ferret')?Math.round(INEW*.9):INEW,d:`아직 없는 종 중 랜덤 1종 · 2마리 · 선반 ${I.tubs.filter(x=>typeof x.t==='number').length}/${ISHOP.length}`,def:0})}
+  {const own=I.tubs.map(x=>x.t);if(ISHOP.some(t=>!own.includes(t)))L.push({k:'inew',n:'🪲 새 콩벌레 들이기',a:spOn(S,'ferret')?Math.round(INEW*.9):INEW,d:`아직 없는 종 중 랜덤 1종 (희귀할수록 드물어요) · 2마리 · 선반 ${I.tubs.filter(x=>typeof x.t==='number').length}/${ISHOP.length}`,def:0})}
   if(S.acad&&S.acad.left>0){for(let i=L.length-1;i>=0;i--)if(L[i].g==='act')L.splice(i,1);L.push({k:'a_acad',g:'act',n:`📚 학원 수업 (${4-S.acad.left}/3일차)`,a:0,d:'컨디션 −6 · 3일 다 들으면 자격증',def:1})}
   scnAucFix(S);
   if((S.auc||{}).d===S.day&&!S.auc.done&&S.auc.t!=null){const pr=spOn(S,'ferret')?Math.round(S.auc.p*.9):S.auc.p;L.push({k:'auc',n:`🔨 희귀종 경매: ${ISPC[S.auc.t].n} 3마리`,a:pr,d:`오늘 밤만 · ✨ 희귀종이라 분양가 5마리 ${f(ITIER[2])}원 · 새 통으로 들어와요`,def:0})}
@@ -3896,7 +3897,7 @@ function scnNight(){const S=scnS(),X=st.scx,C=S.cage,I=S.iso,N=[];
   if(X.nbr){S.nbr=1;N.push('🎁 옆집에 음료수를 드렸더니 "추운 날엔 서로 도와요!" 하셨어요.')}
   {const t=scnE0(S);if(t==='wheel'){S.wheelB=S.day+1;N.push('🐹 햄스터가 처음으로 쳇바퀴를 밤새 돌렸어요! 내일 응원이 2배예요.')}}
   if(X.auc&&S.auc&&!S.auc.done){S.auc.done=1;const t=S.auc.t;const ex=I.tubs.find(x=>x.t===t);if(ex)ex.n+=3;else I.tubs.push({t,n:3});N.push(`🔨 경매 낙찰! ✨ 희귀종 <b>${ISPC[t].n}</b> 3마리가 왔어요.`)}
-  if(X.inew){const own=I.tubs.map(x=>x.t),pool=ISHOP.filter(t=>!own.includes(t));if(pool.length){const t=pool[Math.floor(Math.random()*pool.length)];I.tubs.push({t,n:2});N.push(`📦 새 콩벌레 <b>${ISPC[t].n}</b> 2마리가 왔어요! 선반 ${I.tubs.filter(x=>typeof x.t==='number').length}/${ISHOP.length}`)}}
+  if(X.inew){const own=I.tubs.map(x=>x.t),pool=ISHOP.filter(t=>!own.includes(t));if(pool.length){const t=isoRoll(pool);I.tubs.push({t,n:2});N.push(`📦 새 콩벌레 <b>${ISPC[t].n}</b> 2마리가 왔어요! 선반 ${I.tubs.filter(x=>typeof x.t==='number').length}/${ISHOP.length}`)}}
   {const rnd=e=>Math.floor(e)+(Math.random()<e-Math.floor(e)?1:0);
     {const ad=SPP.find(p=>X['sp_'+p.k]);if(ad&&!S.pet){S.pet={k:ad.k,hu:0,ign:0,d:S.day};spDexAdd(ad.k);N.push(`🐾 <b>${spNm(ad.k,'이','가')}</b> 우리 집에 왔어요! ${ad.ab}`)}
      else{const pt=spOf(S);if(pt){if(X.spf)pt.hu=0;else{pt.hu=(pt.hu||0)+1;N.push(`🐾 ${spNm(pt.k,'이','가')} ${pt.hu}일째 굶었어요.${pt.hu>=2?' 능력이 꺼졌어요.':''}`)}
