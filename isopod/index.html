@@ -839,8 +839,20 @@ function closeSheet(){document.querySelectorAll('.sheet').forEach(e=>e.remove())
 /* --- 사진 --- */
 function pickPhoto(id){if(!needEdit())return;const i=document.createElement('input');i.type='file';i.accept='image/*';i.onchange=()=>{const f=i.files[0];if(!f)return;
   shrink(f,1280,.72).then(data=>shrink(f,240,.7).then(thumb=>{sheet(`<h3>📷 ${esc(tubNm(id))} 사진</h3><img src="${data}" alt="" style="width:100%;border-radius:10px;border:2px solid var(--ink)"><label>메모 (선택)</label><textarea id="pnote" placeholder="예: 탈피 직후"></textarea><div class="sbb"><button class="btn" data-x>취소</button><button class="btn pri" id="pok">올리기</button></div>`,s=>{
-    s.querySelector('#pok').onclick=async()=>{const cid=uid(),m={cid,tub:id,who:D.who,note:s.querySelector('#pnote').value.trim(),thumb,at:new Date().toISOString()};try{await IDB.put(cid,data)}catch(e){toast('⚠ 사진을 저장하지 못했어요');return}D.photos[cid]=m;D.pendP.push(cid);save();closeSheet();toast('📷 사진을 기록했어요');refreshDetail();sync()}})})).catch(()=>toast('⚠ 사진을 읽을 수 없어요'))};i.click()}
-function shrink(file,max,q){return new Promise((ok,no)=>{const u=URL.createObjectURL(file),im=new Image();im.onload=()=>{const s=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);ok(c.toDataURL('image/jpeg',q))};im.onerror=no;im.src=u})}
+    s.querySelector('#pok').onclick=async()=>{const cid=uid(),m={cid,tub:id,who:D.who,note:s.querySelector('#pnote').value.trim(),thumb,at:new Date().toISOString()};try{await IDB.put(cid,data)}catch(e){toast('⚠ 사진을 저장하지 못했어요');return}D.photos[cid]=m;D.pendP.push(cid);save();closeSheet();toast('📷 사진을 기록했어요');refreshDetail();sync()}})})).catch(e=>toast(photoErr(f,e)))};i.click()}
+/* 사진 읽기: 휴대폰마다 형식이 달라서(HEIC 등) 여러 방법을 차례로 시도해요 */
+const loadImg=b=>new Promise((ok,no)=>{const u=URL.createObjectURL(b),im=new Image();im.onload=()=>{ok(im);setTimeout(()=>URL.revokeObjectURL(u),1000)};im.onerror=()=>{URL.revokeObjectURL(u);no(new Error('img'))};im.src=u});
+let HEIC=null;const loadHeic=()=>HEIC||(HEIC=new Promise((ok,no)=>{const sc=document.createElement('script');sc.src='https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js';sc.onload=()=>window.heic2any?ok(window.heic2any):no(new Error('heic lib'));sc.onerror=()=>{HEIC=null;no(new Error('heic lib'))};document.head.appendChild(sc)}));
+const isHeic=f=>/hei[cf]/i.test(f.type||'')||/\.hei[cf]$/i.test(f.name||'');
+const DEC=new WeakMap();
+function decodeImg(file){if(DEC.has(file))return DEC.get(file);const p=(async()=>{
+  if(!file.size)throw new Error('empty');
+  if(!isHeic(file)){if(window.createImageBitmap){try{return await createImageBitmap(file,{imageOrientation:'from-image'})}catch(e){}}try{return await loadImg(file)}catch(e){}}
+  if(isHeic(file)||!file.type){try{const h=await loadHeic(),r=await h({blob:file,toType:'image/jpeg',quality:.9});return await loadImg(Array.isArray(r)?r[0]:r)}catch(e){}}
+  if(window.createImageBitmap){try{return await createImageBitmap(file)}catch(e){}}
+  throw new Error('decode')})();DEC.set(file,p);return p}
+async function shrink(file,max,q){const im=await decodeImg(file),w=im.width,h=im.height,s=Math.min(1,max/Math.max(w,h)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(w*s));c.height=Math.max(1,Math.round(h*s));c.getContext('2d').drawImage(im,0,0,c.width,c.height);return c.toDataURL('image/jpeg',q)}
+const photoErr=(f,e)=>e&&e.message==='empty'?'⚠ 사진 파일이 비어 있어요. 클라우드에만 있는 사진이면 먼저 휴대폰에 내려받아 주세요':`⚠ 사진을 읽을 수 없어요 (${f.type||(f.name||'').split('.').pop()||'형식 모름'})`;
 async function viewPhoto(cid){const m=D.photos[cid];if(!m)return;const v=document.createElement('div');v.className='photoview';v.innerHTML=`<img src="${m.thumb}" alt="사진"><p>${esc(tubNm(m.tub))} · ${esc(m.who)} · ${dayLab(m.at)} ${hm(m.at)}${m.note?'<br>'+esc(m.note):''}</p><p style="opacity:.7">화면을 누르면 닫혀요</p>`;v.onclick=()=>v.remove();document.body.appendChild(v);
   let data=await IDB.get(cid).catch(()=>null);if(!data){try{data=await rpc('iso_view_photo',{id:cid});if(data)IDB.put(cid,data).catch(()=>{})}catch(e){}}if(data&&v.isConnected)v.querySelector('img').src=data}
 const albumGrid=id=>`${GAL_OK?`<div class="g9">${[1,2,3,4,5,6,7,8,9].map(n=>{const g=(D.gal[id]||{})[n];return g&&g.thumb?`<button data-gs="${n}" class="on"><img src="${g.thumb}" alt="사진 ${n}"></button>`:`<button data-gs="${n}" class="${canEdit()?'add':'none'}" ${canEdit()?'':'disabled'}>${canEdit()?'＋':''}</button>`}).join('')}</div>`:'<div class="card empty">사진 칸을 쓰려면 Supabase에서 사진용 SQL을 한 번 실행해 주세요. (설정 → Supabase 서버 설정 SQL)</div>'}`;
@@ -873,7 +885,7 @@ function covMenu(t){if(!needEdit())return;const c=covOf(t);if(!c){galPick(t,0);r
     s.querySelector('#cn').onclick=()=>{closeSheet();galPick(t,0)};
     s.querySelector('#cd').onclick=()=>{if(confirm('대표 사진을 지우고 기본 사진으로 되돌릴까요?')){closeSheet();galRun(rpc('iso_gal_del',{t,s:0}),'↩ 기본 사진으로 되돌렸어요')}}})}
 function galPick(t,n){if(!needEdit())return;const i=document.createElement('input');i.type='file';i.accept='image/*';i.onchange=()=>{const f=i.files[0];if(!f)return;toast('📷 사진을 올리는 중…');
-  shrink(f,1024,.72).then(d=>shrink(f,360,.7).then(th=>galRun(rpc('iso_gal_set',{t,s:n,th,d}),n===0?'📷 대표 사진을 바꿨어요':'📷 사진을 올렸어요'))).catch(()=>toast('⚠ 사진을 읽을 수 없어요'))};i.click()}
+  shrink(f,1024,.72).then(d=>shrink(f,360,.7).then(th=>galRun(rpc('iso_gal_set',{t,s:n,th,d}),n===0?'📷 대표 사진을 바꿨어요':'📷 사진을 올렸어요'))).catch(e=>toast(photoErr(f,e)))};i.click()}
 async function galRun(p,ok){try{await p;await syncGal();toast(ok)}catch(e){toast(/too large/.test(e.message)?'⚠ 사진이 너무 커요':/not allowed/.test(e.message)?'🔒 기록 권한이 없어요':'⚠ 사진을 올리지 못했어요. 인터넷을 확인해 주세요')}
   if(CUR)refreshDetail();else render()}
 /* --- 시작 --- */
