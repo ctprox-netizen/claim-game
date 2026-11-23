@@ -722,16 +722,18 @@ function logSeg(){return`<div class="sg lsg"><button data-lm="log" aria-pressed=
 function bindLogSeg(){document.querySelectorAll('[data-lm]').forEach(b=>b.onclick=()=>{LOGM=b.dataset.lm;PGN.log=60;window.scrollTo({top:0});vLog()})}
 function vDiary(){const L=diaries(SEC);let html='',cur='';
   L.forEach(l=>{const d=dayLab(l.at);if(d!==cur){html+=`<div class="day">${d}</div>`;cur=d}
-    html+=`<div class="card dia"><div class="dh2"><span class="who ${l.who===D.who?'me':''}">${esc(l.who)}</span><small class="mut">${hm(l.at)}${l.sv?'':' · ⏳ 공유 대기'}</small>${canEdit()?`<button class="del" data-ddel="${l.cid}" aria-label="일지 지우기">🗑</button>`:''}</div><div class="dtx">${esc(l.note)}</div></div>`});
+    html+=`<div class="card dia"><div class="dh2"><span class="who ${l.who===D.who?'me':''}">${esc(l.who)}</span><small class="mut">${hm(l.at)}${l.sv?'':' · ⏳ 공유 대기'}</small>${canEdit()?`<button class="del" data-dedit="${l.cid}" aria-label="일지 고치기">✏️</button><button class="del" data-ddel="${l.cid}" aria-label="일지 지우기" style="margin-left:0">🗑</button>`:''}</div><div class="dtx">${esc(l.note)}</div></div>`});
   $('#app').innerHTML=`${logSeg()}<h2 class="sec">일지 <small>${L.length}개 · 최신순</small></h2>${canEdit()?'<button class="btn pri big" id="dNew" style="width:100%">✏️ 일지 쓰기</button>':''}${html||'<div class="card empty">아직 쓴 일지가 없어요.</div>'}`;
-  bindLogSeg();if($('#dNew'))$('#dNew').onclick=diarySheet;
+  bindLogSeg();if($('#dNew'))$('#dNew').onclick=()=>diarySheet();
+  document.querySelectorAll('[data-dedit]').forEach(b=>b.onclick=()=>diarySheet(D.logs[b.dataset.dedit]));
   document.querySelectorAll('[data-ddel]').forEach(b=>b.onclick=()=>{if(confirm('이 일지를 지울까요? 가족 화면에서도 지워져요.')){delItem(b.dataset.ddel);toast('🗑 일지를 지웠어요');vDiary()}})}
-function diarySheet(){if(!needEdit())return;const today=(()=>{const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)})();
-  sheet(`<h3>📔 ${PETS[SEC]?PETS[SEC].full:'등각류'} 일지</h3><label>날짜</label><input id="dd" type="date" value="${today}"><label>내용</label><textarea id="dt" style="min-height:200px" maxlength="2000" placeholder="오늘 있었던 일을 자유롭게 적어 보세요"></textarea><p class="mut" style="font-size:12.5px;margin:4px 0 0">최대 2000자까지 쓸 수 있어요.</p>
+function diarySheet(old){if(!needEdit())return;const loc=x=>{const d=new Date(x);d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)},today=loc(new Date()),d0=old?loc(old.at):today;
+  sheet(`<h3>📔 ${PETS[SEC]?PETS[SEC].full:'등각류'} 일지${old?' 고치기':''}</h3><label>날짜</label><input id="dd" type="date" value="${d0}"><label>내용</label><textarea id="dt" style="min-height:200px" maxlength="2000" placeholder="오늘 있었던 일을 자유롭게 적어 보세요">${old?esc(old.note||''):''}</textarea><p class="mut" style="font-size:12.5px;margin:4px 0 0">최대 2000자까지 쓸 수 있어요.</p>
    <div class="sbb"><button class="btn" data-x>취소</button><button class="btn pri" id="dok">저장</button></div>`,sh=>{
     sh.querySelector('#dok').onclick=()=>{const t=sh.querySelector('#dt').value.trim();if(!t){toast('내용을 적어 주세요');return}const dv=sh.querySelector('#dd').value,n=new Date();
-      let at=n.toISOString();if(dv&&dv!==today){const d=new Date(dv+'T00:00');d.setHours(n.getHours(),n.getMinutes(),n.getSeconds());at=d.toISOString()}
-      addLog('J:'+SEC,'diary',null,t.slice(0,2000),at);closeSheet();toast('📔 일지를 저장했어요');vDiary()}})}
+      let at=n.toISOString();if(old&&dv===d0)at=old.at;else if(dv&&dv!==today){const d=new Date(dv+'T00:00');const h=old?new Date(old.at):n;d.setHours(h.getHours(),h.getMinutes(),h.getSeconds());at=d.toISOString()}
+      if(old&&t===(old.note||'').trim()&&dv===d0){closeSheet();return}
+      addLog('J:'+SEC,'diary',null,t.slice(0,2000),at);if(old)delItem(old.cid);closeSheet();toast(old?'📔 일지를 고쳤어요':'📔 일지를 저장했어요');vDiary()}})}
 function vLog(){if(LOGM==='diary')return vDiary();const whos=[...new Set(logs().concat(photos()).map(x=>x.who))];
   if(LF.tub&&!secIds().includes(LF.tub))LF.tub=null;
   const items=mixFeed(x=>secOf(x.tub)===SEC&&(!LF.tub||x.tub===LF.tub)&&(!LF.who||x.who===LF.who)&&(!LF.kind||(LF.kind==='photo'?!x.kind:x.kind===LF.kind)));
