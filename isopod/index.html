@@ -239,6 +239,9 @@ body:has(#float .fab) #app .petg{padding-bottom:64px}
 .vmemo{padding:10px 12px;background:var(--paper);min-height:120px}.vmemo .mtxt{font-size:15px}
 .viewer .vt button{padding:7px 2px;font-size:13px;white-space:nowrap}.valb .g9{gap:5px}.valb .card.empty{margin:0}
 .sexs{display:flex}.sexs button{flex:1;padding:9px 4px}
+.crop{position:relative;width:100%;aspect-ratio:4/3;border:2px solid var(--ink);border-radius:12px;overflow:hidden;background:#222;touch-action:none;cursor:grab}
+.crop canvas{display:block}
+.cgrid{position:absolute;inset:0;pointer-events:none;background:linear-gradient(to right,transparent 33.2%,rgba(255,255,255,.45) 33.3%,transparent 33.5%,transparent 66.5%,rgba(255,255,255,.45) 66.6%,transparent 66.8%),linear-gradient(to bottom,transparent 33.2%,rgba(255,255,255,.45) 33.3%,transparent 33.5%,transparent 66.5%,rgba(255,255,255,.45) 66.6%,transparent 66.8%)}
 .kv input{width:64px;text-align:center;border:2px solid var(--ink);border-radius:8px;padding:4px}
 </style>
 </head>
@@ -892,10 +895,36 @@ function covMenu(t){if(!needEdit())return;const c=covOf(t);if(!c){galPick(t,0);r
     <div class="gact"><button class="btn" id="cn">🔄 새 사진으로 바꾸기</button><button class="btn" id="cd">↩ 기본 사진으로</button></div><div class="sbb"><button class="btn" data-x>닫기</button></div>`,s=>{
     s.querySelector('#cn').onclick=()=>{closeSheet();galPick(t,0)};
     s.querySelector('#cd').onclick=()=>{if(confirm('대표 사진을 지우고 기본 사진으로 되돌릴까요?')){closeSheet();galRun(rpc('iso_gal_del',{t,s:0}),'↩ 기본 사진으로 되돌렸어요')}}})}
-function galPick(t,n){if(!needEdit())return;const i=document.createElement('input');i.type='file';i.accept='image/*';i.onchange=()=>{const f=i.files[0];if(!f)return;toast('📷 사진을 올리는 중…');
+function galPick(t,n){if(!needEdit())return;const i=document.createElement('input');i.type='file';i.accept='image/*';i.onchange=()=>{const f=i.files[0];if(!f)return;
+  if(n===0){toast('📷 사진을 여는 중…');decodeImg(f).then(im=>{document.querySelectorAll('.toast').forEach(e=>e.remove());cropSheet(t,im)}).catch(e=>toast(photoErr(f,e)));return}
+  toast('📷 사진을 올리는 중…');
   shrink(f,1024,.72).then(d=>shrink(f,360,.7).then(th=>galRun(rpc('iso_gal_set',{t,s:n,th,d}),n===0?'📷 대표 사진을 바꿨어요':'📷 사진을 올렸어요'))).catch(e=>toast(photoErr(f,e)))};i.click()}
 async function galRun(p,ok){try{await p;await syncGal();toast(ok)}catch(e){toast(/too large/.test(e.message)?'⚠ 사진이 너무 커요':/not allowed/.test(e.message)?'🔒 기록 권한이 없어요':'⚠ 사진을 올리지 못했어요. 인터넷을 확인해 주세요')}
   if(CUR)refreshDetail();else render()}
+/* --- 대표 사진 자르기: 끌어서 옮기고, 두 손가락·슬라이더로 확대 --- */
+function cropSheet(t,im){const IW=im.width,IH=im.height;
+  sheet(`<h3>✂️ ${esc(tubNm(t))} 대표 사진 맞추기</h3><p class="mut" style="margin:-4px 0 8px;font-size:13px">사진을 끌어서 옮기고, 두 손가락이나 아래 막대로 확대·축소하세요. 네모 안이 선반에 보이는 모습이에요.</p>
+   <div class="crop" id="crop"><canvas></canvas><div class="cgrid"></div></div>
+   <div class="row" style="flex-wrap:nowrap;margin-top:10px"><span>🔍</span><input id="cz" type="range" min="1" max="4" step="0.01" value="1" style="flex:1"><button class="btn sm" id="cfit">맞춤</button></div>
+   <div class="sbb"><button class="btn" data-x>취소</button><button class="btn pri" id="cok">올리기</button></div>`,sh=>{
+    const box=sh.querySelector('#crop'),cv=box.querySelector('canvas'),g=cv.getContext('2d'),zr=sh.querySelector('#cz');let W=0,H=0,base=1,z=1,x=0,y=0;
+    const clamp=()=>{const s=base*z,w=IW*s,h=IH*s;x=Math.min(0,Math.max(W-w,x));y=Math.min(0,Math.max(H-h,y))};
+    const draw=()=>{clamp();const d=devicePixelRatio||1;g.setTransform(d,0,0,d,0,0);g.clearRect(0,0,W,H);g.imageSmoothingQuality='high';g.drawImage(im,x,y,IW*base*z,IH*base*z)};
+    const fit=()=>{W=box.clientWidth;H=box.clientHeight;const d=devicePixelRatio||1;cv.width=Math.round(W*d);cv.height=Math.round(H*d);cv.style.width=W+'px';cv.style.height=H+'px';base=Math.max(W/IW,H/IH);z=1;zr.value=1;x=(W-IW*base)/2;y=(H-IH*base)/2;draw()};
+    const zoomAt=(nz,cx,cy)=>{nz=Math.max(1,Math.min(4,nz));const s0=base*z,s1=base*nz;x=cx-(cx-x)*s1/s0;y=cy-(cy-y)*s1/s0;z=nz;zr.value=z;draw()};
+    const P=new Map();let last=null;
+    box.addEventListener('pointerdown',e=>{box.setPointerCapture(e.pointerId);P.set(e.pointerId,{x:e.clientX,y:e.clientY});last=null});
+    box.addEventListener('pointermove',e=>{if(!P.has(e.pointerId))return;const prev=P.get(e.pointerId);P.set(e.pointerId,{x:e.clientX,y:e.clientY});
+      if(P.size===1){x+=e.clientX-prev.x;y+=e.clientY-prev.y;draw()}
+      else if(P.size===2){const [a,b]=[...P.values()],r=box.getBoundingClientRect(),dist=Math.hypot(a.x-b.x,a.y-b.y),mx=(a.x+b.x)/2-r.left,my=(a.y+b.y)/2-r.top;
+        if(last){x+=mx-last.mx;y+=my-last.my;zoomAt(z*dist/last.dist,mx,my)}last={dist,mx,my}}});
+    const up=e=>{P.delete(e.pointerId);last=null};box.addEventListener('pointerup',up);box.addEventListener('pointercancel',up);
+    box.addEventListener('wheel',e=>{e.preventDefault();const r=box.getBoundingClientRect();zoomAt(z*(e.deltaY<0?1.08:1/1.08),e.clientX-r.left,e.clientY-r.top)},{passive:false});
+    zr.oninput=()=>zoomAt(+zr.value,W/2,H/2);sh.querySelector('#cfit').onclick=fit;
+    requestAnimationFrame(fit);
+    sh.querySelector('#cok').onclick=()=>{const s=base*z,sx=-x/s,sy=-y/s,sw=W/s,sh2=H/s;
+      const out=(w,h,q)=>{const c=document.createElement('canvas');c.width=w;c.height=h;const cg=c.getContext('2d');cg.imageSmoothingQuality='high';cg.drawImage(im,sx,sy,sw,sh2,0,0,w,h);return c.toDataURL('image/jpeg',q)};
+      const d=out(1024,768,.8),th=out(360,270,.72);closeSheet();toast('📷 사진을 올리는 중…');galRun(rpc('iso_gal_set',{t,s:0,th,d}),'📷 대표 사진을 바꿨어요')}})}
 /* --- 시작 --- */
 boot().then(()=>{render();sync()});
 setInterval(()=>{if(!document.hidden)sync()},45000);
