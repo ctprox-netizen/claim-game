@@ -1307,7 +1307,7 @@ function policyHTML(c,res){
   const rres=i=>st.notice&&c.ans[i].r?` · 사유: <b>${RS[c.ans[i].r]}</b>`:'';
   const silRow=(i)=>{const a=c.ans[i],ok=okP(c,i);return`<div class="cov wide"><div><div class="nm">실손의료비${tag('sil')}${mag('sil')}${res?'':`<button class="info calcb" data-calc="${i}" aria-label="계산기 열기">${CALCI}</button>`}</div><div class="am">영수증 기준 지급액 입력</div></div>
     <div class="silin"><button class="silv calcb" data-calc="${i}" aria-label="실손의료비 지급액 입력 (현재 ${f(c.pick[i]||0)}원)" ${res?'disabled':''}>${c.pick[i]?f(c.pick[i]):'<span class="ph">눌러서 입력</span>'}</button><span>원</span>${res?'':`<button data-z="${i}">0원</button>`}</div>
-    ${res&&(c.flag||c.inv||c.nd||c.xfr||c.big)?`<div class="res"><span class="mk">— ${c.inv?'현장조사 의뢰로 심사 생략':c.flag?'조사 의뢰로 심사 생략':c.xfr?'표준부서 이관으로 심사 생략':c.big?'표준부서 이관 대상 · 간편심사 대상 아님':'현장조사 대상 건 · 지급 심사 대상 아님'}</span></div>`:res?`<div class="res"><span class="mk ${ok?'ok':'bad'}">${ok?'✓ 정답':'✗ 오답'}</span><span>정답: <b>${a.amt?f(a.amt)+'원 지급':'부지급'}</b> · ${a.w}</span></div>`:''}</div>`};
+    ${res&&(c.flag||c.inv||c.nd||c.xfr||isBig(c))?`<div class="res"><span class="mk">— ${c.inv?'현장조사 의뢰로 심사 생략':c.flag?'조사 의뢰로 심사 생략':c.xfr?'표준부서 이관으로 심사 생략':isBig(c)?'표준부서 이관 대상 · 간편심사 대상 아님':'현장조사 대상 건 · 지급 심사 대상 아님'}</span></div>`:res?`<div class="res"><span class="mk ${ok?'ok':'bad'}">${ok?'✓ 정답':'✗ 오답'}</span><span>정답: <b>${a.amt?f(a.amt)+'원 지급':'부지급'}</b> · ${a.w}</span></div>`:''}</div>`};
   return `<aside class="paper policy" aria-label="보험금 심사표">
   ${res?`<div class="stamp">심사완료</div>`:''}
   <div class="phead"><h2>보험금 심사표</h2>
@@ -1319,19 +1319,19 @@ function policyHTML(c,res){
     const dn=dGet(c,i),ctl=isDay(k)?`<button class="sel selb dayb" data-dp="${i}" aria-haspopup="dialog" aria-label="${C.n} 보상 ${dUnit(k)}수: ${dn?dn+dUnit(k):'부지급'}" ${res?'disabled':''}><span>${dn?`<b>${dn}${dUnit(k)}</b> · ${won(dn*C.amt)}`:'부지급 (0'+dUnit(k)+')'}</span><i aria-hidden="true">▾</i></button>`:C.grade||C.carG?`<button class="sel selb" data-gp="${i}" aria-haspopup="listbox" aria-label="${C.n} 결정: ${L[c.pick[i]]}" ${res?'disabled':''}><span>${L[c.pick[i]]}</span><i aria-hidden="true">▾</i></button>`
       :`<div class="seg" role="group" aria-label="${C.n} 결정">${L.map((t,v)=>t?`<button data-i="${i}" data-v="${v}" aria-pressed="${c.pick[i]===v}" ${res?'disabled':''}>${t}</button>`:'').join('')}</div>`;
     return gh+`<div class="cov${k==='pay'?' wide':''}${lk?' locked':''}" ${lk?'aria-disabled="true"':''}><div><div class="nm">${C.n}${tag(k)}${lk?mag(k).replace('<button ','<button disabled tabindex="-1" '):mag(k)}</div></div>${lk?ctl.replace(/<button /g,'<button disabled tabindex="-1" '):ctl}
-    ${res&&(c.flag||c.inv||c.nd||c.xfr||c.big)?`<div class="res"><span class="mk">— ${c.inv?'현장조사 의뢰로 심사 생략':c.flag?'조사 의뢰로 심사 생략':c.xfr?'표준부서 이관으로 심사 생략':c.big?'표준부서 이관 대상 · 간편심사 대상 아님':'현장조사 대상 건 · 지급 심사 대상 아님'}</span></div>`:res?(()=>{const a=c.ans[i],ok=okP(c,i),lab=isDay(k)?(a.d?aDays(c,i)+dUnit(k):'부지급'):C.grade||C.carG||C.opts?L[a.d]:['부지급','','지급'][a.d];return`<div class="res"><span class="mk ${ok?'ok':'bad'}">${ok?'✓ 정답':'✗ 오답'}</span><span>정답: <b>${lab}${a.amt&&!C.grade&&!C.carG&&!C.opts?' '+won(a.amt):''}</b> · ${a.w}</span></div>`})():''}
+    ${res&&(c.flag||c.inv||c.nd||c.xfr||isBig(c))?`<div class="res"><span class="mk">— ${c.inv?'현장조사 의뢰로 심사 생략':c.flag?'조사 의뢰로 심사 생략':c.xfr?'표준부서 이관으로 심사 생략':isBig(c)?'표준부서 이관 대상 · 간편심사 대상 아님':'현장조사 대상 건 · 지급 심사 대상 아님'}</span></div>`:res?(()=>{const a=c.ans[i],ok=okP(c,i),lab=isDay(k)?(a.d?aDays(c,i)+dUnit(k):'부지급'):C.grade||C.carG||C.opts?L[a.d]:['부지급','','지급'][a.d];return`<div class="res"><span class="mk ${ok?'ok':'bad'}">${ok?'✓ 정답':'✗ 오답'}</span><span>정답: <b>${lab}${a.amt&&!C.grade&&!C.carG&&!C.opts?' '+won(a.amt):''}</b> · ${a.w}</span></div>`})():''}
   </div>`});const em=c.groups.filter((g,j)=>!c.covs.some((k,i)=>c.gi[i]===j)).map(g=>g[0]);
     return`<section class="slide list"><div class="gh">심사 담보 <small>${c.covs.filter(k=>k!=='pay').length}개</small></div>${RW.join('')}${em.length?`<p class="nog">가입 담보가 없는 청구 항목: <b>${em.join(', ')}</b>${res&&st.notice?' (미가입)':''}</p>`:''}<div class="dvw"><button class="dvb" id="dvb">📂 서류 보기 <small>좌우로 넘기기 · 톡 누르면 닫기</small></button></div></section>`})()}
-  ${st.notice&&!(res&&(c.nd||c.flag||c.inv||c.xfr||c.big))&&(res?(c.fr||sumPick(c)===0):sumPick(c)===0)?`<section class="slide">${noticeHTML(c,res)}</section>`:''}
+  ${st.notice&&!(res&&(c.nd||c.flag||c.inv||c.xfr||isBig(c)))&&(res?(c.fr||sumPick(c)===0):sumPick(c)===0)?`<section class="slide">${noticeHTML(c,res)}</section>`:''}
   </div>
   <div class="pfoot">
 <div class="snav"><button id="sp" aria-label="이전 항목">‹ 이전</button><span id="sn"></span><button id="snx" aria-label="다음 항목">다음 ›</button></div>
   <div class="total"><span>${res?'내 결정 / 정답 지급액':'결정 지급액 합계'}</span><b id="sumV">${f(sum)}원${res?` / ${f(ans)}원`:''}</b></div>
-  ${st.tut?'':res?(c.inv&&c.nd?`<p class="rqn frd">🔎 <b>현장조사 의뢰 적중!</b> ${c.ndW}</p>`:c.inv?'<p class="rqn bad">⚠ 계약 후 치료 이력인데 현장조사 의뢰 — 지급 지연 민원 (−15점)</p>':c.nd?`<p class="rqn bad">🔎 <b>고지의무 위반 의심 건을 놓쳤어요</b> (−20점) · ${c.ndW}</p>`:'')+(c.flag&&c.fraud?`<p class="rqn frd">🚩 <b>사기 적발!</b> ${c.fraudW||''}</p>`:c.flag?'<p class="rqn bad">⚠ 정상 청구를 조사 의뢰했어요 — 고객 민원 (−20점)</p>':c.fraud?`<p class="rqn bad">🚨 <b>보험사기를 놓쳤어요</b> (−30점) · ${c.fraudW||''}</p>`:'')+(c.xfr&&c.big?`<p class="rqn frd">🏢 <b>표준부서 이관 적중!</b> ${c.big.n} ${won(c.big.amt)} — 200만원 초과 고액 진단비는 간편심사 대상이 아니에요.</p>`:c.xfr?'<p class="rqn bad">⚠ 간편심사로 처리할 건을 이관했어요 — 처리 지연 (−15점)</p>':c.big?`<p class="rqn bad">🏢 <b>이관 대상을 직접 심사했어요</b> (−20점) · ${c.big.n} ${won(c.big.amt)}이 청구된 건은 표준부서로 이관해요.</p>`:'')
+  ${st.tut?'':res?(c.inv&&c.nd?`<p class="rqn frd">🔎 <b>현장조사 의뢰 적중!</b> ${c.ndW}</p>`:c.inv?'<p class="rqn bad">⚠ 계약 후 치료 이력인데 현장조사 의뢰 — 지급 지연 민원 (−15점)</p>':c.nd?`<p class="rqn bad">🔎 <b>고지의무 위반 의심 건을 놓쳤어요</b> (−20점) · ${c.ndW}</p>`:'')+(c.flag&&c.fraud?`<p class="rqn frd">🚩 <b>사기 적발!</b> ${c.fraudW||''}</p>`:c.flag?'<p class="rqn bad">⚠ 정상 청구를 조사 의뢰했어요 — 고객 민원 (−20점)</p>':c.fraud?`<p class="rqn bad">🚨 <b>보험사기를 놓쳤어요</b> (−30점) · ${c.fraudW||''}</p>`:'')+(c.xfr&&isBig(c)?`<p class="rqn frd">🏢 <b>표준부서 이관 적중!</b> ${bigTxt(c)} — 모든 담보 지급액 합계가 200만원을 넘으면 간편심사 대상이 아니에요.</p>`:c.xfr?'<p class="rqn bad">⚠ 간편심사로 처리할 건을 이관했어요 — 처리 지연 (−15점)</p>':isBig(c)?`<p class="rqn bad">🏢 <b>이관 대상을 직접 심사했어요</b> (−20점) · ${bigTxt(c)} — 합계 200만원 초과 건은 표준부서로 이관해요.</p>`:'')
     :`<div class="xfw"><button class="flag xfb" id="xfer" aria-expanded="${!!st.xfo}" aria-pressed="${!!(c.flag||c.inv||c.xfr)}"><span>${c.flag?'🚩 사기 조사 의뢰함':c.inv?'🔎 현장조사 의뢰함':c.xfr?'🏢 표준부서 이관함':'📤 의뢰 · 이관'}</span><i aria-hidden="true">${st.xfo?'▴':'▾'}</i></button>${st.xfo?`<div class="xfp" role="menu">
       <button class="xfo" id="flag" role="menuitemradio" aria-checked="${!!c.flag}"><b>🚩 사기 조사 의뢰</b><small>서류가 위조·변조된 것 같을 때 (이름·병원·날짜·진단명 불일치)</small></button>
       ${st.lv>=2?`<button class="xfo" id="inv" role="menuitemradio" aria-checked="${!!c.inv}"><b>🔎 현장조사 의뢰</b><small>계약 전부터 치료받은 이력(고지의무 위반)이 의심될 때</small></button>`:''}
-      ${st.lv>=1&&!st.tut?`<button class="xfo" id="xfr" role="menuitemradio" aria-checked="${!!c.xfr}"><b>🏢 표준부서 이관</b><small>200만원 초과 진단비가 청구된 건 — 간편심사 대상이 아니에요</small></button>`:''}
+      ${st.lv>=1&&!st.tut?`<button class="xfo" id="xfr" role="menuitemradio" aria-checked="${!!c.xfr}"><b>🏢 표준부서 이관</b><small>모든 담보 지급액 합계가 200만원을 넘는 건 — 간편심사 대상이 아니에요</small></button>`:''}
       ${c.flag||c.inv||c.xfr?'<button class="xfo xfc" id="xfc">↩ 선택 취소 · 직접 심사하기</button>':''}</div>`:''}</div>`}
 </div>
   </aside>`;
@@ -1713,15 +1713,15 @@ function submit(){
   const mul=LV[st.lv].mul;
   let items=c.ans.length-(pSkip?1:0);
   if(st.notice&&c.fr){items+=1;if(sumPick(c)===0&&c.frP===c.fr)right++}
-  if(c.flag||c.inv||c.xfr){right=(c.flag&&c.fraud)||(c.inv&&c.nd)||(c.xfr&&c.big)?1:0;items=1}else if(c.nd||c.big){right=0;items=1}else if(c.fraud)items+=1;
-  if(st.notice&&!c.flag&&!c.inv&&!c.xfr&&!c.big&&!(st.sty&&st.sty.les)){const cmp=st.scnRun&&st.scnEvK==='cmp'&&!st.cmpIt,ca=st.callAll;if(cmp)st.callAll=true;c.call=makeCall(c);st.callAll=ca;if(c.call){c.call.state='pending';c.call.at=Math.min(532,st.gm+(st.callAll||cmp?R(8,40):R(20,120)));if(cmp){st.cmpIt=c;c.cmpN=1}}}
+  if(c.flag||c.inv||c.xfr){right=(c.flag&&c.fraud)||(c.inv&&c.nd)||(c.xfr&&isBig(c))?1:0;items=1}else if(c.nd||isBig(c)){right=0;items=1}else if(c.fraud)items+=1;
+  if(st.notice&&!c.flag&&!c.inv&&!c.xfr&&!isBig(c)&&!(st.sty&&st.sty.les)){const cmp=st.scnRun&&st.scnEvK==='cmp'&&!st.cmpIt,ca=st.callAll;if(cmp)st.callAll=true;c.call=makeCall(c);st.callAll=ca;if(c.call){c.call.state='pending';c.call.at=Math.min(532,st.gm+(st.callAll||cmp?R(8,40):R(20,120)));if(cmp){st.cmpIt=c;c.cmpN=1}}}
   st.ok+=right;st.totalCov+=items;st.score+=Math.round(right*10*mul);
   const s0=st.score;st.score+=0;
   if(right===items){st.score+=Math.round(20*mul);st.okClaims++}
   const it=st.queue[st.cur];
   if(c.flag)st.score+=c.fraud?Math.round(30*mul):-20;else if(c.fraud)st.score-=30;
   if(c.inv)st.score+=c.nd?Math.round(25*mul):-15;else if(c.nd&&!c.flag)st.score-=20;
-  if(c.xfr)st.score+=c.big?Math.round(25*mul):-15;else if(c.big&&!c.flag&&!c.inv)st.score-=20;
+  if(c.xfr)st.score+=isBig(c)?Math.round(25*mul):-15;else if(isBig(c)&&!c.flag&&!c.inv)st.score-=20;
   const fxl=afterSubmit(it,c,right,items,mul);
   it.done=true;it.right=right;it.items=items;it.pts=Math.round(right*10*mul)+(st.score-s0);
   st.done=true;c.resetSx=1;render(true);stampFX(right===items,it.pts,fxl);hud();
@@ -1911,7 +1911,7 @@ function start(){document.body.classList.remove('ingame','scene','endm','subm');
    <p class="intro">처음이라면 <b>튜토리얼 모드</b>부터! 사수와 함께 심사를 하나씩 배워요. 익숙해지면 <b>샌드박스 모드</b>에서 원하는 조건으로 자유롭게 심사해요.</p>
    <button class="begin scnbtn" id="scnbeg">시나리오 모드<small>${CR.scn&&!CR.scn.end?`${CR.scn.day}일차 · 잔고 ${f(CR.scn.money)}원`:'출근해서 번 돈으로 햄스터·콩벌레와 20일 버티기'}</small></button>
    <button class="begin stbtn" id="stbeg">튜토리얼 모드<small>신입 심사자의 성장기 · ${Object.keys(storyDone()).length}/${STORY.length}장 클리어</small></button>
-   <button class="begin sbbtn" id="sbbeg">샌드박스 모드<small>난이도 · 실손 · 접수량 · AI 대결을 직접 골라요${vsRec}</small></button><p class="mobnote">Optimized for mobile · 모바일 세로 화면 기준으로 제작</p><p class="fictnote">이 게임은 가상의 보험금 심사 시뮬레이션으로, 등장하는 인물·기관·상품·심사 기준은 모두 게임용 가상 설정이며 실제 보험사 및 약관·실무와는 무관합니다.</p><p class="bldline"><span class="bld" id="bld">build 225 · 2026.11.23</span></p></section>`;
+   <button class="begin sbbtn" id="sbbeg">샌드박스 모드<small>난이도 · 실손 · 접수량 · AI 대결을 직접 골라요${vsRec}</small></button><p class="mobnote">Optimized for mobile · 모바일 세로 화면 기준으로 제작</p><p class="fictnote">이 게임은 가상의 보험금 심사 시뮬레이션으로, 등장하는 인물·기관·상품·심사 기준은 모두 게임용 가상 설정이며 실제 보험사 및 약관·실무와는 무관합니다.</p><p class="bldline"><span class="bld" id="bld">build 226 · 2026.11.23</span></p></section>`;
   else app.innerHTML=`<section class="paper end start wz"><h2 class="wzh">🧪 샌드박스 모드</h2><p class="wzp">조건을 고르고 아래 버튼을 누르세요.</p>
    <h3 class="wzs">진행 방식</h3>
    <div class="lvs two" role="group" aria-label="진행 방식"><button data-vsm="0" aria-pressed="${!st.vs}">👤 혼자 심사 <small>최고 기록 도전</small></button><button data-vsm="1" aria-pressed="${!!st.vs}">🤖 AI 대결 <small>${CR.vsW||CR.vsL?`전적 ${CR.vsW||0}승 ${CR.vsL||0}패`:'AI 동료와 점수 대결'}</small></button></div>
@@ -1931,7 +1931,7 @@ const MSGT=['보상지원팀','고객센터','장기보상1팀','보상기획파
 const msgFrom=()=>`${pick(MSGT)} ${pick(SN)+pick(GN)} ${pick(MSGR)}`;
 const MSGN=[[0,2],[1,3],[1,4],[2,4],[2,5]];
 function msgPlan(){const n=R(...MSGN[st.vol]);st.msgs=Array.from({length:n},()=>R(40,500)).sort((a,b)=>a-b);st.mq=[];st.msgAll=[];st.callLog=[];st.boss=null;st.msgN=0;msgCard()}
-function makeMsg(F){if(st.tut||st.chR)return;const pend=st.queue.filter(it=>!it.done&&!it.urg&&!it.reas&&!it.ai),done=st.queue.filter(it=>it.done&&it.by!=='ai'&&!it.disp&&!it.c.flag&&!it.c.inv&&!it.c.xfr&&!it.c.big);
+function makeMsg(F){if(st.tut||st.chR)return;const pend=st.queue.filter(it=>!it.done&&!it.urg&&!it.reas&&!it.ai),done=st.queue.filter(it=>it.done&&it.by!=='ai'&&!it.disp&&!it.c.flag&&!it.c.inv&&!it.c.xfr&&!isBig(it.c));
   const missDoc=pend.filter(it=>msgMiss(it.c)),acct=pend.filter(it=>{const i=it.c.covs.indexOf('pay');return i>=0&&it.c.ans[i].d===1&&!it.acct}),cb=done.filter(it=>!it.c.call&&!it.c.flag&&it.c.ans.some((a,i)=>it.c.covs[i]!=='pay'&&a.amt===0&&a.r&&a.r!=='enr')),thx=st.queue.filter(it=>it.done&&it.by!=='ai'&&!it.thx&&it.right===it.items&&it.c.ans.some(a=>a.amt>0));
   const T=[];if(pend.length)T.push(1,1);if(done.length)T.push(2,2);T.push(3);if(missDoc.length)T.push(4,4);if(acct.length)T.push(5,5);if(!st.boss&&st.gm<420)T.push(6);if(cb.length)T.push(7,7);if(thx.length)T.push(8);
   const t=F&&F.t||pick(T),from=msgFrom(),tn=R(0,2),G=['안녕하세요 바쁘실텐데 죄송합니다.','안녕하세요.','저기요.'][tn],V=a=>G+'<br>'+a[tn];let m;
@@ -1999,12 +1999,15 @@ function ndDocs(c,H){if(!c.ndY)return H;const i=H.search(/<article[^>]*data-t="�
   return H.slice(0,i)+A+H.slice(j)}
 /* 표준부서 이관 대상 (200만원 초과 고액 진단비) */
 const BIGL=[['일반암진단비',30000000,'C16.9','상세불명의 위의 악성 신생물'],['일반암진단비',20000000,'C18.7','구불창자의 악성 신생물'],['유사암진단비',3000000,'C73','갑상선의 악성 신생물'],['뇌졸중진단비',20000000,'I63.9','상세불명의 뇌경색증'],['급성심근경색증진단비',20000000,'I21.9','상세불명의 급성 심근경색증'],['뇌혈관질환진단비',10000000,'I67.9','상세불명의 뇌혈관질환']];
-function bigSetup(c){const b=pick(BIGL);c.big={n:b[0],amt:b[1],code:b[2],dn:b[3]};c.docsH=null}
-function bigDocs(c,H){if(!c.big)return H;const B=c.big;
+const BIGM=[['제자리암진단비','D05.1','유방의 관내 제자리암종'],['경계성종양진단비','D39.1','난소의 행동양식 불명 신생물'],['유사암진단비','C44.3','얼굴의 기타 부분의 피부 악성 신생물'],['유사암진단비','C73','갑상선의 악성 신생물']];
+function bigSetup(c){c.big=null;const base=bigT(c);if(Math.random()<.5){const b=pick(BIGL);c.big={n:b[0],amt:b[1],code:b[2],dn:b[3]}}else{const b=pick(BIGM),amt=Math.min(1900000,Math.max(500000,Math.ceil((2e6-base)/1e5)*1e5+1e5*(1+Math.floor(Math.random()*3))));c.big={n:b[0],amt,code:b[1],dn:b[2]};if(base+amt<=2e6)c.big.amt=Math.ceil((2e6-base)/1e5)*1e5+1e5}c.docsH=null}
+function bigDocs(c,H){if(!isBig(c))return H;const B=c.big;
   {let k=H.indexOf('<th>청구 항목</th><td colspan="3">');if(k>=0){const e=H.indexOf('</td>',k+30);H=H.slice(0,e)+` <span class="ck">☑ ${B.n}</span>`+H.slice(e)}else{k=H.indexOf('<th>청구 항목</th><td>');if(k>=0){const e=H.indexOf('</td>',k+20);H=H.slice(0,e)+`, ${B.n}`+H.slice(e)}}}
   {const hd='<tr><th>가입 담보</th><th>가입금액</th></tr>',k=H.indexOf(hd);if(k>=0)H=H.slice(0,k+hd.length)+`<tr><td>${B.n}</td><td class="num">${won(B.amt)}</td></tr>`+H.slice(k+hd.length)}
   {const i=H.search(/<article[^>]*data-t="진단서"/);if(i>=0){const j=H.indexOf('</article>',i),t=`<b>${c.s.code}</b>`,k=H.indexOf(t,i);if(k>=0&&k<j)H=H.slice(0,k+t.length)+`<br><small>부진단: <b>${B.code}</b> ${B.dn}</small>`+H.slice(k+t.length)}}
   return H}
+const bigT=c=>(c.ans||[]).reduce((t,a,i)=>t+(c.covs[i]==='pay'?0:(a&&a.amt)||0),0)+(c.big?c.big.amt:0),isBig=c=>bigT(c)>2e6;
+const bigTxt=c=>`${c.big?`${c.big.n} ${won(c.big.amt)} 포함 · `:''}지급액 합계 ${won(bigT(c))}`;
 /* 사기 서류 */
 function fraudDocs(c,H){if(!c.fraud)return H;const i=H.search(/<article[^>]*data-t="진단서"/);if(i<0){c.fraud=null;return H}
   const j=H.indexOf('</article>',i)+10;let A=H.slice(i,j);const rest=H.slice(0,i)+H.slice(j);
@@ -2053,7 +2056,7 @@ const ACH=[['first','🏁','첫 퇴근','하루 근무를 끝까지 마쳤어요
   ['calls10','☎️','상담의 달인','고객 전화 누적 10통 응대 성공'],['sil20','🧮','실손 마스터','실손 누적 20건 정확 계산'],['promo','👔','과장님','과장으로 승진'],['rankMax','🎖️','심사 장인','최고 직급 \'심사 장인\' 달성'],['ch','🗓️','챌린저','오늘의 챌린지 완료'],
   ['perf50','🎯','정밀 심사','완벽 처리 누적 50건'],['days10','📅','성실 근무','하루 근무 누적 10일'],
   ['allLv','🧗','전 난이도 정복','5개 난이도 모두에서 퇴근'],['trap20','🪤','함정 탐지기','대상 아닌 진단 누적 20건 정확히 부지급'],['car5','🚗','자동차 보상 전문가','자동차·폭행·이륜차 특수 사유 누적 5건 정확 판정'],
-  ['implant','🦷','임플란트 판정관','임플란트 청구 건 완벽 처리'],['dxFraud','🔬','위조 감별사','진단명 위조 사기 적발'],['msg10','📩','쪽지 해결사','처리 결과 문의 누적 10회 적절히 회신'],['boss3','🤝','팀장님 오른팔','팀장님 지시 누적 3회 완수'],['thx5','💌','감사 인사 부자','고객 감사 인사 누적 5회'],['nd1','🔎','현장조사 전문가','고지의무 위반 의심 건 첫 현장조사 의뢰 적중'],['story','📖','에이스 심사자','튜토리얼 모드 12장 완료'],['vsWin1','🤖','AI 이겼다!','AI 대결에서 첫 승리'],['vsAce','🦅','인간 승리','에이스 AI를 상대로 승리'],['scnClear','📜','20일 버티기 성공','시나리오 모드에서 파산 없이 20일 완주'],['scnKing','👑','이달의 심사왕','시나리오에서 올해의 심사왕 또는 SIU 스카우트 달성'],['auditOk','🔍','감사 무사 통과','시나리오 감사 주간을 감봉 없이 통과'],['roomFull','🛋️','풀옵션 원룸','시나리오 상점 물품 10종을 모두 구매'],['isoDex','🪲','콩벌레 브리더','도감의 콩벌레 모두 번식 성공'],['isoFarm','💰','콩벌레 재벌','시나리오 한 판에서 콩벌레 분양 수익 6만원 달성'],['hamRare','✨','희귀 햄스터','시나리오에서 희귀 모프 햄스터 만나기'],['hamDex','📖','햄스터 박사','햄스터 모프 10종 모두 만나기'],['hamFam','🐹','햄스터 대가족','햄스터 3마리와 함께 시나리오 끝까지 생존'],['spAll','🐾','특수 동물 박사','특수 동물 5종을 모두 한 번씩 들여보기'],['xfr1','🏢','선 넘지 않는 심사자','200만원 초과 고액 진단비 건을 표준부서로 첫 이관'],['cert','🎓','손해사정사','시나리오에서 손해사정 학원을 3일 다 듣고 자격증 따기'],['save0','🐷','여유로운 저축','여유 난이도 시나리오를 잔고 30만원 이상으로 완주'],['save1','💰','알뜰 사회초년생','보통 난이도 시나리오를 잔고 20만원 이상으로 완주'],['save2','💎','짠테크 장인','빡빡 난이도 시나리오를 잔고 15만원 이상으로 완주']];
+  ['implant','🦷','임플란트 판정관','임플란트 청구 건 완벽 처리'],['dxFraud','🔬','위조 감별사','진단명 위조 사기 적발'],['msg10','📩','쪽지 해결사','처리 결과 문의 누적 10회 적절히 회신'],['boss3','🤝','팀장님 오른팔','팀장님 지시 누적 3회 완수'],['thx5','💌','감사 인사 부자','고객 감사 인사 누적 5회'],['nd1','🔎','현장조사 전문가','고지의무 위반 의심 건 첫 현장조사 의뢰 적중'],['story','📖','에이스 심사자','튜토리얼 모드 12장 완료'],['vsWin1','🤖','AI 이겼다!','AI 대결에서 첫 승리'],['vsAce','🦅','인간 승리','에이스 AI를 상대로 승리'],['scnClear','📜','20일 버티기 성공','시나리오 모드에서 파산 없이 20일 완주'],['scnKing','👑','이달의 심사왕','시나리오에서 올해의 심사왕 또는 SIU 스카우트 달성'],['auditOk','🔍','감사 무사 통과','시나리오 감사 주간을 감봉 없이 통과'],['roomFull','🛋️','풀옵션 원룸','시나리오 상점 물품 10종을 모두 구매'],['isoDex','🪲','콩벌레 브리더','도감의 콩벌레 모두 번식 성공'],['isoFarm','💰','콩벌레 재벌','시나리오 한 판에서 콩벌레 분양 수익 6만원 달성'],['hamRare','✨','희귀 햄스터','시나리오에서 희귀 모프 햄스터 만나기'],['hamDex','📖','햄스터 박사','햄스터 모프 10종 모두 만나기'],['hamFam','🐹','햄스터 대가족','햄스터 3마리와 함께 시나리오 끝까지 생존'],['spAll','🐾','특수 동물 박사','특수 동물 5종을 모두 한 번씩 들여보기'],['xfr1','🏢','선 넘지 않는 심사자','지급액 합계 200만원 초과 건을 표준부서로 첫 이관'],['cert','🎓','손해사정사','시나리오에서 손해사정 학원을 3일 다 듣고 자격증 따기'],['save0','🐷','여유로운 저축','여유 난이도 시나리오를 잔고 30만원 이상으로 완주'],['save1','💰','알뜰 사회초년생','보통 난이도 시나리오를 잔고 20만원 이상으로 완주'],['save2','💎','짠테크 장인','빡빡 난이도 시나리오를 잔고 15만원 이상으로 완주']];
 {const S=new Set(ACH.map(a=>a[0]));CR.ach=(CR.ach||[]).filter(id=>S.has(id))}
 const tInc=k=>(CR.tot[k]=(CR.tot[k]||0)+1);
 function unlock(id){if(st.tut||CR.ach.includes(id))return;CR.ach.push(id);saveCR();const a=ACH.find(x=>x[0]===id);if(!a)return;st.newAch=(st.newAch||[]).concat(id);toast(`🏅 업적 달성: ${a[1]} ${a[2]}`);sfx('fan')}
@@ -2067,7 +2070,7 @@ function afterSubmit(it,c,right,items,mul){const g=st.g,L=[],perfect=right===ite
   else{if(g.combo>=3)L.push(`💔 ${g.combo}연속 콤보 끊김`);g.combo=0}
   if(c.flag&&c.fraud){g.fraud++;CR.tot.fraud++;L.unshift('🚩 사기 적발!');mProg('fraud');unlock('fraud1');if(CR.tot.fraud>=5)unlock('fraud5');if(c.fraud==='dx')unlock('dxFraud')}
   else if(c.flag)L.unshift('⚠ 정상 건 조사 의뢰');else if(c.fraud)L.unshift('🚨 사기를 놓쳤어요');
-  if(c.inv&&c.nd){g.nd=(g.nd||0)+1;L.unshift('🔎 현장조사 적중!');mProg('ndOk');unlock('nd1')}else if(c.inv)L.unshift('⚠ 정상 건 현장조사 의뢰');else if(c.nd&&!c.flag)L.unshift('🔎 고지의무 위반 의심을 놓쳤어요');if(c.xfr&&c.big){L.unshift('🏢 표준부서 이관 적중!');unlock('xfr1')}else if(c.xfr)L.unshift('⚠ 간편심사 건을 이관');else if(c.big)L.unshift('🏢 이관 대상을 놓쳤어요');
+  if(c.inv&&c.nd){g.nd=(g.nd||0)+1;L.unshift('🔎 현장조사 적중!');mProg('ndOk');unlock('nd1')}else if(c.inv)L.unshift('⚠ 정상 건 현장조사 의뢰');else if(c.nd&&!c.flag)L.unshift('🔎 고지의무 위반 의심을 놓쳤어요');if(c.xfr&&isBig(c)){L.unshift('🏢 표준부서 이관 적중!');unlock('xfr1')}else if(c.xfr)L.unshift('⚠ 간편심사 건을 이관');else if(c.big)L.unshift('🏢 이관 대상을 놓쳤어요');
   if(st.tut){st.score+=bonus;return L}
   if(!c.flag&&!c.inv&&!c.nd)c.covs.forEach((k,i)=>{if(!okP(c,i))return;if(k==='sil'){g.silOk++;CR.tot.sil++;mProg('silOk');if(CR.tot.sil>=20)unlock('sil20')}if(c.ans[i].r==='exempt')mProg('exOk');if(isDay(k)&&c.ans[i].d){mProg('dayOk')}if(k==='pay'&&c.ans[i].d===1)mProg('payHold');if(c.ans[i].r==='excl'){mProg('trapOk');if(tInc('trap')>=20)unlock('trap20')}});
   if(!c.flag&&!c.inv&&c.covs.some((k,i)=>['auto','assault','moto'].includes(c.ans[i].r))&&c.covs.every((k,i)=>!['auto','assault','moto'].includes(c.ans[i].r)||okP(c,i))){mProg('carEx');if(tInc('car')>=5)unlock('car5')}
@@ -3714,7 +3717,7 @@ function scnEndHook(){if(!st.scnRun)return'';st.scnRun=false;const S=scnS(),mine
   MA.filter(m=>m.kind==='quiz'&&m.ans!=null&&m.opts[m.ans][1]).forEach(()=>ex.push(['📋 선배 퀴즈 정답',2000]));
   MA.filter(m=>m.kind==='recl'&&m.ans!=null).forEach(m=>ex.push(m.opts[m.ans][1]?['🔁 재청구 바르게 처리',2000]:['🔁 재청구 잘못 처리',-2000]));
   MA.filter(m=>m.kind==='reclx').forEach(()=>ex.push(['🔁 잘못 처리한 건 재청구 민원',-3000]));
-  {const RL=S.recl||(S.recl=[]);mine.filter(x=>x.c.fr&&!x.c.flag&&!x.c.inv&&!x.c.fraud&&!x.c.xfr&&!x.c.big).sort(()=>Math.random()-.5).slice(0,2).forEach(x=>RL.push({d:S.day+2+Math.floor(Math.random()*2),who:x.c.who,fr:x.c.fr,ok:x.right===x.items,pn:x.c.pn||'청구하신 보험금'}));S.recl=RL.filter(r=>r.d>S.day).slice(-6)}
+  {const RL=S.recl||(S.recl=[]);mine.filter(x=>x.c.fr&&!x.c.flag&&!x.c.inv&&!x.c.fraud&&!x.c.xfr&&!isBig(x.c)).sort(()=>Math.random()-.5).slice(0,2).forEach(x=>RL.push({d:S.day+2+Math.floor(Math.random()*2),who:x.c.who,fr:x.c.fr,ok:x.right===x.items,pn:x.c.pn||'청구하신 보험금'}));S.recl=RL.filter(r=>r.d>S.day).slice(-6)}
   MA.filter(m=>m.kind==='hosp'&&m.ans!=null).forEach(m=>ex.push(m.opts[m.ans][1]?['🏥 진단서 정정 바르게 처리',3000]:['🏥 진단서 정정 잘못 처리',-3000]));
   if(E&&E.k==='cmp'&&st.evc&&(st.evc.ok||st.evc.bad))ex.push([`😤 민원 응대 (잘함 ${st.evc.ok} · 못함 ${st.evc.bad})`,(st.evc.ok-st.evc.bad)*2000]);
   S.mo=S.mo||{ok:0,bad:0};S.mo.ok+=ok;S.mo.bad+=bad;if(S.day===10||S.day===SCN_DAYS){const t=S.mo.ok+S.mo.bad,acc=t?S.mo.ok/t:0;ex.push([`💰 월 성과급 (정확도 ${Math.round(acc*100)}%)`,Math.round(Math.max(0,(acc-.7)/.3)*30)*1000]);S.mo={ok:0,bad:0}}
@@ -3909,7 +3912,7 @@ function dayEnd(acc,un,dn){const n=st.queue.filter(x=>x.by!=='ai'&&!x.ai).length
   if(gr==='S'||gr==='A')mProg('gradeA');
   if(dn>0)unlock('first');if(gr==='S')unlock('s');if(CR.days>=10)unlock('days10');if(dn>0&&!st.chR){CR.lvs=CR.lvs||[];if(!CR.lvs.includes(st.lv))CR.lvs.push(st.lv);if(CR.lvs.length>=5)unlock('allLv')}if(dn>=5&&acc===100&&un===0)unlock('flawless');if(st.vol===4&&un===0&&dn>0)unlock('rush');if(st.lv===4&&(gr==='S'||gr==='A'))unlock('hard');
   const r1=rankOf(CR.xp);if(r1>=3)unlock('promo');if(r1>=RANKS.length-1)unlock('rankMax');
-  let ch=null;if(st.chR){const d=today(),row=st.queue.map(it=>!it.done?'⬛':it.c.flag&&it.c.fraud?'🚩':it.c.inv&&it.c.nd?'🔎':it.c.xfr&&it.c.big?'🏢':it.right===it.items?'🟦':'🟧').join('');
+  let ch=null;if(st.chR){const d=today(),row=st.queue.map(it=>!it.done?'⬛':it.c.flag&&it.c.fraud?'🚩':it.c.inv&&it.c.nd?'🔎':it.c.xfr&&isBig(it.c)?'🏢':it.right===it.items?'🟦':'🟧').join('');
     const prev=CR.ch[d];ch={score:st.score,gr,acc,maxC:st.g.maxC,dn,n,row};if(!prev||st.score>prev.score)CR.ch[d]=ch;sbSubmit(d,CR.ch[d]).then(ok=>{if(ok)toast('🌐 온라인 순위에 기록했어요');else if(!CR.nick)toast('🏆 챌린지 창에서 닉네임을 정하면 온라인 순위에 올라가요')});unlock('ch');st.chR=null}
   saveCR();const nx=RANKS[r1+1],xpPct=nx?Math.round((CR.xp-RANKS[r1][1])/(nx[1]-RANKS[r1][1])*100):100;
   const ms=missions(),nA=st.newAch||[];
@@ -3931,9 +3934,9 @@ function wrongNote(){const out=[];if(!st.queue.some(it=>it.done))return'';
     if(c.inv&&!c.nd)E.push(['🔎 현장조사 의뢰',c.ndDecoy?`치료 시작(약 ${c.ndY}년 전)이 계약일(${fd(c.con)}) 이후라 고지 대상이 아니에요`:'계약 전 치료 이력이 없는 정상 청구였어요']);
     if(c.fraud&&!c.flag)E.push(['🚨 놓친 사기',c.fraudW||'']);
     if(c.nd&&!c.inv)E.push(['🔎 놓친 현장조사 건',c.ndW||'']);
-    if(c.xfr&&!c.big)E.push(['🏢 표준부서 이관','간편심사로 처리할 수 있는 건이었어요 — 200만원 넘는 진단비가 청구되지 않았어요']);
-    if(c.big&&!c.xfr)E.push(['🏢 놓친 이관 건',`<b>${c.big.n} ${won(c.big.amt)}</b>이 청구된 건 — 200만원 초과 고액 진단비는 표준부서로 이관해요`]);
-    if(!c.flag&&!c.inv&&!c.nd&&!c.xfr&&!c.big){const pI=c.covs.indexOf('pay'),pSkip=pI>=0&&sumPick(c)===0;
+    if(c.xfr&&!isBig(c))E.push(['🏢 표준부서 이관',`간편심사로 처리할 수 있는 건이었어요 — 지급액 합계 ${won(bigT(c))} (200만원 이하)`]);
+    if(isBig(c)&&!c.xfr)E.push(['🏢 놓친 이관 건',`<b>${bigTxt(c)}</b> — 모든 담보 지급액 합계가 200만원을 넘으면 표준부서로 이관해요`]);
+    if(!c.flag&&!c.inv&&!c.nd&&!c.xfr&&!isBig(c)){const pI=c.covs.indexOf('pay'),pSkip=pI>=0&&sumPick(c)===0;
       c.covs.forEach((k,i)=>{if((i===pI&&pSkip)||okP(c,i))return;E.push([COV[k].n,`내 결정 <s>${DL(c,i,c.pick[i],0)}</s> → 정답 <b>${DL(c,i,c.ans[i].d,1)}</b><br><small>${c.ans[i].w}</small>`])});
       if(st.notice&&c.fr&&sumPick(c)===0&&c.frP!==c.fr)E.push(['최종 부지급 사유',`정답 <b>${RS[c.fr]}</b>`])}
     if(E.length&&!st.queue._wn&&!st.sty&&!st.tut)(st._wnNew=st._wnNew||[]).push({t:Date.now(),m:st.wnMode||(st.chR?'데일리 챌린지':st.vs?'AI 대결':'샌드박스'),who:c.who,code:c.s.code,nm:short(c.s),E});
