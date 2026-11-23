@@ -140,3 +140,73 @@ grant execute on function iso_whoami() to anon, authenticated;
 grant execute on function iso_write(json) to authenticated;
 grant execute on function iso_write_photo(json) to authenticated;
 grant execute on function iso_remove(text) to authenticated;
+
+-- ===== 통마다 사진 9칸 (v3) =====
+-- 칸(1~9)마다 사진 한 장. 교체하면 예전 사진은 서버에서 지워져요.
+create table if not exists iso_gal(
+  fam text not null,
+  tub text not null check (length(tub) <= 8),
+  slot int not null check (slot between 0 and 9),
+  thumb text not null,
+  data text not null,
+  who text,
+  upd timestamptz not null default now(),
+  primary key (fam, tub, slot)
+);
+alter table iso_gal enable row level security;
+
+-- 목록 (누구나): 모든 칸의 위치·시각, 미리보기는 since 이후 바뀐 칸만
+create or replace function iso_gal_list(since timestamptz default '1970-01-01')
+returns json language sql stable security definer set search_path = public as $$
+  select coalesce(json_agg(json_build_object('tub', tub, 'slot', slot, 'who', who, 'upd', upd,
+           'thumb', case when upd > since then thumb end) order by tub, slot), '[]'::json)
+  from iso_gal where fam = iso_fam() and slot between 1 and 9;
+$$;
+
+-- 원본 사진 (누구나)
+create or replace function iso_gal_get(t text, s int) returns text
+language sql stable security definer set search_path = public as $$
+  select data from iso_gal where fam = iso_fam() and tub = t and slot = s;
+$$;
+
+-- 올리기·교체 (등록된 계정만)
+create or replace function iso_gal_set(t text, s int, th text, d text) returns timestamptz
+language plpgsql security definer set search_path = public as $$
+declare me text := iso_me(); u timestamptz := clock_timestamp();
+begin
+  if me is null then raise exception 'not allowed' using errcode = '42501'; end if;
+  if s < 1 or s > 9 then raise exception 'bad slot'; end if;
+  if length(d) > 1000000 or length(th) > 120000 then raise exception 'photo too large'; end if;
+  insert into iso_gal(fam, tub, slot, thumb, data, who, upd) values (iso_fam(), t, s, th, d, me, u)
+  on conflict (fam, tub, slot) do update set thumb = excluded.thumb, data = excluded.data, who = excluded.who, upd = excluded.upd;
+  return u;
+end $$;
+
+-- 지우기 (등록된 계정만) — 서버에서 실제로 지워요
+create or replace function iso_gal_del(t text, s int) returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  if iso_me() is null then raise exception 'not allowed' using errcode = '42501'; end if;
+  delete from iso_gal where fam = iso_fam() and tub = t and slot = s;
+end $$;
+
+-- 두 칸 자리 바꾸기 (대표 사진 정하기 등)
+create or replace function iso_gal_swap(t text, a int, b int) returns void
+language plpgsql security definer set search_path = public as $$
+declare f text := iso_fam(); u timestamptz := clock_timestamp();
+begin
+  if iso_me() is null then raise exception 'not allowed' using errcode = '42501'; end if;
+  if a = b or a < 1 or a > 9 or b < 1 or b > 9 then return; end if;
+  update iso_gal set slot = 0 where fam = f and tub = t and slot = a;
+  update iso_gal set slot = a, upd = u where fam = f and tub = t and slot = b;
+  update iso_gal set slot = b, upd = u where fam = f and tub = t and slot = 0;
+end $$;
+
+revoke execute on function iso_gal_set(text, int, text, text) from public, anon;
+revoke execute on function iso_gal_del(text, int) from public, anon;
+revoke execute on function iso_gal_swap(text, int, int) from public, anon;
+grant execute on function iso_gal_list(timestamptz) to anon, authenticated;
+grant execute on function iso_gal_get(text, int) to anon, authenticated;
+grant execute on function iso_gal_set(text, int, text, text) to authenticated;
+grant execute on function iso_gal_del(text, int) to authenticated;
+grant execute on function iso_gal_swap(text, int, int) to authenticated;
