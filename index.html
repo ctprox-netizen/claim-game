@@ -1760,7 +1760,8 @@ app.addEventListener('click',e=>{
   if(b.id==='wzBack'){st.wz=0;st.vs=false;start();return}
   if(b.id!=='scnRst')st.rstArm=0;
   if(b.id==='scnbeg'||b.id==='scnHub'){st.sty=null;if(!CR.scn){scnPick();return}scnHub();return}
-  if(b.dataset.scd!=null){CR.scn=scnNew(+b.dataset.scd);saveCR();scnHub();return}
+  if(b.dataset.scd!=null){st.scdSel=+b.dataset.scd;scnPick();return}
+  if(b.id==='scdGo'){CR.scn=scnNew(st.scdSel==null?1:st.scdSel);st.scdSel=null;saveCR();scnHub();return}
   if(b.id==='scnGo'){scnGo();return}
   if(b.dataset.hbi!=null||b.dataset.hbp||b.id==='hbRule'){const d=b.dataset.hbi!=null?b.nextElementSibling:document.getElementById(b.dataset.hbp?'hbpd':'hbrd'),open=b.getAttribute('aria-expanded')==='true';
     document.querySelectorAll('.hubc [aria-expanded="true"]').forEach(o=>o.setAttribute('aria-expanded','false'));document.querySelectorAll('.hubc .hbd').forEach(o=>{o.hidden=true});
@@ -1891,7 +1892,7 @@ function start(){document.body.classList.remove('ingame','scene','endm','subm');
    <p class="intro">처음이라면 <b>튜토리얼 모드</b>부터! 사수와 함께 심사를 하나씩 배워요. 익숙해지면 <b>샌드박스 모드</b>에서 원하는 조건으로 자유롭게 심사해요.</p>
    <button class="begin scnbtn" id="scnbeg">시나리오 모드<small>${CR.scn&&!CR.scn.end?`${CR.scn.day}일차 · 잔고 ${f(CR.scn.money)}원`:'출근해서 번 돈으로 햄스터·콩벌레와 20일 버티기'}</small></button>
    <button class="begin stbtn" id="stbeg">튜토리얼 모드<small>신입 심사자의 성장기 · ${Object.keys(storyDone()).length}/${STORY.length}장 클리어</small></button>
-   <button class="begin sbbtn" id="sbbeg">샌드박스 모드<small>난이도 · 실손 · 접수량 · AI 대결을 직접 골라요${vsRec}</small></button><p class="mobnote">Optimized for mobile · 모바일 세로 화면 기준으로 제작</p><p class="fictnote">이 게임은 가상의 보험금 심사 시뮬레이션으로, 등장하는 인물·기관·상품·심사 기준은 모두 게임용 가상 설정이며 실제 보험사 및 약관·실무와는 무관합니다.</p><p class="bldline"><span class="bld" id="bld">build 219 · 2026.11.23</span></p></section>`;
+   <button class="begin sbbtn" id="sbbeg">샌드박스 모드<small>난이도 · 실손 · 접수량 · AI 대결을 직접 골라요${vsRec}</small></button><p class="mobnote">Optimized for mobile · 모바일 세로 화면 기준으로 제작</p><p class="fictnote">이 게임은 가상의 보험금 심사 시뮬레이션으로, 등장하는 인물·기관·상품·심사 기준은 모두 게임용 가상 설정이며 실제 보험사 및 약관·실무와는 무관합니다.</p><p class="bldline"><span class="bld" id="bld">build 220 · 2026.11.23</span></p></section>`;
   else app.innerHTML=`<section class="paper end start wz"><h2 class="wzh">🧪 샌드박스 모드</h2><p class="wzp">조건을 고르고 아래 버튼을 누르세요.</p>
    <h3 class="wzs">진행 방식</h3>
    <div class="lvs two" role="group" aria-label="진행 방식"><button data-vsm="0" aria-pressed="${!st.vs}">👤 혼자 심사 <small>최고 기록 도전</small></button><button data-vsm="1" aria-pressed="${!!st.vs}">🤖 AI 대결 <small>${CR.vsW||CR.vsL?`전적 ${CR.vsW||0}승 ${CR.vsL||0}패`:'AI 동료와 점수 대결'}</small></button></div>
@@ -3854,7 +3855,7 @@ function scnEnding(){const S=scnS(),H=scnHamAgg(S),I=S.iso;if(!S.endR){if(S.end=
    <button class="begin" id="scnRst">${st.rstArm?'한 번 더 누르면 새로 시작':'처음부터 다시'}</button><button class="wzb" id="wzBack">← 처음 화면</button></section>`;window.scrollTo({top:0});
   app.querySelectorAll('.endc').forEach((e,k)=>{e.style.animationDelay=(k*.5)+'s'})}
 function scnReset(){if(!st.rstArm){st.rstArm=1;scnS().end?scnEnding():scnHub();return}st.rstArm=0;CR.scn=null;saveCR();scnPick()}
-function scnPick(){storyPrep();document.body.classList.remove('scene');st.scr='start';app.innerHTML=`<section class="paper end start wz scn"><h2 class="wzh">📜 시나리오 모드</h2><p class="wzp">20일 동안 출근해서 번 돈으로 월세를 내고 햄스터·콩벌레를 돌봐요.<br><b>난이도를 골라 주세요.</b></p><div class="wzl">${SCD.map((x,i)=>`<button class="wzo" data-scd="${i}" aria-pressed="${i===1}"><b>${x.n}</b><span>${x.d}</span></button>`).join('')}</div><button class="wzb" id="wzBack">← 처음 화면</button></section>`;window.scrollTo({top:0})}
+function scnPick(){storyPrep();document.body.classList.remove('scene');st.scr='start';app.innerHTML=`<section class="paper end start wz scn"><h2 class="wzh">📜 시나리오 모드</h2><p class="wzp">20일 동안 출근해서 번 돈으로 월세를 내고 햄스터·콩벌레를 돌봐요.<br><b>난이도를 골라 주세요.</b></p><div class="wzl">${SCD.map((x,i)=>`<button class="wzo" data-scd="${i}" aria-pressed="${i===(st.scdSel==null?1:st.scdSel)}"><b>${x.n}</b><span>${x.d}</span></button>`).join('')}</div><button class="begin" id="scdGo">📜 ${SCD[st.scdSel==null?1:st.scdSel].n} 난이도로 시작하기</button><button class="wzb" id="wzBack">← 처음 화면</button></section>`;window.scrollTo({top:0})}
 
 const GRK={S:4,A:3,B:2,C:1,D:0};
 function storyDone(){const D=CR.story||(CR.story={});if(CR.stv!==3){let o=D;if(CR.stv!==2){const n={};Object.keys(o).forEach(k=>{n[+k>=5?+k+2:k]=o[k]});o=n}const M={4:8,5:9,6:10,7:4,8:5,9:6,10:7},n={};Object.keys(o).forEach(k=>{n[M[k]||k]=o[k]});CR.story=n;CR.stv=3;saveCR()}return CR.story}
