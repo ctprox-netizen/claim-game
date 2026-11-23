@@ -574,7 +574,7 @@ function rmSheet(){if(!needEdit())return;const ids=ALL.filter(id=>SEL.has(id));
 function fitShelf(){const v=$('#shv');if(!v)return;const W=v.clientWidth,top=v.getBoundingClientRect().top+window.scrollY,tabs=($('#tabs').offsetHeight||0)+($('#rmbar')?$('#rmbar').offsetHeight:0),H=window.innerHeight-top-tabs-22-($('#dmbar')?$('#dmbar').offsetHeight+8:0),G=4;
   if(v.classList.contains('shelf')){const cols=SHELF.filter(x=>x.id!=='fl'),mx=Math.max(...cols.map(c=>c.tubs.length)),cw=(W-2*6)/3,
       lab=v.querySelector('.shl').offsetHeight,fixed=lab*2+10+12+8+G*mx;
-    let h=Math.floor((H-fixed)/(mx+1));h=Math.max(42,Math.min(h,Math.floor(cw*.75)));
+    let h=Math.floor((H-fixed)/(mx+1));h=Math.max(42,Math.min(h,Math.floor(cw*.75)));h=Math.min(Math.round(h*1.5),Math.floor(cw*.9));
     const cwe=Math.min(cw,Math.round(h*2.4));v.style.setProperty('--th',h+'px');v.style.maxWidth=Math.round(cwe*3+12)+'px';v.style.setProperty('--tw',Math.round(cwe)+'px');return}
   v.style.maxWidth='';{const c=Math.max(3,Math.floor((W+G)/(170+G)));v.style.setProperty('--tw',Math.floor((W-G*(c-1))/c)+'px');return}const gs=[...v.querySelectorAll('.sh2')].map(x=>x.querySelectorAll('.tb2').length),OV=gs.length*30;
   let lo=40,hi=Math.min(220,W);for(let k=0;k<24;k++){const w=(lo+hi)/2,c=Math.max(1,Math.floor((W+G)/(w+G))),rows=gs.reduce((a,n)=>a+Math.ceil(n/c),0);if(rows*(w*.75+G)+OV<=H)lo=w;else hi=w}
