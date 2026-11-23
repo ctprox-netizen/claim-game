@@ -41,6 +41,14 @@
 .dxl{flex:none;width:44px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:11px;font-weight:800;line-height:1.15;border-radius:8px;background:#f1ece2;color:#5d564e}
 .dxg.sc .dxl{background:#fff4e0;color:#8a4600;border:1.5px dashed #e08a00}
 .dxb{flex:1;display:grid;grid-template-columns:repeat(var(--n),1fr);gap:4px}
+
+.bossb{display:inline-block;background:#fff4e0;color:#8a4600;border:1.5px solid #e08a00;border-radius:6px;padding:0 5px;font-size:.82em;font-weight:800;white-space:nowrap}
+
+.shimg{display:block;width:100%;max-width:360px;margin:4px auto 8px;border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,.18)}
+.shb{display:flex;flex-direction:column;gap:8px}.shb .begin{margin:0;text-align:center;text-decoration:none}
+
+.msl b{white-space:nowrap;flex:none}
+.files.more{-webkit-mask-image:linear-gradient(90deg,#000 78%,transparent);mask-image:linear-gradient(90deg,#000 78%,transparent)}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700;800;900&family=Nanum+Myeongjo:wght@800&display=swap" rel="stylesheet">
 <style>
@@ -1346,7 +1354,7 @@ function policyHTML(c,res){
     ${res&&(c.flag||c.inv||c.nd||c.xfr||isBig(c))?`<div class="res"><span class="mk">— ${c.inv?'현장조사 의뢰로 심사 생략':c.flag?'조사 의뢰로 심사 생략':c.xfr?'표준부서 이관으로 심사 생략':isBig(c)?'표준부서 이관 대상 · 간편심사 대상 아님':'현장조사 대상 건 · 지급 심사 대상 아님'}</span></div>`:res?`<div class="res"><span class="mk ${ok?'ok':'bad'}">${ok?'✓ 정답':'✗ 오답'}</span><span>정답: <b>${a.amt?f(a.amt)+'원 지급':'부지급'}</b> · ${a.w}</span></div>`:''}</div>`};
   return `<aside class="paper policy" aria-label="보험금 심사표">
   ${res?`<div class="stamp">심사완료</div>`:''}
-  <div class="phead"><h2>보험금 심사표</h2>
+  <div class="phead"><h2>보험금 심사표${c.boss?' <span class="bossb">👑 보스</span>':''}</h2>
   <div class="cdate"><span><i class="lb2">보험 </i>계약일</span><b>${fd(c.con)}</b></div>
   <div class="meta"><span><i class="lb">피보험자 </i><b>${c.who}</b></span><span><i class="lb">증권번호 </i><b>${c.no}</b></span></div>
   <p class="hint">청구 항목별로 <b>가입한 담보</b>만 보여요. 가입 조건과 금액은 폴더의 <b>보험증권</b>에서 확인하세요.</p></div>
@@ -1575,7 +1583,9 @@ function pgGo(dir,cb){const RM=matchMedia('(prefers-reduced-motion: reduce)').ma
   app.addEventListener('touchmove',e=>{if(!t0)return;const t=e.touches[0],dx=t.clientX-t0.x,dy=t.clientY-t0.y;if(!t0.lk&&(Math.abs(dx)>10||Math.abs(dy)>10))t0.lk=dx<0&&Math.abs(dx)>Math.abs(dy)*1.3?1:-1;if(t0.lk===1)pgDrag(dx)},{passive:true});
   app.addEventListener('touchend',e=>{if(!t0)return;const dx=e.changedTouches[0].clientX-t0.x,lk=t0.lk;t0=null;if(lk!==1)return;if(dx<-80&&ok())pgGo(-1,()=>openQ(st.lastQ));else pgBack()},{passive:true});
   app.addEventListener('touchcancel',()=>{if(t0&&t0.lk===1)pgBack();t0=null},{passive:true})}
-function render(res){if(!inf.hidden)closeInfo(false);closeCalc();closeGp(false);
+function filesHint(){document.querySelectorAll('.files').forEach(e=>{const u=()=>e.classList.toggle('more',e.scrollLeft+e.clientWidth<e.scrollWidth-4);u();if(!e.dataset.fh){e.dataset.fh=1;e.addEventListener('scroll',u,{passive:true})}})}
+addEventListener('resize',()=>filesHint());
+function render(res){if(!inf.hidden)closeInfo(false);closeCalc();closeGp(false);setTimeout(filesHint,0);
   document.body.classList.remove('startm','endm','subm');document.body.classList.add('ingame','app');const c=st.c,os=document.getElementById('slides');if(c.resetSx){c.sx=null;c.resetSx=0}else if(os)c.sx=os.scrollLeft;
   const keep=os&&!c._fresh,sTops=keep?[...os.children].map(e=>e.scrollTop):[],wy=scrollY;const fx=keep&&document.getElementById('files')?document.getElementById('files').scrollLeft:0;c._fresh=false;
   const it=st.queue[st.cur];
@@ -1603,9 +1613,10 @@ const clock=s=>`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
 function stopT(){if(st.tid&&st.last){const now=Date.now();st.gm=Math.min(540,st.gm+GM*(now-st.last)/1000);st.last=now}clearInterval(st.tid);st.tid=null;st.last=null}
 const DAY_SEC=900,VOL=[{n:'적음',k:6},{n:'보통',k:10},{n:'많음',k:16},{n:'매우 많음',k:22},{n:'폭주',k:30}],GM=540/DAY_SEC,hm=m=>{const t=540+Math.floor(m);return`${String(Math.floor(t/60)).padStart(2,'0')}:${String(t%60).padStart(2,'0')}`};
 function arrive(){st.regPick=null;
-  const c=seeded(()=>{let c=gen();if(st.scnRun&&st.scnRule&&Math.random()<.45)for(let t=0;t<120;t++){if(st.scnRule==='ktas3'?c.covs.includes('er')&&c.er===3:c.covs.includes('burn')&&c.burn==='표재성 2도'&&c.s.grp==='burn')break;c=gen()}if(!st.tut&&Math.random()<(st.sty&&st.sty.fr!=null?st.sty.fr:st.scnRun&&st.scnFr?st.scnFr:FRP[st.lv]))c.fraud=pick(c.s.cause==='d'?['name','edit','hos','dx']:['name','edit','hos']);if(!st.tut&&!c.fraud&&st.lv>=2)ndSetup(c);if(!st.tut&&!st.sty&&!c.fraud&&!c.nd&&st.lv>=1&&Math.random()<.07)bigSetup(c);return c});st.regPick=null;
+  let c=seeded(()=>{let c=gen();if(st.scnRun&&st.scnRule&&Math.random()<.45)for(let t=0;t<120;t++){if(st.scnRule==='ktas3'?c.covs.includes('er')&&c.er===3:c.covs.includes('burn')&&c.burn==='표재성 2도'&&c.s.grp==='burn')break;c=gen()}if(!st.tut&&Math.random()<(st.sty&&st.sty.fr!=null?st.sty.fr:st.scnRun&&st.scnFr?st.scnFr:FRP[st.lv]))c.fraud=pick(c.s.cause==='d'?['name','edit','hos','dx']:['name','edit','hos']);if(!st.tut&&!c.fraud&&st.lv>=2)ndSetup(c);if(!st.tut&&!st.sty&&!c.fraud&&!c.nd&&st.lv>=1&&Math.random()<.07)bigSetup(c);return c});if(st.scnRun&&st.wBoss&&st.queue.length===1){st.wBoss=0;c=seeded(bossClaim)}st.regPick=null;
   const it={id:c.regno,c,at:st.gm,done:false};st.queue.push(it);
   if(st.scr==='game'){toast(`📥 새 접수 ${it.id} · ${c.who}`)}return it}
+function bossClaim(){const lv=st.lv;st.lv=3;let b=null;for(let i=0;i<14;i++){const c=gen(),n=c.covs.filter(k=>k!=='pay').length;if(!b||n>b.n)b={c,n}}const c=b.c;if(Math.random()<.45)c.fraud=pick(c.s.cause==='d'?['name','edit','hos','dx']:['name','edit','hos']);else ndSetup(c);st.lv=lv;c.boss=1;return c}
 const TQ=[];function toast(t){TQ.push(t);if(TQ.length===1)toastNext()}
 function toastNext(){const e=document.getElementById('toast');if(!TQ.length){e.hidden=true;return}e.textContent=TQ[0];e.hidden=false;clearTimeout(st.tt);st.tt=setTimeout(()=>{TQ.shift();toastNext()},TQ.length>1?1800:2600)}
 function missingDocs(c){const m=[];if(c.days&&!c.docs.hosp)m.push('입원 확인서');if(c.surg&&!c.docs.surg)m.push('수술 확인서');if(st.sil&&!c.docs.rcpt)m.push('진료비 영수증');if(c.car&&!c.docs.carDoc)m.push('부상급수 확인서');return m}
@@ -1628,7 +1639,7 @@ function hud(){const q=st.queue,dn=q.filter(x=>x.done&&x.by!=='ai').length;
 function inbox(keep){st.scr='inbox';document.body.classList.add('app');document.body.classList.remove('ingame','startm','endm','subm');if(!keep){closeDoc(false);closeInfo(false)}
   const q=st.queue,wait=q.filter(x=>!x.done),done=q.filter(x=>x.done),left=540-st.gm;
   const row=it=>{const c=it.c,[cl,tx]=qst(it),stt=`<span class="qs ${cl}" id="qs${q.indexOf(it)}">${tx}</span>`;
-    return`<button class="qi${it.done?' dn':''}" data-q="${q.indexOf(it)}"><span class="qn">${it.id}</span><span class="qc">${it.urg&&!it.done?`<b class="urgb${it.urg.fail?' late':''}">⚡빠른지급 ${it.urg.fail?'기한 초과':'~'+hm(it.urg.dl)}</b> `:''}${it.reas?'<b class="reab">🔁담당 변경</b> ':''}${c.who} · ${c.groups.map(g=>g[0]).filter(n=>n!=='지급처').join('·')}</span><span class="qt">접수 ${hm(it.at)}</span>${stt}</button>`};
+    return`<button class="qi${it.done?' dn':''}" data-q="${q.indexOf(it)}"><span class="qn">${it.id}</span><span class="qc">${it.urg&&!it.done?`<b class="urgb${it.urg.fail?' late':''}">⚡빠른지급 ${it.urg.fail?'기한 초과':'~'+hm(it.urg.dl)}</b> `:''}${it.reas?'<b class="reab">🔁담당 변경</b> ':''}${c.boss?'<b class="bossb">👑 주간 보스</b> ':''}${c.who} · ${c.groups.map(g=>g[0]).filter(n=>n!=='지급처').join('·')}</span><span class="qt">접수 ${hm(it.at)}</span>${stt}</button>`};
   st.rowHTML=row;st.shown=q.length;
   app.innerHTML=`<section class="paper inbox"><div class="ibh"><h2>내 일정</h2><div class="clk" id="clkB">${hm(st.gm)}</div></div>
    <p class="ibm" id="ibm">${ibmTxt()}</p>${vsHTML()}
@@ -1761,23 +1772,25 @@ function submit(){
   it.done=true;it.right=right;it.items=items;it.pts=Math.round(right*10*mul)+(st.score-s0);
   st.done=true;c.resetSx=1;render(true);stampFX(right===items,it.pts,fxl);hud();
 }
-function end(){stopT();callReset();st.scr='end';st.msgs=null;st.mq=[];{const e=document.getElementById('msgc');if(e)e.hidden=true}document.body.classList.remove('app','startm','ingame','subm');document.body.classList.add('endm');
+function end(){const scnDay=!!st.scnRun;stopT();callReset();st.scr='end';st.msgs=null;st.mq=[];{const e=document.getElementById('msgc');if(e)e.hidden=true}document.body.classList.remove('app','startm','ingame','subm');document.body.classList.add('endm');
   const un=st.queue.filter(x=>!x.done&&!x.ai).length,dn=st.queue.filter(x=>x.done&&x.by!=='ai').length;st.score-=un*15;
   const acc=st.totalCov?Math.round(st.ok/st.totalCov*100):0;
-  best=bests[mk()]||null;const isBest=!best||st.score>best.score;
+  best=bests[mk()]||null;const isBest=dn>0&&!scnDay&&(!best||st.score>best.score);
   if(isBest&&!st.chR&&!st.vs&&!st.sty&&!st.scnRun){best={score:st.score};bests[mk()]=best;try{localStorage.setItem('claimBest2',JSON.stringify(bests))}catch(e){}}
   const G=dayEnd(acc,un,dn);
   const msg=acc>=95?'민원 0건 예상, 완벽한 심사였습니다.':acc>=80?'꼼꼼한 심사였어요. 놓친 담보 사유만 다시 보세요.':acc>=60?'지침을 한 번 더 펼쳐보고 내일 다시 도전!':'과지급·미지급이 많았어요. 심사 지침부터 확인해 보세요.';
   document.getElementById('barI').style.width='100%';
   document.getElementById('best').textContent=best?best.score:'-';
   const VS=st.vs&&st.ai?(()=>{const A=st.ai,L=AIL[A.lv],w=st.score>A.score?1:st.score<A.score?-1:0;if(w>0){CR.vsW=(CR.vsW||0)+1;unlock('vsWin1');if(A.lv===2)unlock('vsAce')}else if(w<0)CR.vsL=(CR.vsL||0)+1;saveCR();return`<div class="vsr ${w>0?'win':w<0?'lose':''}"><b>${w>0?'🏆 승리!':w<0?'😵 패배':'🤝 무승부'}</b><span>🧑 나 <b>${st.score}</b>점 · ${dn}건 · 정확도 ${st.totalCov?Math.round(st.ok/st.totalCov*100):0}%</span><span>${L.ic} ${L.n} <b>${A.score}</b>점 · ${A.n}건 · 정확도 ${A.tot?Math.round(A.ok/A.tot*100):0}%</span><small>AI 대결 전적 ${CR.vsW||0}승 ${CR.vsL||0}패</small></div>`})():'';
-  app.innerHTML=`<section class="paper end"><h2>${st.gm>=540?'18:00 퇴근!':'업무 종료'}${G.ch?' · 🗓 오늘의 챌린지':''}${VS?' · 🤖 AI 대결':''}${st.sty?` · 📖 ${st.sty.ch+1}장`:''}</h2>${VS}${scnEndHook()}${storyEndHTML(acc,dn,G.gr)}<div class="grd g${G.gr}" aria-label="등급 ${G.gr}">${G.gr}</div><div class="big">${st.score}점</div>
+  if(scnDay){app.innerHTML=`<section class="paper end scnday"><h2>${st.gm>=540?'18:00 퇴근!':'업무 종료'}</h2>${scnEndHook()}${G.wn||''}${(G.nA||[]).length?`<div class="nach">${G.nA.map(id=>{const a=ACH.find(x=>x[0]===id);return`<span>${a[1]} ${a[2]}</span>`}).join('')}</div>`:''}</section>`;window.scrollTo({top:0});return}
+  app.innerHTML=`<section class="paper end"><h2>${st.gm>=540?'18:00 퇴근!':'업무 종료'}${G.ch||G.chF?' · 🗓 데일리 챌린지':''}${VS?' · 🤖 AI 대결':''}${st.sty?` · 📖 ${st.sty.ch+1}장`:''}</h2>${VS}${scnEndHook()}${storyEndHTML(acc,dn,G.gr)}<div class="grd g${G.gr}" aria-label="등급 ${G.gr}">${G.gr}</div><div class="big">${st.score}점</div>
    <p>접수 <b>${st.queue.length}건</b> · 처리 <b>${dn}건</b> · 미처리 <b>${un}건</b>${un?` (−${un*15}점)`:''}</p>
    <p>담보 판단 정확도 <b>${acc}%</b> (${st.ok}/${st.totalCov}) · 완벽 처리 <b>${st.okClaims}건</b></p>
-   <p>${LV[st.lv].n} · ${st.sil?'실손 포함':'실손 제외'} · 접수량 ${VOL[st.vol].n}${G.ch?'':` · ${isBest?'🏆 최고 기록 경신!':'최고 기록 '+best.score+'점'}`}</p><p style="color:#6b625a">${msg}</p>
+   <p>${LV[st.lv].n} · ${st.sil?'실손 포함':'실손 제외'} · 접수량 ${VOL[st.vol].n}${G.ch||scnDay?'':isBest?' · 🏆 최고 기록 경신!':best?` · 최고 기록 ${best.score}점`:''}</p><p style="color:#6b625a">${msg}</p>
    <p>최고 콤보 <b>🔥${st.g.maxC}</b> · 사기 적발 <b>${st.g.fraud}건</b> · 전화 응대 성공 <b>${st.g.callOk}통</b></p>
    ${G.html}
-   <button class="go" id="again">처음 화면으로</button></section>`;
+   ${!scnDay&&!st.tut?'<button class="go ghost" id="shareC">📤 결과 카드 공유</button>':''}<button class="go" id="again">처음 화면으로</button></section>`;
+  st.shareD={mode:G.ch?`🗓 데일리 챌린지 · ${new Date().getMonth()+1}월 ${new Date().getDate()}일`:VS?'🤖 AI 대결':st.sty?`📖 튜토리얼 ${st.sty.ch+1}장`:'📋 샌드박스',title:`${G.gr} 등급`,big:`${st.score}점`,lines:[`처리 ${dn}건 · 담보 정확도 ${acc}%`,`최고 콤보 🔥${st.g.maxC} · 사기 적발 ${st.g.fraud}건`,G.ch&&st.lastCh?st.lastCh.row:`${LV[st.lv].n} · ${st.sil?'실손 포함':'실손 제외'}`],tx:G.ch?chText():null};
   if(G.fan)setTimeout(()=>sfx('fan'),300);
 }
 app.addEventListener('click',e=>{
@@ -1800,6 +1813,7 @@ app.addEventListener('click',e=>{
   if(b.id==='back'||b.id==='back2'){inbox();window.scrollTo({top:0});return}
   if(b.dataset.q!==undefined){openQ(+b.dataset.q);return}
   if(b.id==='quit'){quitAsk();return}
+  if(b.id==='shareC'){shareCard(st.shareD);return}
   if(b.id==='again'){st.sty=null;start();return}
   if(b.id==='stbeg'){st.sty=null;st.scr='start';storyMap();return}
   if(b.id==='stSkipTog'){CR.stSkip=CR.stSkip===false;saveCR();storyMap();return}
@@ -1851,7 +1865,7 @@ app.addEventListener('click',e=>{
   if(b.id==='mbox'){openMbox();return}
   if(b.id==='cbox'){openCbox();return}
   if(b.id==='pull'){if(LS&&LS.time&&LS.arr.length){const nt=LS.arr[0][0];if(st.gm<nt)st.gm=nt;lesArr(false);sfx('coin');inbox(true);return}if(st.sched.length&&!st.tut){st.sched.shift();arrive();sfx('coin');inbox(true)}return}
-  if(b.id==='xfer'&&!st.done){st.xfo=!st.xfo;render(false);return}
+  if(b.id==='xfer'&&!st.done){st.xfo=!st.xfo;render(false);if(st.xfo){const g=document.getElementById('go'),p=document.querySelector('.xfp');requestAnimationFrame(()=>{g&&g.scrollIntoView({block:'nearest'});p&&p.scrollIntoView({block:'nearest'})})}return}
   if(['flag','inv','xfr','xfc'].includes(b.id)&&!st.done){const c=st.c,k=b.id,on=k!=='xfc'&&!c[k];c.flag=c.inv=c.xfr=false;if(on)c[k]=true;st.xfo=false;render(false);return}
   if(b.id==='msb'){openMissions();return}if(b.id==='acb'){openAch();return}if(b.id==='chb'){openCh();return}
   if(b.id==='snd'){togSnd();return}
@@ -1940,13 +1954,13 @@ function start(){document.body.classList.remove('ingame','scene','endm','subm');
   document.getElementById('prog').textContent='0 / 0';document.getElementById('score').textContent='0';
   document.getElementById('best').textContent='-';document.getElementById('barI').style.width='0';
   const bb=sil=>{const x=bests[mk(sil,st.lv,st.vol)];return x?x.score+'점':'기록 없음'},b1=bb(true),b0=bb(false),L=LV[st.lv];
-  const W=st.wz||0;st.wzCur=W;const back='<button class="wzb" id="wzBack">← 처음 화면</button>';
+  const W=st.wz||0;st.wzCur=W;const back='';
   const vsRec=CR.vsW||CR.vsL?` · AI 대결 ${CR.vsW||0}승 ${CR.vsL||0}패`:'';
   if(W===0)app.innerHTML=`<section class="paper end start hmain"><h2>오늘의 심사 시작</h2>${profHTML()}
    <p class="intro">처음이라면 <b>튜토리얼 모드</b>부터! 사수와 함께 심사를 하나씩 배워요. 익숙해지면 <b>샌드박스 모드</b>에서 원하는 조건으로 자유롭게 심사해요.</p>
    <button class="begin scnbtn" id="scnbeg">시나리오 모드<small>${CR.scn&&!CR.scn.end?`${CR.scn.day}일차 · 잔고 ${f(CR.scn.money)}원`:'출근해서 번 돈으로 햄스터·콩벌레와 20일 버티기'}</small></button>
    <button class="begin stbtn" id="stbeg">튜토리얼 모드<small>신입 심사자의 성장기 · ${Object.keys(storyDone()).length}/${STORY.length}장 클리어</small></button>
-   <button class="begin sbbtn" id="sbbeg">샌드박스 모드<small>난이도 · 실손 · 접수량 · AI 대결을 직접 골라요${vsRec}</small></button><p class="mobnote">Optimized for mobile · 모바일 세로 화면 기준으로 제작</p><p class="fictnote">이 게임은 가상의 보험금 심사 시뮬레이션으로, 등장하는 인물·기관·상품·심사 기준은 모두 게임용 가상 설정이며 실제 보험사 및 약관·실무와는 무관합니다.</p><p class="bldline"><span class="bld" id="bld">build 233 · 2026.11.23</span></p></section>`;
+   <button class="begin sbbtn" id="sbbeg">샌드박스 모드<small>난이도 · 실손 · 접수량 · AI 대결을 직접 골라요${vsRec}</small></button><p class="mobnote">Optimized for mobile · 모바일 세로 화면 기준으로 제작</p><p class="fictnote">이 게임은 가상의 보험금 심사 시뮬레이션으로, 등장하는 인물·기관·상품·심사 기준은 모두 게임용 가상 설정이며 실제 보험사 및 약관·실무와는 무관합니다.</p><p class="bldline"><span class="bld" id="bld">build 237 · 2026.11.23</span></p></section>`;
   else app.innerHTML=`<section class="paper end start wz"><h2 class="wzh">🧪 샌드박스 모드</h2><p class="wzp">조건을 고르고 아래 버튼을 누르세요.</p>
    <h3 class="wzs">진행 방식</h3>
    <div class="lvs two" role="group" aria-label="진행 방식"><button data-vsm="0" aria-pressed="${!st.vs}">👤 혼자 심사 <small>최고 기록 도전</small></button><button data-vsm="1" aria-pressed="${!!st.vs}">🤖 AI 대결 <small>${CR.vsW||CR.vsL?`전적 ${CR.vsW||0}승 ${CR.vsL||0}패`:'AI 동료와 점수 대결'}</small></button></div>
@@ -2088,7 +2102,7 @@ function mProg(id,v=1){if(st.tut)return;missions().forEach(m=>{if(m.id!==id||m.d
 /* 업적 */
 const ACH=[['first','🏁','첫 퇴근','하루 근무를 끝까지 마쳤어요'],['s','🌟','S등급 심사관','하루 정산 S등급'],['combo10','🔥','불꽃 콤보','한 근무에서 10연속 정확'],['fraud1','🕵️','첫 사기 적발','보험사기를 처음 적발'],
   ['fraud5','🦅','사기 사냥꾼','보험사기 누적 5건 적발'],['flawless','💯','무결점의 하루','5건 이상 처리 · 정확도 100% · 미처리 0'],['rush','🌪️','폭주 생존','접수량 폭주에서 미처리 0'],['hard','🏔️','베테랑','매우 어려움에서 A등급 이상'],
-  ['calls10','☎️','상담의 달인','고객 전화 누적 10통 응대 성공'],['sil20','🧮','실손 마스터','실손 누적 20건 정확 계산'],['promo','👔','과장님','과장으로 승진'],['rankMax','🎖️','심사 장인','최고 직급 \'심사 장인\' 달성'],['ch','🗓️','챌린저','오늘의 챌린지 완료'],
+  ['calls10','☎️','상담의 달인','고객 전화 누적 10통 응대 성공'],['sil20','🧮','실손 마스터','실손 누적 20건 정확 계산'],['promo','👔','과장님','과장으로 승진'],['rankMax','🎖️','심사 장인','최고 직급 \'심사 장인\' 달성'],['ch','🗓️','챌린저','데일리 챌린지 완료'],
   ['perf50','🎯','정밀 심사','완벽 처리 누적 50건'],['days10','📅','성실 근무','하루 근무 누적 10일'],
   ['allLv','🧗','전 난이도 정복','5개 난이도 모두에서 퇴근'],['trap20','🪤','함정 탐지기','대상 아닌 진단 누적 20건 정확히 부지급'],['car5','🚗','자동차 보상 전문가','자동차·폭행·이륜차 특수 사유 누적 5건 정확 판정'],
   ['implant','🦷','임플란트 판정관','임플란트 청구 건 완벽 처리'],['dxFraud','🔬','위조 감별사','진단명 위조 사기 적발'],['msg10','📩','쪽지 해결사','처리 결과 문의 누적 10회 적절히 회신'],['boss3','🤝','팀장님 오른팔','팀장님 지시 누적 3회 완수'],['thx5','💌','감사 인사 부자','고객 감사 인사 누적 5회'],['nd1','🔎','현장조사 전문가','고지의무 위반 의심 건 첫 현장조사 의뢰 적중'],['story','📖','에이스 심사자','튜토리얼 모드 12장 완료'],['vsWin1','🤖','AI 이겼다!','AI 대결에서 첫 승리'],['vsAce','🦅','인간 승리','에이스 AI를 상대로 승리'],['scnClear','📜','20일 버티기 성공','시나리오 모드에서 파산 없이 20일 완주'],['scnKing','👑','이달의 심사왕','시나리오에서 올해의 심사왕 또는 SIU 스카우트 달성'],['auditOk','🔍','감사 무사 통과','시나리오 감사 주간을 감봉 없이 통과'],['roomFull','🛋️','풀옵션 원룸','시나리오 상점 물품 10종을 모두 구매'],['isoDex','🪲','콩벌레 브리더','도감의 콩벌레 모두 번식 성공'],['isoFarm','💰','콩벌레 재벌','시나리오 한 판에서 콩벌레 분양 수익 6만원 달성'],['hamRare','✨','희귀 햄스터','시나리오에서 희귀 모프 햄스터 만나기'],['hamDex','📖','햄스터 박사','햄스터 모프 10종 모두 만나기'],['hamFam','🐹','햄스터 대가족','햄스터 3마리와 함께 시나리오 끝까지 생존'],['spAll','🐾','특수 동물 박사','특수 동물 5종을 모두 한 번씩 들여보기'],['xfr1','🏢','선 넘지 않는 심사자','지급액 합계 200만원 초과 건을 표준부서로 첫 이관'],['cert','🎓','손해사정사','시나리오에서 손해사정 학원을 3일 다 듣고 자격증 따기'],['save0','🐷','여유로운 저축','여유 난이도 시나리오를 잔고 30만원 이상으로 완주'],['save1','💰','알뜰 사회초년생','보통 난이도 시나리오를 잔고 20만원 이상으로 완주'],['save2','💎','짠테크 장인','빡빡 난이도 시나리오를 잔고 15만원 이상으로 완주']];
@@ -2115,7 +2129,7 @@ function afterSubmit(it,c,right,items,mul){const g=st.g,L=[],perfect=right===ite
 function cmpNext(it,good){const c=it&&it.c;if(!c||!st.scnRun||st.cmpIt!==c)return;if(good||!spOn(scnS(),'hog'))st.evc[good?'ok':'bad']++;if(c.cmpN>=3)return;c.cmpN++;(st.evm=st.evm||[]).push({at:st.gm+R(35,70),fn:()=>{const ca=st.callAll;st.callAll=true;const nc=makeCall(c);st.callAll=ca;if(nc){c.call=nc;nc.state='pending';nc.at=st.gm;toast('😤 그 고객이 또 전화할 것 같아요…')}}});st.evm.sort((a,b)=>a.at-b.at)}
 function callDone(it,k){if(!it||st.tut)return;cmpNext(it,k.end===1);(st.callLog=st.callLog||[]).push({at:st.gm,it,k});if(k.end===1){st.g.callOk++;CR.tot.calls++;mProg('callOk');if(CR.tot.calls>=10)unlock('calls10')}saveCR()}
 /* 근무 시작 */
-function beginDay(){if(!st.scnRun){st.wnMode=null;st.scnRule=st.scnFr=null;st.evm=null;st.scnEvK=null}st.sil=st.pick;st.ai=st.vs&&!st.chR?{lv:st.aiLv||1,score:0,n:0,ok:0,tot:0,cur:null,next:R(3,8)}:null;if(!st.ai)st.vs=false;st.notice=true;TOTAL=LV[st.lv].total;best=st.chR?null:bests[mk()]||null;st.g={combo:0,maxC:0,perfect:0,fraud:0,callOk:0,silOk:0};st.gXp=0;st.newAch=[];
+function beginDay(){if(!st.scnRun){st.wBoss=0;st.wnMode=null;st.scnRule=st.scnFr=null;st.evm=null;st.scnEvK=null}st.sil=st.pick;st.ai=st.vs&&!st.chR?{lv:st.aiLv||1,score:0,n:0,ok:0,tot:0,cur:null,next:R(3,8)}:null;if(!st.ai)st.vs=false;st.notice=true;TOTAL=LV[st.lv].total;best=st.chR?null:bests[mk()]||null;st.g={combo:0,maxC:0,perfect:0,fraud:0,callOk:0,silOk:0};st.gXp=0;st.newAch=[];
   Object.assign(st,{i:0,score:0,ok:0,okClaims:0,totalCov:0,queue:[],gm:0,lateN:0,cur:-1,lastQ:null});
   st.sched=seeded(()=>Array.from({length:st.scnRun&&st.scnCnt?Math.max(0,st.scnCnt-2):Math.max(1,VOL[st.vol].k+R(-2,2))},()=>R(3,528)).sort((a,b)=>a-b));
   msgPlan();arrive();arrive();inbox();window.scrollTo({top:0});startT()}
@@ -2750,9 +2764,9 @@ function openDexHub(k){if(k==='code'){openDex();return}clearInterval(IT.dexT);le
   else if(k==='sp')b=spDexHTML();
   else if(k==='ham')b=`<p class="gmd">🐹 만난 햄스터 ${(CR.hamDex||[]).length}/${HMORPH.length}종 · 시나리오 모드에서 한 번이라도 키워 보면 도감이 열려요</p><div class="scdg">${['드워프','골든'].map(g=>`<h4 class="igh">${g} 햄스터</h4>`+HMORPH.map((m,i)=>[m,i]).filter(([m])=>m.sp===g).map(([m,i])=>{const has=(CR.hamDex||[]).includes(i);return`<div class="scdc${has?'':' no'}"><canvas data-dex="${i}" ${has?'':'data-lk="1"'} width="60" height="44"></canvas><span>${has?m.n:'???'}</span><small>${HRAR[m.r]}</small></div>`}).join('')).join('')}</div>`+`<h4 class="igh">성격</h4><p class="gmd">건강하고 배부른 햄스터는 1마리당 <b>근무 시간 +10%</b>, 그리고 <b>오심 경고 1장</b>을 더 봐줘요. 여기에 성격별 효과가 붙어요.<br>⚠️ 사료를 빼먹은 다음 날은 <b>근무 시간 −5%</b>, 햄스터가 본가로 가면 <b>3일 동안 근무 시간 −10% · 경고 1장 덜</b>, 그리고 시나리오가 끝날 때까지 <b>매일 사료비 3,000원</b>을 본가에 보내야 해요.</p><ul class="covl hpl">${HPDESC.map(([i,e,b])=>`<li><b>${HPERS[i].ic} ${HPERS[i].n}</b><span>${e}</span><span>🐹 ${b}</span></li>`).join('')}</ul>`;
   else b=`<p class="gmd">🪲 발견 ${new Set([...(CR.isoSeen||[]),...(CR.isoDex||[])]).size}/${ISPC.length}종 · 🐣 번식 성공 ${(CR.isoDex||[]).length}종<br>시나리오 모드에서 한 번이라도 들이면 도감이 열려요</p><div class="scdg ig">${[['콩벌레',1],['쥐며느리',0]].map(([gn,rl])=>`<h4 class="igh">${gn} <small>${rl?'위협받으면 공처럼 말아요':'몸을 못 말고 도망가요'}</small></h4>`+ISPC.map((p,i)=>i).filter(i=>ISPC[i].roll===rl).sort((a,b)=>ISPC[a].t-ISPC[b].t||ISPC[a].n.localeCompare(ISPC[b].n,'ko')).map(i=>{const p=ISPC[i],bred=(CR.isoDex||[]).includes(i),got=(CR.isoSeen||[]).includes(i)||bred;return`<div class="scdc${got?'':' no'}"><canvas data-idx="${i}" ${got?'':'data-lk="1"'} width="60" height="40"></canvas><span>${got?p.n+(bred?' 🐣':''):'???'}</span><small>${got?`${ITIERN[p.t]} · ${f(ITIER[p.t])}원`:ITIERN[p.t]}</small></div>`}).join('')).join('')}</div><h4 class="igh">키우는 법</h4><p class="gmd">콩벌레는 <b>부수입</b>이에요. 안 키워도 게임 진행에는 지장이 없지만, 잘 키우면 분양으로 돈을 벌어요.</p><ul class="covl hpl">${ISCARE.map(([a,b,c])=>`<li><b>${a}</b><span>${b}</span>${c?`<span>${c}</span>`:''}</li>`).join('')}</ul>`;
-  const wasDex=!gmo.hidden&&gmo.classList.contains('dexm');gOpen('📖 도감',dexTabs(k)+b);gmo.classList.add('dexm');if(wasDex)gmo.firstElementChild.classList.add('noanim');if(k==='ham'||k==='iso'||k==='sp')scnDexDraw()}
+  const wasDex=!gmo.hidden&&gmo.classList.contains('dexm');gOpen('📖 사전',dexTabs(k)+b);gmo.classList.add('dexm');if(wasDex)gmo.firstElementChild.classList.add('noanim');if(k==='ham'||k==='iso'||k==='sp')scnDexDraw()}
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('#gmo [data-dxt]');if(t)openDexHub(t.dataset.dxt)});
-function openDex(){dexN=100;const wasDex=!gmo.hidden&&gmo.classList.contains('dexm');gOpen('📖 도감',dexTabs('code')+`<input id="dexq" class="dexq" type="search" placeholder="진단명·코드·초성 (예: 통풍, M10, ㄷㅅ)" autocomplete="off" aria-label="진단코드 검색"><p class="dexn" id="dexn" aria-live="polite"></p><div class="dexl" id="dexl"></div><p class="dexsrc">KCD 9차 (건강보험심사평가원 상병분류기호, 2025.12.16)</p>`);gmo.classList.add('dexm');if(wasDex)gmo.firstElementChild.classList.add('noanim');dexRender();dexLoad().then(dexRender).catch(()=>{const L=document.getElementById('dexl');if(L)L.innerHTML='<p class="gmd">이 브라우저에서는 코드 목록을 열 수 없어요. 최신 브라우저로 열어 주세요.</p>'});setTimeout(()=>{const i=document.getElementById('dexq');if(i&&!MOBQ())i.focus()},50)}
+function openDex(){dexN=100;const wasDex=!gmo.hidden&&gmo.classList.contains('dexm');gOpen('📖 사전',dexTabs('code')+`<input id="dexq" class="dexq" type="search" placeholder="진단명·코드·초성 (예: 통풍, M10, ㄷㅅ)" autocomplete="off" aria-label="진단코드 검색"><p class="dexn" id="dexn" aria-live="polite"></p><div class="dexl" id="dexl"></div><p class="dexsrc">KCD 9차 (건강보험심사평가원 상병분류기호, 2025.12.16)</p>`);gmo.classList.add('dexm');if(wasDex)gmo.firstElementChild.classList.add('noanim');dexRender();dexLoad().then(dexRender).catch(()=>{const L=document.getElementById('dexl');if(L)L.innerHTML='<p class="gmd">이 브라우저에서는 코드 목록을 열 수 없어요. 최신 브라우저로 열어 주세요.</p>'});setTimeout(()=>{const i=document.getElementById('dexq');if(i&&!MOBQ())i.focus()},50)}
 let dexT=null;document.addEventListener('input',e=>{if(e.target.id==='dexq'){dexN=100;clearTimeout(dexT);dexT=setTimeout(dexRender,120)}});
 document.addEventListener('click',e=>{if(e.target.closest('#dexmore')){dexN+=100;dexRender()}});
 
@@ -2803,7 +2817,8 @@ function scnNew(d){d=d==null?1:d;return{dif:d,day:1,money:SCD[d].m,arr:0,hams:[O
 function scnS(){const S=scnHamFix(CR.scn||(CR.scn=scnNew()));if(S.news&&S.news.some(x=>/30일/.test(x)))S.news=S.news.map(x=>x.replace(/30일/g,'20일'));return S}
 const scnLv=d=>d<=5?0:d<=10?1:d<=15?2:3,scnSil=d=>d>=9;
 function scnBusyDays(){const D=[];let tries=0;while(D.length<2&&tries++<200){const d=8+Math.floor(Math.random()*11);if(d<SCN_DAYS&&D.every(x=>Math.abs(x-d)>=4))D.push(d)}return D.sort((a,b)=>a-b)}
-function scnVol(S,d){if(d>=SCN_DAYS)return{lo:18,hi:20,n:'매우 많음',w:'last'};const B=d<=3?{lo:4,hi:8,n:'매우 적음'}:d<=8?{lo:6,hi:10,n:'적음'}:{lo:8,hi:12,n:'보통'};if(d<SCN_DAYS&&(S.busy||[]).includes(d))return{lo:Math.round(B.lo*1.5),hi:Math.round(B.hi*1.5),n:'많음',w:'busy'};return B}
+function scnVol(S,d){const V=scnVol0(S,d);if(S&&S.quitD&&d>S.quitD&&V.w!=='last')return Object.assign({},V,{lo:V.lo+2,hi:V.hi+2,n:V.n+' · 인력 공백 +2'});return V}
+function scnVol0(S,d){if(d>=SCN_DAYS)return{lo:18,hi:20,n:'매우 많음',w:'last'};const B=d<=3?{lo:4,hi:8,n:'매우 적음'}:d<=8?{lo:6,hi:10,n:'적음'}:{lo:8,hi:12,n:'보통'};if(d<SCN_DAYS&&(S.busy||[]).includes(d))return{lo:Math.round(B.lo*1.5),hi:Math.round(B.hi*1.5),n:'많음',w:'busy'};return B}
 function scnHam1(h,C){if(h.sick)return`🤒 아파요 (${h.sd+1}일째)`;if(C.hu>=1||C.di>=3)return'😟 힘들어 보여요';return'😊 건강해요'}
 /* ===== 시나리오: 도트 방 + 클로즈업 (콩벌레 사육통 · 햄스터 케이지) ===== */
 function PXG(cv){const g=cv.getContext('2d');g.imageSmoothingEnabled=false;const o={g,W:cv.width,H:cv.height};
@@ -3065,6 +3080,10 @@ function buyItem(k){const S=scnS();if(k==='acad'){const pr=spOn(S,'ferret')?Math
   if(U&&lv){if(lv>=U.length)return;const p0=U[lv][1],pr=spOn(S,'ferret')?Math.round(p0*.9):p0;if(S.money<pr||S.pend)return;S.money-=pr;F[k]=lv+1;saveCR();sfx('coin');toast(`⬆ ${U[lv][0]}(으)로 업그레이드했어요!`);scnHub.keep=1;scnHub();scnHub.keep=0;openShop();return}
   const pr=spOn(S,'ferret')?Math.round(it[2]*.9):it[2];if(F[k]||S.money<pr||S.pend)return;S.money-=pr;F[k]=1;if(SHOP.every(x=>F[x[0]]))unlock('roomFull');saveCR();sfx('coin');toast(`📦 ${it[1]} 배송 완료! 방에 놓였어요.`);scnHub.keep=1;scnHub();scnHub.keep=0;openShop()}
 function openCal(){const S=scnS(),L=[];for(let d=S.day;d<=Math.min(SCN_DAYS,S.day+4);d++){const t=[];if(d===SCN_DAYS)t.push('🚨 월말 마감 (접수 폭주)');{const A=scnAucFix(S);if(A&&!A.done&&A.d===d)t.push('🔨 희귀종 경매 (정산 때)')}if(d===11||d===16)t.push(`💸 감봉 인상 (건당 ${f(scnPenU(d))}원)`);if((S.busy||[]).includes(d))t.push('⚠️ 접수 몰리는 날');
+  if(S.quitD&&d===S.quitD)t.push(`👋 동기 ${S.quitN} 마지막 출근`);if(S.quitD&&d===S.quitD+1)t.push('📈 인력 공백 (접수 +2건 · 수당 +2,000원)');
+  if(S.jrD&&d===S.jrD)t.push(`🐣 신입 ${S.jrN} 입사 (사수 맡기)`);
+  if(d===10&&S.rank==null)t.push('📋 승진 심사 (1~10일차 정확도 85% 이상이면 선임)');
+  if(d===7||d===17)t.push('👑 주간 보스 건');if(d===19)t.push('🌙 마감 전야 (미처리 0건이면 +5,000원)');
   if(d===4||d===9){const V=scnVol({busy:[]},d);t.push(`📈 접수량 늘어남 (${V.n} · ${V.lo}~${V.hi}건)`)}
   if(d>1&&scnLv(d)!==scnLv(d-1))t.push(`🧠 심사 난이도 ↑ (${LV[scnLv(d)].n})`);
   if(d===9)t.push('🏥 실손 청구 접수 시작');
@@ -3422,7 +3441,7 @@ function hamDrawWheel(o,part){const W=HWHEEL;const ring=(yy,c)=>{let pv=null;for
 function hamDrawBowl(o){const c=hP(HBOWL[0],HBOWL[1],0);for(let y=-4;y<=3;y++)for(let x=-10;x<=10;x++){const e=(x/10)**2+((y+.5)/4)**2;if(e>1)continue;o.p(c[0]+x,c[1]+y,e>.75?'#8c8273':y<-1&&e<.55?'#cfc8bb':'#fff')}
   if(HZ.food>0){const n=Math.ceil(HZ.food*12);for(let i=0;i<n;i++)o.r(c[0]-6+(i*4)%12,c[1]-3-Math.floor(i/3),2,1,i%2?'#e08a00':'#5d4630')}}
 /* 햄스터 3D 도트 렌더 (타원체 조합 + 조명 + 깊이버퍼 + 외곽선) */
-const H3={N:56,zb:null,cb:null};
+const H3={N:76,zb:null,cb:null};
 function ham3D(o,X,Y,Z,a,pose,t,sc,M){M=M||HMORPH[0];sc=(sc||1)*(M.sz||1);const N=H3.N,c0=hP(X,Y,Z),ox=Math.round(c0[0])-N/2,oy=Math.round(c0[1])-N/2-6;
   if(!H3.zb){H3.zb=new Float32Array(N*N);H3.cb=new Array(N*N)}const zb=H3.zb,cb=H3.cb;zb.fill(-1e9);cb.fill(null);
   const ca=Math.cos(a),sa=Math.sin(a),walk=pose==='walk'||pose==='run',ph=t*(pose==='run'?22:12),bob=walk?Math.abs(Math.sin(ph))*.35:0;
@@ -3592,7 +3611,7 @@ function hamStep(dt){if(HZ.gone)return;HZ.hearts.forEach(x=>{x.t-=dt;x.y-=dt*9})
 function hamDrawHam(o,h){if(h.st==='house')return;const s=h.st,p=hamScr(h);
   let pose=['roll','belly','stretch','scratch','loaf','climb','shake'].includes(s)?s:s==='walk'||(s==='follow'&&h.mv)?(h.run?'run':'walk'):s==='wheel'?'run':s==='eat'?(HZ.hu?'sit':'eat'):s==='groom'?'groom':s==='dig'?'dig':s==='stand'||s==='drink'?'stand':s==='box'?(Math.floor(h.pt*6)%2?'stand':'groom'):s==='lie'?'lie':s==='sniff'||s==='sit'||s==='wait'?(Math.floor(h.fr*1.5)%3===0?'sniff':'sit'):'sit';
   if(s!=='wheel')for(let x=-5;x<=5;x++)for(let y=-1;y<=1;y++)if((x/5.2)**2+(y/1.4)**2<=1)o.p(p[0]+x,p[1]+y,'rgba(60,40,20,.25)');
-  if(s==='wheel'){const W=HWHEEL;ham3D(o,W.x,W.y+W.w/2,W.z-W.r+.4,0,'run',ZM.t,.5,h.M)}else ham3D(o,h.x,h.y,0,h.ang,pose,['roll','stretch'].includes(s)?h.pt:ZM.t+h.i*1.7,.5,h.M);
+  if(s==='wheel'){const W=HWHEEL;ham3D(o,W.x,W.y+W.w/2,W.z-W.r+.4,0,'run',ZM.t,.84,h.M)}else ham3D(o,h.x,h.y,0,h.ang,pose,['roll','stretch'].includes(s)?h.pt:ZM.t+h.i*1.7,.84,h.M);
   const x=Math.round(p[0])-6,y=Math.round(p[1])-9;
   if(h.sick){const tx=x+11,ty=y-6;o.r(tx,ty,2,6,'#fff');o.r(tx,ty+3,2,3,'#b35c00');o.line(tx-1,ty,tx-1,ty+6,'#1d1a17');o.line(tx+2,ty,tx+2,ty+6,'#1d1a17');o.r(tx-1,ty+6,4,2,'#b35c00')}
   if(s==='eat'&&HZ.hu){const bx=x+10,by=y-7;o.r(bx,by,10,6,'#fff');o.line(bx,by,bx+9,by,'#1d1a17');o.line(bx,by+5,bx+9,by+5,'#1d1a17');o.line(bx,by,bx,by+5,'#1d1a17');o.line(bx+9,by,bx+9,by+5,'#1d1a17');[2,4,6].forEach(i=>o.p(bx+i+.5,by+3,'#1d1a17'))}
@@ -3659,7 +3678,7 @@ function scnHub(){storyPrep();if(!scnHub.keep)rmPopX();document.body.classList.r
     hamW=!H.gone&&(H.hu||H.di>=3||H.sick),isoW=I.dry,petW=p&&(p.hu||(p.k==='hog'&&p.ign));
   const act=items.filter(x=>x.act);
   app.innerHTML=`<section class="paper end start wz scn hubc">
-   <div class="hbtop"><h2 class="wzh">📜 ${S.day}일차 <small>/ ${SCN_DAYS}</small></h2><span class="hbm">${scnDif(S).n} · <b>${f(S.money)}원</b>${S.arr?` · <b class="scw">⚠ 월세 ${S.arr}일 밀림</b>`:''}</span></div>
+   <div class="hbtop"><h2 class="wzh">📜 ${S.day}일차 <small>/ ${SCN_DAYS}</small></h2><span class="hbm">${S.rank?'👔 선임 · ':''}${scnDif(S).n} · <b>${f(S.money)}원</b>${S.arr?` · <b class="scw">⚠ 월세 ${S.arr}일 밀림</b>`:''}</span></div>
    ${scnRoom(S)}
    <div class="hbcond" title="방 안 물건을 눌러 보세요 (달력·우편함·PC·침대·창문·냉장고)"><b>🔋 ${c}</b><div class="cbar2" role="progressbar" aria-valuenow="${c}" aria-valuemin="0" aria-valuemax="100" aria-label="컨디션"><i style="width:${c}%" class="${c<45?'low':''}"></i></div><span>${condLab(c)} · ${WXN[S.wx||'sun']}</span></div>
    <div class="hbchips" id="hbchips">${chip(`🐹 ${H.gone?'본가':`${H.n}마리`}${hamW?' ⚠':''}`,hamW)}${chip(`🪲 ${isoTotal(I)}마리${isoW?' ⚠':''}`,isoW)}${p?chip(`${D.ic} ${spOn(S)?'능력 ✨':'능력 꺼짐'}${petW?' ⚠':''}`,petW):''}</div><div class="hbd" id="hbpd" hidden></div>
@@ -3669,7 +3688,7 @@ function scnHub(){storyPrep();if(!scnHub.keep)rmPopX();document.body.classList.r
    <div class="hbft"><button class="wzb" id="hbRule" aria-expanded="false">ⓘ 규칙</button><button class="wzb" id="scnRst">${st.rstArm?'한 번 더 누르면 초기화':'처음부터 다시'}</button></div></div><div class="hbd" id="hbrd" hidden></div></section>`;scnRoomMount(S);scnDexDraw();hubFit();if(!st.hdexKeep)window.scrollTo({top:0});st.hdexKeep=0}
 function hubFit(){const cv=document.querySelector('.hubc #scrc');if(!cv)return;cv.style.height='';const cur=cv.offsetHeight,ex=innerHeight-document.documentElement.scrollHeight,w=cv.parentElement.clientWidth-6,mx=Math.min(300,w*164/200);cv.style.height=Math.round(innerWidth>=1000?mx:Math.max(130,Math.min(mx,cur+ex-4)))+'px';cv.style.width='auto'}
 addEventListener('resize',()=>{if(document.querySelector('.hubc'))hubFit()});
-function scnRuleHTML(S){return`<p class="scrule">정확하게 처리한 건마다 <b>2,500원</b>, 기본급 <b>12,000원</b>. 오심은 하루 3건까지 경고, 넘기면 건당 감봉 — <b>1~10일차 3,000원 · 11~15일차 5,000원 · 16~20일차 7,000원</b> (오늘 ${f(scnPenU(S.day))}원). 월세는 매일 <b>${f(scnRent(S))}원</b>, 3일 밀리면 쫓겨나요.${scnDif(S).pen>1?' <b>빡빡 난이도라 감봉이 2배</b>예요.':''}</p><p class="gmd">방 안 물건을 눌러 보세요: 📅 달력 · 🚪 우편함 · 🖥 상점 · 🛏 침대 · 🪟 창문 · 🧊 냉장고 · 가구 ${SHOP.filter(x=>(S.furn||{})[x[0]]).length}/${SHOP.length}개</p>`}
+function scnRuleHTML(S){const RK=S.rank&&S.day>10;return`<p class="scrule">정확하게 처리한 건마다 <b>${RK?'3,000':'2,500'}원</b>, 기본급 <b>12,000원</b>${RK?' + 선임 수당 <b>3,000원</b>':''}${S.quitD&&S.day>S.quitD?' + 인력 공백 수당 <b>2,000원</b>':''}. 오심은 하루 3건까지 경고, 넘기면 건당 감봉 — <b>1~10일차 3,000원 · 11~15일차 5,000원 · 16~20일차 7,000원</b> (오늘 ${f(scnPenU(S.day))}원). 월세는 매일 <b>${f(scnRent(S))}원</b>, 3일 밀리면 쫓겨나요.${scnDif(S).pen>1?' <b>빡빡 난이도라 감봉이 2배</b>예요.':''}</p><p class="scrule">📋 <b>10일차 승진 심사</b>: 그때까지 정확도 85% 이상이면 선임 (수당 +3,000원 · 건당 +500원 · 감봉 +1,000원). 👑 <b>7·17일차 보스 건</b>: 완벽 처리 +10,000원. 🌙 <b>19일차</b>: 미처리 0건이면 +5,000원. 📨 실수는 며칠 뒤 <b>후일담</b>으로 돌아와요 (과지급 환수·민원·놓친 사기 −2,000~3,000원, 잡은 사기 검거 +3,000원).</p><p class="gmd">방 안 물건을 눌러 보세요: 📅 달력 · 🚪 우편함 · 🖥 상점 · 🛏 침대 · 🪟 창문 · 🧊 냉장고 · 가구 ${SHOP.filter(x=>(S.furn||{})[x[0]]).length}/${SHOP.length}개</p>`}
 function hamDexDraw(cv,i,t){const o=PXG(cv),W=cv.width,H=cv.height,A=(W/2-HOX)/HKK,B=(H*.74-HOY)/(HKK/2);o.g.clearRect(0,0,W,H);for(let x=-9;x<=9;x++)for(let y=-2;y<=2;y++)if((x/9.5)**2+(y/2.4)**2<=1)o.p(W/2+x,H*.74+y+1,'rgba(40,30,20,.16)');ham3D(o,(A+B)/2,(B-A)/2,0,t*.6,'sit',t,1.05,cv.dataset.lk?Object.assign({},HMORPH[i],{b:'#8c8273',w:'#8c8273',e:'#8c8273',pk:'#8c8273',s:'#8c8273',pat:'plain'}):HMORPH[i])}
 function scnDexDraw(){clearInterval(IT.dexT);const cs=[...document.querySelectorAll('canvas[data-idx],canvas[data-dex],canvas[data-spx]')];if(cs.length){let t=0;const dr=()=>{t+=.12;cs.forEach(c=>{if(!document.body.contains(c))return;if(c.dataset.spx)spDexDraw(c,c.dataset.spx,t,!!c.dataset.lk);else if(c.dataset.idx!=null)isoDexDraw(c,+c.dataset.idx,t+ +c.dataset.idx,!!c.dataset.lk);else hamDexDraw(c,+c.dataset.dex,t+ +c.dataset.dex*.7)});if(!cs.some(c=>document.body.contains(c)))clearInterval(IT.dexT)};dr();IT.dexT=setInterval(dr,120)}}
 /* ===== PC 편의: 단축키 · 증권 나란히 · 담보 설명 펼침 · 접수 레일 ===== */
@@ -3726,13 +3745,26 @@ function scnEvPlan(busy){const P={},N={},used=new Set(busy),rnd=(a,b)=>a+Math.fl
   const take=(k,a,b,x)=>{for(let t=0;t<80;t++){const d=rnd(a,b);if(!used.has(d)){used.add(d);P[d]=Object.assign({k},x||{});return d}}};
   for(let t=0;t<80;t++){const s=rnd(10,13);if([s,s+1,s+2].every(d=>!used.has(d))){[s,s+1,s+2].forEach((d,i)=>{used.add(d);P[d]={k:'audit',i}});break}}
   take('rule',6,13,{r:Math.random()<.5?'ktas3':'burn2'});
-  const lastBusy=Math.max(...busy);take('fraud',5,18);take('mentor',4,18);take('cmp',5,18);take('hosp',6,18);take('favor',3,Math.max(4,lastBusy-2));
+  const lastBusy=Math.max(...busy);take('fraud',5,19);take('mentor',4,19);take('cmp',5,19);take('hosp',6,19);take('favor',3,Math.max(4,lastBusy-2));
   const nu=new Set();const tn=(k,a,b)=>{for(let t=0;t<80;t++){const d=rnd(a,b);if(!nu.has(d)){nu.add(d);N[d]=k;return}}};
-  [0,1].forEach(()=>tn('din',4,18));tn('cold',5,17);tn('esc',4,17);[0,1].forEach(()=>tn('parcel',4,18));return{P,N}}
-function scnEvFix(S){if(!S.evp){const E=scnEvPlan(S.busy||[]);S.evp=E.P;S.evn=E.N;S.mo={ok:0,bad:0}}return S}
+  [0,1].forEach(()=>tn('din',4,19));tn('cold',5,18);tn('esc',4,18);[0,1].forEach(()=>tn('parcel',4,19));return{P,N}}
+function scnArcNews(S,N){if(S.quitD&&S.day===S.quitD-1)N.push(`👋 동기 <b>${S.quitN}</b>${jo(S.quitN,'이','가')} 내일이 마지막 출근이래요…`);
+  if(S.quitD&&S.day===S.quitD)N.push('📈 내일부터 동기 몫까지 맡아요. 접수 <b>+2건</b> · 인력 공백 수당 <b>+2,000원</b>');
+  if(S.jrD&&S.day===S.jrD-1)N.push(`🐣 내일 신입 <b>${S.jrN}</b> 씨가 와요. 사수는 나예요!`);
+  if(S.day===10&&S.rank!=null)N.push(S.rank?`👔 <b>선임 심사역 승진!</b> 1~10일차 정확도 ${S.promoA}%. 내일부터 직급 수당 <b>+3,000원</b> · 정확 처리 건당 <b>+500원</b>. 대신 감봉도 건당 <b>+1,000원</b>이에요.`:`📋 승진 심사 결과: 정확도 ${S.promoA}% — 이번엔 아쉽게 떨어졌어요. (85% 이상 필요)`);
+  if(S.day===18)N.push('🌙 내일은 <b>마감 전야</b>예요. 미처리 없이 끝내면 팀장님이 <b>+5,000원</b> 준대요.');
+  if(S.day===6||S.day===16)N.push('👑 내일은 <b>주간 보스 건</b>이 들어와요. 푹 쉬어 두세요!');
+  if(S.jrD&&S.day>=S.jrD){const T=S.st||{},n=T.jrOk||0;if(n&&n!==S.jrMsg&&(n===3||n===6)){S.jrMsg=n;N.push(`🐣 신입 ${S.jrN}: "선배님 덕분에 ${n===3?'조금씩 감이 와요':'이제 혼자서도 잘해요'}! 감사합니다 🙇"`)}}}
+function scnEvFix(S){if(!S.evp){const E=scnEvPlan(S.busy||[]);S.evp=E.P;S.evn=E.N;S.mo={ok:0,bad:0}}
+  if(S.quitD==null){const b=Math.max((S.day||1)+1,4);S.quitD=b<=14?b+Math.floor(Math.random()*3):0;if(S.quitD===7||S.quitD===17)S.quitD++;S.quitN=pick(SN)+pick(GN);S.jrD=S.quitD?S.quitD+2:0;if(S.jrD===7||S.jrD===17)S.jrD++;S.jrN=pick(SN)+pick(GN)}return S}
 const scnEv=S=>(S.evp||{})[S.day]||null;
 function evMsg(o){const m=Object.assign({t:'ev',at:st.gm,read:false},o);st.msgAll.push(m);st.mq=[m];st.msgN++;sfx('ding');msgCard();clearTimeout(st.mcT);st.mcT=setTimeout(()=>{st.mq=[];msgCard()},8000);if(st.scr==='inbox')inbox(true)}
-function evJr(){const nm=pick(SN)+pick(GN),q=pick(EVJR),o=[['네, 맞게 처리했어요. 잘했어요!',!!q[1]],['아니에요, 틀렸어요. 다시 처리해 주세요.',!q[1]]];evMsg({kind:'jr',from:`신입 ${nm}`,title:'🐣 신입 검토 요청',text:`선배님, 신입 ${nm}입니다! 방금 처리한 건인데 맞는지 봐 주세요 🙏<br>${q[0]}`,opts:o,why:q[2]})}
+function evAft(a){const T={over:['준법감시팀','💸 과지급 환수 요청',`며칠 전 <b>${a.who}</b> 고객님 건이 정답보다 <b>${f(a.diff)}원 많이</b> 지급됐어요. 환수 안내가 나갔고 고객님이 많이 당황하셨대요.<br>이번 건은 <b>2,000원 감봉</b>이에요.`,'💸 과지급 환수 (후일담)',-2000],
+    under:['고객센터','📞 "보험금이 덜 나왔어요" 민원',`<b>${a.who}</b> 고객님이 보험금이 <b>${f(a.diff)}원 덜</b> 나왔다고 민원을 넣으셨어요. 추가 지급으로 마무리했지만 처리 지연 민원이라 <b>2,000원 감봉</b>이에요.`,'📞 미지급 민원 (후일담)',-2000],
+    fmiss:['SIU(보험사기조사팀)','🚨 놓친 사기 건 적발',`지난번 <b>${a.who}</b> 고객 건, 서류 위조였어요. 다른 건을 조사하다가 저희가 찾아냈어요. 이미 지급된 돈은 환수 중이에요.<br>다음엔 서류끼리 꼭 대조해 주세요. <b>3,000원 감봉</b>이에요.`,'🚨 놓친 사기 건 (후일담)',-3000],
+    fcat:['관할 경찰서 수사과','👮 수사 협조 감사',`안녕하세요, 수사과입니다. 조사 의뢰해 주신 <b>${a.who}</b> 건이 계기가 돼서 <b>보험사기 일당</b>을 검거했습니다. 협조에 깊이 감사드립니다.<br>회사에서도 <b>포상금 3,000원</b>이 나왔어요!`,'👮 사기 검거 포상 (후일담)',3000]}[a.k];
+  if(!T)return;evMsg({kind:'aft',from:T[0],title:T[1],text:T[2],lb:T[3],amt:T[4]})}
+function evJr(n){const nm=n||pick(SN)+pick(GN),q=pick(EVJR),o=[['네, 맞게 처리했어요. 잘했어요!',!!q[1]],['아니에요, 틀렸어요. 다시 처리해 주세요.',!q[1]]];evMsg({kind:'jr',from:`신입 ${nm}`,title:'🐣 신입 검토 요청',text:`선배님, 신입 ${nm}입니다! 방금 처리한 건인데 맞는지 봐 주세요 🙏<br>${q[0]}`,opts:o,why:q[2]})}
 function evHosp(){const q=pick(EVHS),who=pick(SN)+pick(GN),o=[['정정된 코드도 보장 대상이라 지급 결과를 그대로 유지합니다.',!!q[3]],['보장 대상이 아니게 됐으니 환수 절차를 진행합니다.',!q[3]],['이미 지급이 끝난 건이라 다시 볼 수 없습니다.',false]].sort(()=>Math.random()-.5);
   evMsg({kind:'hosp',from:`${pick(['서울','연세','한빛','새봄'])}${pick(['내과','정형외과','비뇨의학과','의원'])} 원무과`,title:'🏥 진단서 정정 연락',text:`안녕하세요, 원무과입니다. 지난주 ${who} 고객님 <b>${q[0]}</b> 청구 때 드린 진단서 코드를 잘못 적었어요 😥<br><b>${q[1]}</b> → <b>${q[2]}</b> 로 정정된 진단서를 다시 보내드립니다.`,opts:o,why:q[3]?'정정된 코드도 같은 질병 분류라 보장 대상이에요. 지급 유지.':'정정된 코드는 이 담보의 보장 대상이 아니에요. 환수 대상이에요.'})}
 function evRecl(r){const nm=r.who||'고객';
@@ -3742,6 +3774,12 @@ function evRecl(r){const nm=r.who||'고객';
 function scnEvStart(S){const E=scnEv(S),M=[];st.evc={ok:0,bad:0};st.cmpIt=null;st.evm=[];
   if(scnE0(S)==='quiz')M.push([R(40,200),evQuiz]);
   {const RL=S.recl||[],i=RL.findIndex(r=>r.d===S.day);if(i>=0&&Math.random()<.7){const r=RL.splice(i,1)[0];M.push([R(90,330),()=>evRecl(r)])}}
+  if(S.quitD&&S.quitD===S.day)M.push([R(30,110),()=>evMsg({kind:'bye',from:`동기 ${S.quitN}`,title:'👋 동기의 마지막 출근',text:`나 오늘이 마지막 출근이야… 그동안 진짜 고마웠어 🥲<br>내 담당 건들은 내일부터 너한테 넘어갈 거야. 미안해!`,opts:[['고생 많았어! 새 회사에서도 잘 지내 🍀',true],['가지 마… 나 혼자 어떡해 😭',true]],why:'동기: "자주 연락하자! 너 진짜 잘하잖아." — 내일부터 접수가 <b>2건</b> 늘고, <b>인력 공백 수당 2,000원</b>이 붙어요.'})]);
+  if(S.jrD&&S.jrD===S.day)M.push([5,()=>evMsg({from:'보상심사팀 팀장',title:'🐣 신입 사수 지정',text:`팀장입니다. 오늘 신입 <b>${S.jrN}</b> 씨가 들어왔어요. 사수는 당신이에요!<br>앞으로 매일 한 건씩 쪽지로 검토를 부탁할 거예요. <b>정확히 봐 주면 건당 +2,000원</b>이에요.`})]);
+  if(S.jrD&&S.day>=S.jrD)M.push([R(150,430),()=>evJr(S.jrN)]);
+  {const A=(S.aft||[]).filter(a=>a.d===S.day);A.forEach(a=>M.push([R(60,420),()=>evAft(a)]));S.aft=(S.aft||[]).filter(a=>a.d>S.day)}
+  if(S.day===19)M.push([4,()=>evMsg({from:'보상심사팀 팀장',title:'🌙 마감 전야',text:'팀장입니다. 내일이 월말 마감이에요. 오늘 들어온 건을 <b>하나도 남기지 않고</b> 처리하면 <b>+5,000원</b> 줄게요. 내일을 위해 깔끔하게 비워 둬요!'})]);
+  if(S.day===7||S.day===17)M.push([4,()=>evMsg({from:'보상심사팀 팀장',title:'👑 주간 보스 건',text:'팀장입니다. 이번 주 가장 까다로운 건이 오늘 들어와요. 목록에 <b>👑</b> 표시된 건이에요.<br>담보가 많고 함정이 숨어 있으니 서두르지 말아요. <b>완벽하게 처리하면 +10,000원</b>!'})]);
   if(!E){st.evm=M.map(x=>({at:x[0],fn:x[1]}));return}
   const lead=`보상심사팀 ${pick(SN)}${pick(GN)} 팀장`;
   if(E.k==='audit'&&E.i===0)M.push([3,()=>evMsg({from:lead,title:'🔍 감사 주간 시작',text:'팀장입니다. 오늘부터 <b>3일간 본사 감사</b>가 있어요.<br>이 기간엔 경고를 넘긴 오심 감봉이 <b>2배</b>예요. 3일 동안 감봉 없이 버티면 <b>감사 통과 보너스</b>가 나와요!'})]);
@@ -3786,8 +3824,16 @@ function scnGo(){const S=scnS();if(S.esc&&hamAlive(S).length){toast('🐹 햄스
   if(hamAlive(S).length&&S.cage.hu)st.scnBoost=Object.assign({},st.scnBoost,{t:(st.scnBoost.t||1)*.95});
   {const F=S.furn||{};let m=condMul(condOf(S));if(F.coffee)m*=upgV(S,'coffee',1);if(F.tunnel&&hamAlive(S).some(h=>hamOK(h,S.cage)))m*=1.05;if(S.hamPlay===S.day&&hamAlive(S).length)m*=1.05;if(S.petPlay===S.day&&spOf(S))m*=1.05;if(S.jobT===S.day)m*=.95;if(scnE0(S)==='coffee')m*=1.05;if(S.wheelB===S.day&&hamAlive(S).length)m*=1.1;if(S.ferMis===S.day&&spOn(S,'ferret'))m*=.95;st.scnBoost=Object.assign({},st.scnBoost,{t:(st.scnBoost.t||1)*m});st.silChk=+((S.furn||{}).silc||0)>=3?2:0;st.scnHint=(S.hint||0)+(S.cert?1:0);S.hint=0;if(S.cert)st.scnBoost=Object.assign({},st.scnBoost,{waive:(st.scnBoost.waive||0)+1});if(spOn(S,'hog'))st.scnBoost=Object.assign({},st.scnBoost,{free:(st.scnBoost.free||0)+1})}
   if(S.guilt>0){st.scnBoost=Object.assign({},st.scnBoost,{t:(st.scnBoost.t||1)*.9,free:(st.scnBoost.free||0)-1});S.guilt--}
-  const E=scnEv(S);st.scnEvK=E?E.k:null;{const V=scnVol(S,S.day);let n=V.lo+Math.floor(Math.random()*(V.hi-V.lo+1));if(E&&E.k==='favor'&&E.a===1){n+=2;S.favor=(S.favor||0)+1}if(S.favor&&V.w==='busy'){n=Math.max(1,n-2);S.favor--}st.scnCnt=n}st.scnRule=E&&E.k==='rule'?E.r:null;st.scnFr=E&&E.k==='fraud'?.3:null;st.scnRun=true;st.sty=null;st.vs=false;st.chR=null;st.lv=scnLv(S.day);st.pick=scnSil(S.day);st.vol=0;beginDay();st.wnMode=`시나리오 ${S.day}일차`;scnEvStart(S);if(S.mom){const nm=S.mom;S.mom=null;st.evm.push({at:R(70,160),fn:()=>evMsg({kind:'mom',from:'엄마',title:'📱 엄마',text:`${nm} 잘 지내고 있어~ 해바라기씨 주니까 엄청 잘 먹더라 🐹<br>근데 너는 괜찮니? 요즘 많이 바빠? 밥은 챙겨 먹고 다니고?`,opts:[['응 괜찮아~ 요즘 일이 좀 많았어. 고마워 엄마.',true],['미안해… 잘 못 챙겨서. 주말에 보러 갈게!',true]],why:'엄마: "그래, 너무 무리하지 말고. 힘들면 언제든 전화해 ❤️" — 마음이 조금 가벼워졌어요. (걱정 하루 줄어듦)'})});st.evm.sort((a,b)=>a.at-b.at)}}
-function scnEndHook(){if(!st.scnRun)return'';st.scnRun=false;const S=scnS(),mine=st.queue.filter(x=>x.done&&x.by!=='ai'&&!x.ai),ok=mine.filter(x=>x.right===x.items).length,bad=mine.length-ok,un=st.queue.filter(x=>!x.done&&!x.ai).length,B=st.scnBoost||{free:0,waive:0},warn=Math.max(0,bad-3-B.free),wv=Math.min(warn,B.waive),base=12000,perf=ok*2500,E=scnEv(S),aud=E&&E.k==='audit',pen=(warn-wv)*scnPenU(S.day)*(aud?2:1)*scnDif(S).pen,ex=[],MA=st.msgAll||[];
+  const E=scnEv(S);st.scnEvK=E?E.k:null;{const V=scnVol(S,S.day);let n=V.lo+Math.floor(Math.random()*(V.hi-V.lo+1));if(E&&E.k==='favor'&&E.a===1){n+=2;S.favor=(S.favor||0)+1}if(S.favor&&V.w==='busy'){n=Math.max(1,n-2);S.favor--}st.scnCnt=n}st.scnRule=E&&E.k==='rule'?E.r:null;st.scnFr=E&&E.k==='fraud'?.3:null;st.scnRun=true;st.wBoss=(S.day===7||S.day===17)?1:0;st.sty=null;st.vs=false;st.chR=null;st.lv=scnLv(S.day);st.pick=scnSil(S.day);st.vol=0;beginDay();st.wnMode=`시나리오 ${S.day}일차`;scnEvStart(S);if(S.mom){const nm=S.mom;S.mom=null;st.evm.push({at:R(70,160),fn:()=>evMsg({kind:'mom',from:'엄마',title:'📱 엄마',text:`${nm} 잘 지내고 있어~ 해바라기씨 주니까 엄청 잘 먹더라 🐹<br>근데 너는 괜찮니? 요즘 많이 바빠? 밥은 챙겨 먹고 다니고?`,opts:[['응 괜찮아~ 요즘 일이 좀 많았어. 고마워 엄마.',true],['미안해… 잘 못 챙겨서. 주말에 보러 갈게!',true]],why:'엄마: "그래, 너무 무리하지 말고. 힘들면 언제든 전화해 ❤️" — 마음이 조금 가벼워졌어요. (걱정 하루 줄어듦)'})});st.evm.sort((a,b)=>a.at-b.at)}}
+function scnEndHook(){if(!st.scnRun)return'';st.scnRun=false;const S=scnS(),mine=st.queue.filter(x=>x.done&&x.by!=='ai'&&!x.ai),ok=mine.filter(x=>x.right===x.items).length,bad=mine.length-ok,un=st.queue.filter(x=>!x.done&&!x.ai).length,B=st.scnBoost||{free:0,waive:0},warn=Math.max(0,bad-3-B.free),wv=Math.min(warn,B.waive),base=12000,perf=ok*2500,E=scnEv(S),aud=E&&E.k==='audit',RK=S.rank&&S.day>10,pen=(warn-wv)*(scnPenU(S.day)+(RK?1000:0))*(aud?2:1)*scnDif(S).pen,ex=[],MA=st.msgAll||[];
+  if(S.quitD&&S.day>S.quitD)ex.push(['👥 인력 공백 수당',2000]);
+  if(RK){ex.push(['👔 선임 직급 수당',3000]);if(ok)ex.push([`👔 선임 성과 가산 (${ok}건 × 500원)`,ok*500])}
+  {const Bs=mine.find(x=>x.c.boss);if(Bs)ex.push(Bs.right===Bs.items?['👑 주간 보스 건 완벽 처리',10000]:['👑 주간 보스 건 (아쉽게 놓침)',0])}
+  MA.filter(m=>m.kind==='aft').forEach(m=>ex.push([m.lb,m.amt]));
+  if(S.day===19)ex.push(un?[`🌙 마감 전야 (미처리 ${un}건 남음)`,0]:['🌙 마감 전야 미처리 0건',5000]);
+  if(S.day<SCN_DAYS){const plain=c=>!c.flag&&!c.inv&&!c.xfr&&!isBig(c)&&!c.fraud&&!c.nd,tot=c=>c.ans.reduce((a,x,i)=>a+(c.covs[i]==='pay'?0:x.amt||0),0),C=[];
+    mine.forEach(x=>{const c=x.c;if(c.fraud&&!c.flag){if(Math.random()<.7)C.push({k:'fmiss',who:c.who})}else if(c.fraud&&c.flag){if(Math.random()<.5)C.push({k:'fcat',who:c.who})}else if(plain(c)&&!c.fr&&x.right!==x.items&&Math.random()<.6){const d=sumPick(c)-tot(c);if(d>0)C.push({k:'over',who:c.who,diff:d});else if(d<0)C.push({k:'under',who:c.who,diff:-d})}});
+    const A=S.aft||(S.aft=[]);C.sort(()=>Math.random()-.5).slice(0,2).forEach(a=>{a.d=Math.min(SCN_DAYS,S.day+2+Math.floor(Math.random()*2));A.push(a)});S.aft=A.slice(-6)}
   if(aud){S.audP=(E.i===0?0:S.audP||0)+(warn-wv);if(E.i===2&&!S.audP){ex.push(['🔍 감사 통과 보너스',15000]);unlock('auditOk')}}
   if(E&&E.k==='fraud'){const n=mine.filter(x=>x.c.flag&&x.c.fraud).length;if(n)ex.push([`🚨 사기 적발 포상 ${n}건`,n*3000])}
   {const J=MA.filter(m=>m.kind==='jr'&&m.ans!=null&&m.opts[m.ans][1]).length;if(J)ex.push([`🐣 신입 검토 ${J}건`,J*2000])}
@@ -3801,6 +3847,7 @@ function scnEndHook(){if(!st.scnRun)return'';st.scnRun=false;const S=scnS(),mine
   if(S.hamLost)ex.push([`🏡 본가 햄스터 사료비 송금 (${S.hamLost}마리)`,-3000*S.hamLost]);
   {const T=S.st||(S.st={});T.ok=(T.ok||0)+ok;T.bad=(T.bad||0)+bad;T.pen=(T.pen||0)+pen;T.fr=(T.fr||0)+mine.filter(x=>x.c.flag&&x.c.fraud).length;T.frBad=(T.frBad||0)+mine.filter(x=>x.c.flag&&!x.c.fraud).length;
     if(aud&&E.i===2&&!S.audP)T.aud=1;MA.filter(m=>m.kind==='jr'&&m.ans!=null).forEach(m=>{m.opts[m.ans][1]?T.jrOk=(T.jrOk||0)+1:T.jrBad=(T.jrBad||0)+1});if(E&&E.k==='cmp'&&st.evc){T.cmpOk=(T.cmpOk||0)+st.evc.ok;T.cmpBad=(T.cmpBad||0)+st.evc.bad}}
+  if(S.day===10&&S.rank==null){const T=S.st,t=(T.ok||0)+(T.bad||0),a=t?T.ok/t:0;S.promoA=Math.round(a*100);if(a>=.85){S.rank=1;ex.push(['🎉 선임 승진 축하금',10000])}else S.rank=0}
   const exs=ex.reduce((a,x)=>a+x[1],0);st.scnRule=st.scnFr=null;st.evm=null;
   S.pend={ok,bad,un,base,perf,pen,wv,ex,net:base+perf-pen+exs};S.news=[];saveCR();
   return`<div class="vsr win"><b>📜 ${S.day}일차 근무 끝</b><span>정확 처리 ${ok}건 · 오심 ${bad}건${bad?` (경고 ${Math.min(bad,3+B.free)}장${warn?` · 감봉 ${warn-wv}건${wv?` · 감봉 ${wv}건 면제`:''}`:''})`:''} · 미처리 ${un}건</span>${ex.map(x=>`<span>${x[0]} <b>${x[1]<0?'−':'+'}${f(Math.abs(x[1]))}원</b></span>`).join('')}<span>오늘 번 돈 <b>${f(S.pend.net)}원</b></span></div><button class="begin" id="scnSet">🧾 퇴근 정산하기</button>`}
@@ -3849,7 +3896,7 @@ function scnSettle(){storyPrep();document.body.classList.remove('scene');st.scr=
       ng=L.filter(x=>!x.g),U=ng.filter(urg),F=ng.filter(x=>!urg(x)&&x.def),E=ng.filter(x=>!urg(x)&&!x.def),
       fOn=F.filter(x=>X[x.k]),fSum=fOn.reduce((a,x)=>a+x.a,0),eOn=E.filter(x=>X[x.k]),
       fold=(k,ic,t,sub,on)=>`<button class="sxfold" data-sxo="${k}" aria-expanded="${!!O[k]}"><span class="sxn">${ic} ${t}<small>${sub}</small></span><span class="sxa">${on}</span><span class="sxar">${O[k]?'▴':'▾'}</span></button>`,
-      chip=x=>`<button class="sxchip" data-sx="${x.k}" aria-pressed="${!!X[x.k]}" aria-label="${x.n}">${SXS[x.k]||(x.k==='a_pet'?x.n.split(' ')[0]+' 놀기':x.n)}</button>`,
+      chip=x=>`<button class="sxchip" data-sx="${x.k}" aria-pressed="${!!X[x.k]}" aria-label="${x.n}">${SXS[x.k]||(x.k==='a_pet'?x.n.split(' ')[0]+' '+({mega:'메가볼',dorm:'다람쥐',tiel:'앵무',ferret:'페럿',hog:'고슴도치'}[(spOf(scnS())||{}).k]||'')+' 놀기':x.n)}</button>`,
       grp=g=>{const G=L.filter(x=>x.g===g),c=G.find(x=>X[x.k]);return`<div class="sxchips">${G.map(chip).join('')}</div><p class="sxsel">${c?`${X[c.k]?'✔':''} <b>${c.n}</b> · ${c.d} · <b>${am(c)}</b>`:'아직 안 골랐어요'}</p>`},
       spSel=L.find(x=>x.g==='sp'&&X[x.k]&&x.k!=='sp_none');
      return`${U.length?`<h3 class="wzs">⚠️ 꼭 확인할 것</h3><div class="sxl">${U.map(B).join('')}</div>`:''}
@@ -3860,7 +3907,7 @@ function scnSettle(){storyPrep();document.body.classList.remove('scene');st.scr=
    ${canSell?`<h3 class="wzs">🪲 분양 (통마다 ${IUNIT}마리)</h3><div class="sxl">${sellT.map(([x,i])=>{const k='sell'+i,on=!!st.scx[k];return`<button class="sxi sell" data-sx="${k}" aria-pressed="${on}"><span class="sxc">${on?'☑':'☐'}</span><span class="sxn">${tubName(x.t)}<small>지금 ${x.n}마리 → ${x.n-IUNIT}마리 · ${ITIERN[ISPC[tubSp(x.t)].t]}</small></span><span class="sxa">+${f(isoPrice(i))}</span></button>`}).join('')}</div>`:`<p class="scrule">🪲 통 하나에 <b>${ISELL}마리</b> 이상 모이면 ${IUNIT}마리씩 분양할 수 있어요. 희귀종일수록 비싸요.</p>`}
    <button class="wzb" id="scnHub">← 나중에 하기</button>
    <div class="scbar"><div class="screst">남는 돈 <b>${f(rest)}원</b></div><button class="begin" id="scnOk">🌙 잠자기</button></div></section>`}
-const SXS={a_rest:'🛌 쉬기',a_game:'🎮 게임',a_study:'📚 공부',a_job:'💻 부업',a_ham:'🐹 놀기',a_acad:'📚 학원'};
+const SXS={a_rest:'🛌 쉬기',a_game:'🎮 게임',a_study:'📚 공부',a_job:'💻 부업',a_ham:'🐹 햄스터 놀기',a_acad:'📚 학원'};
 function scnToggle(k){const S=scnS(),X=st.scx;
   if(k.startsWith('sell')){if(X[k]&&scnAvail(S)-isoPrice(+k.slice(4))<scnSpent(S)){toast('분양을 취소하면 돈이 모자라요. 다른 지출부터 빼요.');return}X[k]=X[k]?0:1;scnSettle();return}
   const it=scnItems(S).find(x=>x.k===k);if(!it)return;
@@ -3924,7 +3971,7 @@ function scnNight(){const S=scnS(),X=st.scx,C=S.cage,I=S.iso,N=[];
     if(nk==='parcel'){S.money+=10000;C.free=1;N.push(`📦 본가에서 택배가 왔어요! 반찬과 용돈 <b>+10,000원</b>${hamAlive(S).length?', 햄스터 간식도 있어서 내일 사료 1마리분 무료':''}.${S.hamLost?' 본가로 간 햄스터가 잘 지내는 사진도 들어 있어요 📷':''}`)}
     if(S.day>=5&&(S.llN||0)<2&&Math.random()<(spOn(S,'tiel')?.13:.08)){S.llN=(S.llN||0)+1;if(S.arr&&spOn(S,'hog')&&!S.pet.sh){S.pet.sh=1;N.push('🦔 집주인이 찾아왔지만 고슴도치가 가시를 세우자 그냥 돌아갔어요! (독촉 1번 막음)')}else if(S.arr){S.arr++;N.push(`🏠 집주인이 찾아왔어요. "월세 언제 줄 거예요?" — 독촉이 하루 빨라졌어요! (연체 ${S.arr}일)`)}else{S.money+=6000;N.push('🏠 집주인이 찾아왔어요. "꼬박꼬박 내서 고마워요" — <b>+6,000원</b> 돌려받았어요.')}}
     if(S.day>=6&&(S.boomN||0)<2&&I.tubs.some(x=>x.n>=ISELL-2)&&Math.random()<.12){S.boom=S.day+1;S.boomN=(S.boomN||0)+1;N.push('📈 콩벌레 사진이 SNS에서 화제예요! <b>내일 정산 때 분양가 2배</b>.')}}
-  S.news=N;S.pend=null;st.scx=null;
+  scnArcNews(S,N);S.news=N;S.pend=null;st.scx=null;
   {const nv=scnVol(S,S.day+1);if(S.day<SCN_DAYS&&nv.w==='busy')N.push('📞 팀장님: "내일 접수가 몰린대요. 단단히 각오해요!"');if(S.day<SCN_DAYS&&nv.w==='last')N.push('📞 팀장님: "내일이 마지막 날이에요. 월말 마감이라 접수가 쏟아질 거예요!"')}
   if(S.arr>=3){S.end='broke';scnEndCalc(S)}else if(S.day>=SCN_DAYS){S.end='done';scnEndCalc(S)}else{S.day++;S.wx=S.wxN||'sun';S.newsLog=(S.newsLog||[]).concat([{d:S.day-1,n:N.filter(x=>!x.startsWith('🔋'))}]).slice(-5);scnSnap(S)}
   saveCR();scnHub()}
@@ -3932,8 +3979,8 @@ function scnNight(){const S=scnS(),X=st.scx,C=S.cage,I=S.iso,N=[];
 const ENDC=[['broke','💸 파산','월세가 3일 밀려서 원룸에서 쫓겨났어요. 햄스터는 본가로, 콩벌레 사육통은 친구 집으로 갔어요.','월세 3일 연체'],
  ['siu','🚨 사기 전담반 스카우트','보험사기를 <b>{fr}건</b>이나 잡아낸 걸 본 SIU(보험사기 조사팀)에서 연락이 왔어요. "우리 팀으로 오시죠." 다음 달부터 조사관이에요!','보험사기 6건 이상 적발 · 정상 건을 잘못 의뢰한 적 없음'],
  ['king','🏅 올해의 심사왕','20일 동안 정확도 <b>{acc}%</b>! 본사에서 표창장과 함께 정규직 전환 제안이 왔어요.','40건 이상 처리 · 20일 평균 정확도 95% 이상'],
- ['promo','📈 주임 승진','감사까지 깔끔하게 통과하고 정확도 <b>{acc}%</b>. 다음 달부터 주임이에요. 월급도 조금 올라요!','정확도 85% 이상 · 감사 주간 통과 (감봉 없이)'],
- ['mentor','🐣 좋은 사수','신입들이 "선배님 덕분이에요" 롤링페이퍼를 건넸어요. 까다로운 고객 응대까지 완벽했죠.','신입 검토 모두 정답 · 민원 통화 2번 이상 잘 응대하고 실수 없음'],
+ ['promo','📈 수석 심사역 추천','감사까지 깔끔하게 통과하고 정확도 <b>{acc}%</b>. 팀장님이 다음 달 수석 심사역으로 추천했어요. 월급도 조금 올라요!','정확도 85% 이상 · 감사 주간 통과 (감봉 없이)'],
+ ['mentor','🐣 좋은 사수','신입들이 "선배님 덕분이에요" 롤링페이퍼를 건넸어요. 까다로운 고객 응대까지 완벽했죠.','신입 검토 5건 이상 · 모두 정답 · 민원 통화 2번 이상 잘 응대하고 실수 없음'],
  ['work','🌙 워커홀릭','야근은 빠짐없이, 회식은 한 번도 안 갔어요. 일은 잘했지만… 팀장님이 조용히 연차 신청서를 내밀어요.','야근 2번 이상 · 회식 0번'],
  ['mood','🍻 분위기 메이커','회식마다 빠지지 않은 덕에 팀에서 제일 사랑받는 사람이 됐어요. 실적은… 평범했지만요!','회식 2번 모두 참석'],
  ['pen','😵 감봉 왕','20일 동안 감봉만 <b>{pen}원</b>. 인사팀에서 면담하자는 메일이 왔어요… 다음 달이 걱정돼요.','감봉 합계 30,000원 이상'],
@@ -3942,7 +3989,7 @@ const ENDH=[['fam','🐹🐹🐹 햄스터 대가족','세 마리 모두 한 번
 const ENDP=[['mega','🟤 흙의 장인','메가볼 덕분에 콩벌레 선반이 작은 숲처럼 변했어요. 가끔 둘이 나란히 공처럼 말려 있어요.','마다가스카르 메가볼을 끝까지 키우기'],['dorm','🐭 밤샘 메이트','야근하는 밤마다 들리던 쳇바퀴 소리가 응원가 같았어요.','피그미 다람쥐를 끝까지 키우기'],['tiel','🦜 팀장님 성대모사','앵무가 팀장님 말투를 따라 해요. "심사 완료~! 도장 쾅!"','왕관앵무를 끝까지 키우기'],['ferret','🦦 소파 밑 보물 창고','페럿이 소파 밑에 모아 둔 동전이 꽤 쌓였어요… 잃어버린 양말도 같이요.','페럿을 끝까지 키우기'],['hog','🦔 가시 경호원','고슴도치 덕분에 집주인도 민원 고객도 무섭지 않았어요.','고슴도치를 끝까지 키우기'],['lost','🏠 분양 센터의 친구','분양 센터에서 새 가족을 만났대요. 다음엔 더 잘 챙겨 줄게…','특수 동물을 분양 센터로 돌려보내기']];
 const ENDI=[['farm','🪲 콩벌레 농장 사장','분양 수익 <b>{sold}원</b>! 퇴근 후 부업이 본업이 될 것 같아요.','콩벌레 분양 수익 60,000원 이상'],['brd','📖 콩벌레 브리더','<b>{br}종</b>이나 번식에 성공했어요. 브리더 모임에서 강연 요청이 왔어요.','콩벌레 10종 이상 번식 성공'],['col','🔍 콩벌레 수집가','선반에 <b>{sp}종</b>이 가득해요. 방이 점점 좁아져요…','콩벌레 15종 이상 들이기'],['empty','🪦 텅 빈 선반','콩벌레가 모두 사라졌어요… 선반에 빈 통만 남았어요.','콩벌레가 모두 죽음'],['one','🏠 소박한 통 하나','불가레 통 하나만 끝까지 키웠어요. 가끔 통을 들여다보는 게 힐링이에요.','불가레 통 하나만 끝까지 키우기']];
 function scnEndCalc(S){const T=S.st||{},I=S.iso,tot=(T.ok||0)+(T.bad||0),acc=tot?T.ok/tot:0,A=hamAlive(S),sp=new Set(I.tubs.map(x=>tubSp(x.t))).size;
-  let c='done';if(S.end==='broke')c='broke';else if((T.fr||0)>=6&&!T.frBad)c='siu';else if(tot>=40&&acc>=.95)c='king';else if(acc>=.85&&T.aud)c='promo';else if((T.jrOk||0)>=3&&!T.jrBad&&(T.cmpOk||0)>=2&&!T.cmpBad)c='mentor';else if((T.ot||0)>=2&&!T.din)c='work';else if((T.din||0)>=2)c='mood';else if((T.pen||0)>=30000)c='pen';
+  let c='done';if(S.end==='broke')c='broke';else if((T.fr||0)>=6&&!T.frBad)c='siu';else if(tot>=40&&acc>=.95)c='king';else if(acc>=.85&&T.aud)c='promo';else if((T.jrOk||0)>=5&&!T.jrBad&&(T.cmpOk||0)>=2&&!T.cmpBad)c='mentor';else if((T.ot||0)>=2&&!T.din)c='work';else if((T.din||0)>=2)c='mood';else if((T.pen||0)>=30000)c='pen';
   let h=null;const rare=S.hams.filter(x=>HMORPH[x.m].r===2).length;if(A.length>=HAM_MAX&&!S.hamLost)h='fam';else if(rare>=2)h='rare';else if((S.hamLost||0)>=2)h='home';else if(T.mom)h='mom';else if(S.hams.length===1&&A.length===1)h='solo';
   let i=null;if(I.sold>=60000)i='farm';else if((T.br||[]).length>=10)i='brd';else if(sp>=15)i='col';else if(isoTotal(I)===0)i='empty';else if(I.tubs.length===1&&I.tubs[0].t===22)i='one';
   const pe=S.pet?(S.pet.gone?'lost':S.pet.k):null;S.endR={c,h,i,pe,acc:Math.round(acc*100),rare,sp};const D=CR.endDex||(CR.endDex=[]);['c:'+c,h&&'h:'+h,i&&'i:'+i,pe&&'p:'+pe].filter(Boolean).forEach(k=>{if(!D.includes(k))D.push(k)});if(h==='fam')unlock('hamFam');if(S.end==='done'){unlock('scnClear');const dv=S.dif==null?1:S.dif;if(S.money>=[300000,200000,150000][dv])unlock(['save0','save1','save2'][dv])}if(c==='king'||c==='siu')unlock('scnKing');if(I.sold>=60000)unlock('isoFarm');saveCR()}
@@ -3950,6 +3997,23 @@ function endFill(t,S){const T=S.st||{},R=S.endR||{},A=hamAlive(S);return t.repla
 function endDexHTML(){const D=CR.endDex||[],sec=(t,L,p)=>`<h4 class="igh">${t} <small>${L.filter(x=>D.includes(p+x[0])).length}/${L.length}</small></h4><ul class="covl hpl">${L.map(x=>{const g=D.includes(p+x[0]);return`<li class="${g?'':'eno'}"><b>${g?x[1]:'🔒 ???'}</b><span class="endq">🎯 조건: ${x[3]}</span>${g?`<span>${x[2].replace(/<[^>]+>/g,'').replace(/\{[a-z]+\}/g,'…')}</span>`:''}</li>`}).join('')}</ul>`;
   return`<p class="gmd">시나리오를 끝까지 하면 <b>직장 엔딩</b> 하나와 <b>햄스터·콩벌레 후일담</b>이 나와요. 특수 동물을 들였다면 <b>특수 동물 후일담</b>도 나와요. 조건이 여러 개 맞으면 <b>위에 있는 엔딩이 먼저</b> 나와요.</p>`+sec('🏢 직장 엔딩',ENDC,'c:')+sec('🐹 햄스터 후일담',ENDH,'h:')+sec('🪲 콩벌레 후일담',ENDI,'i:')+sec('🐾 특수 동물 후일담',ENDP,'p:')}
 
+const GAME_URL='https://ctprox-netizen.github.io/claim-game/';
+function shareCard(D){if(!D)return;const W=720,H=900,cv=document.createElement('canvas');cv.width=W;cv.height=H;const g=cv.getContext('2d'),FF='"PretendardUI","Pretendard","Apple SD Gothic Neo","Noto Sans KR",sans-serif',tx=t=>String(t).replace(/<[^>]+>/g,'');
+  g.fillStyle='#f6f1e7';g.fillRect(0,0,W,H);
+  const rr=(x,y,w,h,r)=>{g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()};
+  g.fillStyle='#1d1a17';rr(44,52,W-88,H-104,28);g.fill();g.fillStyle='#fffdf8';rr(40,44,W-88,H-104,28);g.fill();g.lineWidth=5;g.strokeStyle='#1d1a17';g.stroke();
+  g.save();rr(40,44,W-88,150,28);g.clip();g.fillStyle='#1d4ed8';g.fillRect(40,44,W-88,150);g.restore();g.beginPath();g.moveTo(40,194);g.lineTo(W-48,194);g.stroke();
+  g.fillStyle='#fff';g.textAlign='center';g.textBaseline='middle';g.font=`900 64px ${FF}`;g.fillText('간편심사',W/2-4,108);g.font=`700 26px ${FF}`;g.fillStyle='#dbe6ff';g.fillText(tx(D.mode),W/2-4,166);
+  const fit=(t,max,sz,wt)=>{let z=sz;g.font=`${wt} ${z}px ${FF}`;while(g.measureText(t).width>max&&z>18){z-=2;g.font=`${wt} ${z}px ${FF}`}};
+  g.fillStyle='#e08a00';const T=tx(D.title);fit(T,W-160,52,900);g.fillText(T,W/2-4,282);
+  g.fillStyle='#1d1a17';const B=tx(D.big);fit(B,W-160,76,900);g.fillText(B,W/2-4,382);
+  g.strokeStyle='#d9d2c6';g.lineWidth=3;g.setLineDash([10,8]);g.beginPath();g.moveTo(90,452);g.lineTo(W-98,452);g.stroke();g.setLineDash([]);
+  g.fillStyle='#3e3934';(D.lines||[]).slice(0,4).forEach((l,i)=>{const t=tx(l);fit(t,W-170,30,700);g.fillText(t,W/2-4,510+i*62)});
+  g.fillStyle='#8c8273';const d=new Date(),u=GAME_URL.replace('https://','').replace(/\/$/,'');g.font=`600 22px ${FF}`;g.fillText(`${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} · 나도 해 보기 👇`,W/2-4,H-128);g.fillStyle='#1d4ed8';fit(u,W-170,24,800);g.fillText(u,W/2-4,H-94);
+  st.shareCv=cv;st.shareTx=D.tx||`간편심사 ${tx(D.mode)} — ${tx(D.title)} · ${tx(D.big)}\n${GAME_URL}`;const url=cv.toDataURL('image/png');
+  gOpen('📤 결과 카드',`<img class="shimg" src="${url}" alt="결과 카드: ${tx(D.title)} ${tx(D.big)}"><p class="gmd">이미지를 <b>길게 눌러</b> 저장하거나, 아래 버튼으로 바로 보낼 수 있어요.</p><div class="shb">${navigator.share?'<button class="begin" id="shGo">📤 공유하기</button>':''}${window.self===window.top?`<a class="begin ghost shdl" download="간편심사-결과.png" href="${url}">💾 이미지 저장</a>`:''}<button class="begin ghost" id="shCp">🔗 링크·문구 복사</button></div>`)}
+async function shareGo(){const cv=st.shareCv;if(!cv)return;try{const blob=await new Promise(r=>cv.toBlob(r,'image/png')),file=new File([blob],'간편심사-결과.png',{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[file]}))await navigator.share({files:[file],title:'간편심사',text:st.shareTx});else await navigator.share({title:'간편심사',text:st.shareTx,url:GAME_URL})}catch(e){if(e&&e.name!=='AbortError')toast('공유를 열 수 없어요. 이미지를 길게 눌러 저장해 주세요.')}}
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('#shGo,#shCp');if(!t)return;if(t.id==='shGo')shareGo();else{const done=()=>toast('🔗 복사했어요! 카톡에 붙여 넣어 보세요.');try{navigator.clipboard.writeText(st.shareTx).then(done,()=>toast('복사할 수 없어요.'))}catch(x){toast('복사할 수 없어요.')}}});
 function scnEnding(){const S=scnS(),H=scnHamAgg(S),I=S.iso;if(!S.endR){if(S.end==='farm'||S.end==='family')S.end='done';scnEndCalc(S)}const R=S.endR,C=ENDC.find(x=>x[0]===R.c),Hh=ENDH.find(x=>x[0]===R.h),Ii=ENDI.find(x=>x[0]===R.i),A=hamAlive(S);
   const hl=Hh?[Hh[1],endFill(Hh[2],S)]:A.length?['🐹 함께한 햄스터',`${A.map(h=>h.nm).join(', ')}${jo(A[A.length-1].nm,'과','와')} 함께 20일을 보냈어요.`]:['🏡 본가의 햄스터','햄스터들은 본가에서 잘 지내고 있어요.'];
   const il=Ii?[Ii[1],endFill(Ii[2],S)]:['🪲 콩벌레 선반',`콩벌레 ${isoTotal(I)}마리가 선반에서 꼬물꼬물 지내요.`];
@@ -3958,12 +4022,13 @@ function scnEnding(){const S=scnS(),H=scnHamAgg(S),I=S.iso;if(!S.endR){if(S.end=
    <div class="endc"><small>🐹 햄스터 후일담</small><b>${hl[0]}</b><p>${hl[1]}</p></div>
    <div class="endc"><small>🪲 콩벌레 후일담</small><b>${il[0]}</b><p>${il[1]}</p></div>
    ${(x=>x?`<div class="endc"><small>🐾 특수 동물 후일담</small><b>${x[1]}</b><p>${x[2]}</p></div>`:'')(ENDP.find(x=>x[0]===R.pe))}
-   <ul class="scsum"><li>버틴 날: <b>${S.day}일</b> · 남은 돈 <b>${f(S.money)}원</b></li><li>심사 정확도 <b>${R.acc}%</b> · 사기 적발 ${(S.st||{}).fr||0}건 · 감봉 ${f((S.st||{}).pen||0)}원</li><li>🪲 콩벌레 ${isoTotal(I)}마리 · 분양 수익 ${f(I.sold)}원 · 도감 🐣${(CR.isoDex||[]).length}/${ISPC.length}</li>${S.pet?`<li>🐾 ${spDef(S.pet.k).n}${S.pet.gone?' (분양 센터로 돌아감)':' — 끝까지 함께했어요'}</li>`:''}<li>🎖 엔딩 도감 ${(CR.endDex||[]).length}/${ENDC.length+ENDH.length+ENDI.length+ENDP.length} — 📖 도감에서 볼 수 있어요</li></ul>
+   <ul class="scsum"><li>버틴 날: <b>${S.day}일</b> · 남은 돈 <b>${f(S.money)}원</b></li><li>심사 정확도 <b>${R.acc}%</b> · 사기 적발 ${(S.st||{}).fr||0}건 · 감봉 ${f((S.st||{}).pen||0)}원</li><li>🪲 콩벌레 ${isoTotal(I)}마리 · 분양 수익 ${f(I.sold)}원 · 도감 🐣${(CR.isoDex||[]).length}/${ISPC.length}</li>${S.pet?`<li>🐾 ${spDef(S.pet.k).n}${S.pet.gone?' (분양 센터로 돌아감)':' — 끝까지 함께했어요'}</li>`:''}<li>🎖 엔딩 도감 ${(CR.endDex||[]).length}/${ENDC.length+ENDH.length+ENDI.length+ENDP.length} — 📖 사전에서 볼 수 있어요</li></ul>
    ${S.end==='broke'&&(S.snaps||[]).length?`<h3 class="wzs">⏪ 되돌아가기 (최대 3일 전)</h3>${S.snaps.slice().sort((a,b)=>b.day-a.day).filter(x=>S.day-x.day<=3).map(x=>`<button class="begin rwb" data-rw="${x.day}">⏪ ${x.day}일차 아침으로<small>${S.day-x.day?S.day-x.day+'일 전':'파산한 날'} 아침 · 잔고 ${f(x.d.money)}원 · 밀린 월세 ${x.d.arr}일</small></button>`).join('')}`:''}
-   <button class="begin" id="scnRst">${st.rstArm?'한 번 더 누르면 새로 시작':'처음부터 다시'}</button><button class="wzb" id="wzBack">← 처음 화면</button></section>`;window.scrollTo({top:0});
+   <button class="begin ghost" id="shareC">📤 결과 카드 공유</button><button class="begin" id="scnRst">${st.rstArm?'한 번 더 누르면 새로 시작':'처음부터 다시'}</button></section>`;window.scrollTo({top:0});
+  st.shareD={mode:`🏠 시나리오 · ${scnDif(S).n}`,title:C[1],big:`남은 돈 ${f(S.money)}원`,lines:[`${S.day}일 버팀 · 심사 정확도 ${R.acc}%${S.rank?' · 👔 선임':''}`,hl[0],il[0],`사기 적발 ${(S.st||{}).fr||0}건 · 콩벌레 ${isoTotal(I)}마리`]};
   app.querySelectorAll('.endc').forEach((e,k)=>{e.style.animationDelay=(k*.5)+'s'})}
 function scnReset(){if(!st.rstArm){st.rstArm=1;scnS().end?scnEnding():scnHub();return}st.rstArm=0;CR.scn=null;saveCR();scnPick()}
-function scnPick(){storyPrep();document.body.classList.remove('scene');st.scr='start';app.innerHTML=`<section class="paper end start wz scn"><h2 class="wzh">📜 시나리오 모드</h2><p class="wzp">20일 동안 출근해서 번 돈으로 월세를 내고 햄스터·콩벌레를 돌봐요.<br><b>난이도를 골라 주세요.</b></p><div class="wzl">${SCD.map((x,i)=>`<button class="wzo" data-scd="${i}" aria-pressed="${i===(st.scdSel==null?1:st.scdSel)}"><b>${x.n}</b><span>${x.d}</span></button>`).join('')}</div><button class="begin" id="scdGo">📜 ${SCD[st.scdSel==null?1:st.scdSel].n} 난이도로 시작하기</button><button class="wzb" id="wzBack">← 처음 화면</button></section>`;window.scrollTo({top:0})}
+function scnPick(){storyPrep();document.body.classList.remove('scene');st.scr='start';app.innerHTML=`<section class="paper end start wz scn"><h2 class="wzh">📜 시나리오 모드</h2><p class="wzp">20일 동안 출근해서 번 돈으로 월세를 내고 햄스터·콩벌레를 돌봐요.<br><b>난이도를 골라 주세요.</b></p><div class="wzl">${SCD.map((x,i)=>`<button class="wzo" data-scd="${i}" aria-pressed="${i===(st.scdSel==null?1:st.scdSel)}"><b>${x.n}</b><span>${x.d}</span></button>`).join('')}</div><button class="begin" id="scdGo">📜 ${SCD[st.scdSel==null?1:st.scdSel].n} 난이도로 시작하기</button></section>`;window.scrollTo({top:0})}
 
 const GRK={S:4,A:3,B:2,C:1,D:0};
 function storyDone(){const D=CR.story||(CR.story={});if(CR.stv!==3){let o=D;if(CR.stv!==2){const n={};Object.keys(o).forEach(k=>{n[+k>=5?+k+2:k]=o[k]});o=n}const M={4:8,5:9,6:10,7:4,8:5,9:6,10:7},n={};Object.keys(o).forEach(k=>{n[M[k]||k]=o[k]});CR.story=n;CR.stv=3;saveCR()}return CR.story}
@@ -3975,7 +4040,7 @@ function storyMap(){storyPrep();document.body.classList.remove('scene');st.scr='
   app.innerHTML=`<section class="paper end start wz"><h2 class="wzh">🎓 튜토리얼 모드</h2><p class="wzp">신입 심사자의 성장기 · ${n}/${STORY.length}장 클리어</p>
   ${anyTried?`<button class="tutbtn" id="stSkipTog" aria-pressed="${skipOn}">${skipOn?'⚡ 해 본 장은 사수 설명 건너뛰고 바로 도전: 켜짐':'📖 해 본 장도 사수 설명부터 다시 보기'}</button>`:''}
   <div class="stl">${STORY.map((c,i)=>{const op=STORY_OPEN||i===0||D[i];const dn=D[i+1],tried=T[i]||dn;return`<button class="sto ${dn?'dn':''}" data-sto="${i}" ${op?'':'disabled aria-disabled="true"'}><span class="stn">${i+1}장</span><span class="stb"><b>${op?c.t:'🔒 잠김'}</b><small>${op?c.d:'이전 장을 클리어하면 열려요'}</small>${op?`<em>목표: ${storyGoalTxt(c.goal)} · ${LV[c.lv].n}${c.pick?' · 실손':''} · ${i<3||c.simple?'간편 서류':'실제 양식'}${tried&&skipOn?' · ⚡ 바로 도전':''}</em>`:''}</span><span class="stg">${dn?`<i class="g${dn}">${dn}</i>`:op?'▶':''}</span></button>`}).join('')}</div>
-  <button class="wzb" id="wzBack">← 처음 화면</button></section>`;window.scrollTo({top:0})}
+  </section>`;window.scrollTo({top:0})}
 function storyBegin(ch,skipGuide){CR.stTried=CR.stTried||{};CR.stTried[ch]=1;saveCR();const c=STORY[ch];st.sty={ch,...c,skipGuide:!!skipGuide};st.lv=c.lv;st.pick=c.pick;st.vol=c.vol;st.vs=false;st.chR=null;st.newbie=ch<3||!!c.simple;if(c.les){lessonBegin(ch,!!skipGuide);return}beginDay();if(!skipGuide)sgGo()}
 function storyEndHTML(acc,dn,gr){if(!st.sty)return'';const ch=st.sty.ch,R=storyCheck(st.sty.goal,acc,dn,gr),ok=R.every(r=>r[1]);
   if(ok){const D=storyDone();if(!D[ch+1]||GRK[gr]>GRK[D[ch+1]])D[ch+1]=gr;if(ch===STORY.length-1)unlock('story');saveCR()}
@@ -3989,17 +4054,17 @@ function dayEnd(acc,un,dn){const n=st.queue.filter(x=>x.by!=='ai'&&!x.ai).length
   if(gr==='S'||gr==='A')mProg('gradeA');
   if(dn>0)unlock('first');if(gr==='S')unlock('s');if(CR.days>=10)unlock('days10');if(dn>0&&!st.chR){CR.lvs=CR.lvs||[];if(!CR.lvs.includes(st.lv))CR.lvs.push(st.lv);if(CR.lvs.length>=5)unlock('allLv')}if(dn>=5&&acc===100&&un===0)unlock('flawless');if(st.vol===4&&un===0&&dn>0)unlock('rush');if(st.lv===4&&(gr==='S'||gr==='A'))unlock('hard');
   const r1=rankOf(CR.xp);if(r1>=3)unlock('promo');if(r1>=RANKS.length-1)unlock('rankMax');
-  let ch=null;if(st.chR){const d=today(),row=st.queue.map(it=>!it.done?'⬛':it.c.flag&&it.c.fraud?'🚩':it.c.inv&&it.c.nd?'🔎':it.c.xfr&&isBig(it.c)?'🏢':it.right===it.items?'🟦':'🟧').join('');
+  let ch=null,chF=false;if(st.chR&&dn<3){st.chR=null;chF=true}if(st.chR){const d=today(),row=st.queue.map(it=>!it.done?'⬛':it.c.flag&&it.c.fraud?'🚩':it.c.inv&&it.c.nd?'🔎':it.c.xfr&&isBig(it.c)?'🏢':it.right===it.items?'🟦':'🟧').join('');
     const prev=CR.ch[d];ch={score:st.score,gr,acc,maxC:st.g.maxC,dn,n,row};if(!prev||st.score>prev.score)CR.ch[d]=ch;sbSubmit(d,CR.ch[d]).then(ok=>{if(ok)toast('🌐 온라인 순위에 기록했어요');else if(!CR.nick)toast('🏆 챌린지 창에서 닉네임을 정하면 온라인 순위에 올라가요')});unlock('ch');st.chR=null}
   saveCR();const nx=RANKS[r1+1],xpPct=nx?Math.round((CR.xp-RANKS[r1][1])/(nx[1]-RANKS[r1][1])*100):100;
-  const ms=missions(),nA=st.newAch||[];
-  const html=`${r1>r0?`<div class="promo">🎉 승진! <b>${RANKS[r0][0]} → ${RANKS[r1][0]}</b></div>`:''}
+  const ms=missions(),nA=st.newAch||[],wn=wrongNote();
+  const html=`${chF?'<p class="rqn bad">🗓 데일리 챌린지는 <b>3건 이상</b> 처리해야 기록돼요. 다시 도전해 보세요!</p>':''}${r1>r0?`<div class="promo">🎉 승진! <b>${RANKS[r0][0]} → ${RANKS[r1][0]}</b></div>`:''}
    <div class="xpw"><span>👔 <b>${RANKS[r1][0]}</b> · +${gain+(st.gXp||0)} XP</span><div class="xpb"><i style="width:${xpPct}%"></i></div><small>${nx?`다음 직급 ${nx[0]}까지 ${nx[1]-CR.xp} XP`:'최고 직급 달성!'}</small></div>
-   ${wrongNote()}
+   ${wn}
    <div class="msl">${ms.map(m=>`<div class="${m.done?'dn':''}"><span>${m.done?'✅':'🎯'} ${m.t}</span><b>${m.p}/${m.n}</b></div>`).join('')}</div>
    ${nA.length?`<div class="nach">${nA.map(id=>{const a=ACH.find(x=>x[0]===id);return`<span>${a[1]} ${a[2]}</span>`}).join('')}</div>`:''}
-   ${ch?`<div class="chr"><div class="chrow">${ch.row}</div><button class="tutbtn" id="share">📤 결과 복사해서 친구에게 자랑하기</button></div>`:''}`;
-  st.lastCh=ch;return{gr,html,ch:!!ch,fan:r1>r0||gr==='S'}}
+   ${ch?`<div class="chr"><div class="chrow">${ch.row}</div></div>`:''}`;
+  st.lastCh=ch;return{gr,html,wn,nA,ch:!!ch,chF,fan:r1>r0||gr==='S'}}
 function wnBookHTML(){const L=CR.wnb||[];if(!L.length)return'<p class="gmd">📝 아직 저장된 오답이 없어요. 샌드박스·시나리오·챌린지에서 틀린 건이 여기에 모여요.</p>';
   const d=t=>{const x=new Date(t);return`${x.getMonth()+1}/${x.getDate()} ${String(x.getHours()).padStart(2,'0')}:${String(x.getMinutes()).padStart(2,'0')}`};
   return`<p class="gmd">최근 틀린 건 <b>${L.length}개</b> (최대 60개). 누르면 무엇을 틀렸는지 펼쳐져요.</p>${L.map(w=>`<details class="wnx"><summary><span><b>${w.m}</b> · ${w.who} <small>${w.code} ${w.nm}</small></span><em>${w.E.length}개 · ${d(w.t)}</em></summary>${w.E.map(e=>`<p class="wni"><b>${e[0]}</b><br>${e[1]}</p>`).join('')}</details>`).join('')}<button class="wzb" data-wnclr="1">${st.wnArm?'정말 지울까요? 한 번 더 누르면 전부 삭제':'🗑 오답 노트 전체 지우기'}</button>`}
@@ -4040,8 +4105,9 @@ async function sbOpen(){SBC=null;sbFill(st.sbTab||0);const r=await sbLoad();if(!
 let ONLINE=false;
 const ymd=d=>d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate();
 function weekDays(){const d=new Date(),w=(d.getDay()+6)%7,L=[];for(let k=0;k<=w;k++){const x=new Date(d);x.setDate(d.getDate()-w+k);L.push(ymd(x))}return L}
+function chText(){const c=st.lastCh;if(!c)return'';const d=new Date();return`📋 간편심사 · 데일리 챌린지 ${d.getMonth()+1}/${d.getDate()}\n${CR.nick?CR.nick+' · ':''}등급 ${c.gr} · ${f(c.score)}점 · 정확도 ${c.acc}%\n처리 ${c.dn}/${c.n} · 최고 콤보 🔥${c.maxC}\n${c.row}\n👉 https://ctprox-netizen.github.io/claim-game/`}
 function shareCh(){const c=st.lastCh;if(!c)return;const d=new Date();
-  const t=`📋 간편심사 · 오늘의 챌린지 ${d.getMonth()+1}/${d.getDate()}\n${CR.nick?CR.nick+' · ':''}등급 ${c.gr} · ${f(c.score)}점 · 정확도 ${c.acc}%\n처리 ${c.dn}/${c.n} · 최고 콤보 🔥${c.maxC}\n${c.row}\n👉 https://ctprox-netizen.github.io/claim-game/`;
+  const t=`📋 간편심사 · 데일리 챌린지 ${d.getMonth()+1}/${d.getDate()}\n${CR.nick?CR.nick+' · ':''}등급 ${c.gr} · ${f(c.score)}점 · 정확도 ${c.acc}%\n처리 ${c.dn}/${c.n} · 최고 콤보 🔥${c.maxC}\n${c.row}\n👉 https://ctprox-netizen.github.io/claim-game/`;
   const ok=()=>toast('📋 복사했어요! 카톡에 붙여 넣으세요');
   if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(ok,()=>fb());else fb();
   function fb(){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');ok()}catch(e){prompt('아래 내용을 복사하세요',t)}a.remove()}}
@@ -4079,7 +4145,7 @@ function openMissions(){const ms=missions();gOpen('🎯 오늘의 미션',`<p cl
   <div class="msl big">${ms.map(m=>`<div class="${m.done?'dn':''}"><span>${m.done?'✅':'🎯'} ${m.t}</span><b>${m.p}/${m.n}</b><i style="width:${Math.round(m.p/m.n*100)}%"></i></div>`).join('')}</div>`)}
 function openAch(){gOpen(`🏅 업적 ${CR.ach.length}/${ACH.length}`,`<div class="acl">${ACH.map(a=>{const on=CR.ach.includes(a[0]);return`<div class="${on?'on':'off'}"><span class="ai">${on?a[1]:'🔒'}</span><b>${a[2]}</b><small>${a[3]}</small></div>`}).join('')}</div>
   <p class="gmd">직급: ${RANKS.map((r,i)=>`${i===rankOf(CR.xp)?`<b>${r[0]}</b>`:r[0]}`).join(' → ')} · 누적 ${f(CR.xp)} XP · 근무 ${CR.days}일</p>`)}
-function openCh(){const d=new Date(),chd=CR.ch[today()];gOpen(`🗓 오늘의 챌린지 · ${d.getMonth()+1}월 ${d.getDate()}일`,`<p class="gmd">오늘 이 게임을 하는 <b>모든 사람이 똑같은 청구 건</b>을 같은 시각에 받아요. 친구랑 점수를 비교해 보세요!</p>
+function openCh(){const d=new Date(),chd=CR.ch[today()];gOpen(`🗓 데일리 챌린지 · ${d.getMonth()+1}월 ${d.getDate()}일`,`<p class="gmd">오늘 이 게임을 하는 <b>모든 사람이 똑같은 청구 건</b>을 같은 시각에 받아요. 친구랑 점수를 비교해 보세요!</p>
   <div class="tmk2">난이도 <b>보통</b> · 실손 <b>제외</b> · 접수량 <b>보통</b>${st.newbie?' · 간편 서류':''}</div>
   ${chd?`<div class="chr"><p>오늘 내 최고: <b>${chd.gr}등급 · ${f(chd.score)}점</b> · 정확도 ${chd.acc}%</p><div class="chrow">${chd.row}</div><button class="tutbtn" id="share2">📤 결과 복사하기</button></div>`:''}
   <button class="begin" id="chgo">${chd?'다시 도전하기 (최고점만 기록)':'도전하기!'}</button>
