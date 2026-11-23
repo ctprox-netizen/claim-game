@@ -184,6 +184,13 @@ details summary{cursor:pointer;font-weight:800}
 .flr{margin-top:8px}.flr .shl{flex-direction:row!important;align-items:baseline!important;gap:8px!important}
 .frow{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding-bottom:4px;border-bottom:7px double var(--ink)}
 .shv.tax .shl b i{font-weight:900}
+.dmbar{display:flex;margin:8px auto 0;max-width:520px}
+.dmbar button{flex:1;padding:7px 2px;font-size:12.5px}
+.dm-photo .tb2 span{display:none}
+.dm-name .tb2{background:var(--paper)}
+.dm-name .tb2 img{display:none}
+.dm-name .tb2 span{inset:0;bottom:0;background:none;color:var(--ink);display:flex;align-items:center;justify-content:center;font-size:clamp(12px,calc(var(--tw,90px)*.15),19px);padding:2px 4px}
+.shv.shelf.dm-name .tb2 span{font-size:clamp(13px,calc(var(--th,60px)*.3),19px)}
 .kv input{width:64px;text-align:center;border:2px solid var(--ink);border-radius:8px;padding:4px}
 </style>
 </head>
@@ -525,6 +532,7 @@ function taxGroups(){const g=IGRP.map(([f,gn,sp])=>({k:gn,t:`<i>${gn}</i>`,d:f,i
   Object.keys(XSP).forEach(id=>{if(ALL.includes(id))g.push({k:id,t:esc(XSP[id].n),d:XSP[id].fam,ids:[id]})});return g}
 const tileH=id=>`<button class="tb2 ${RM&&SEL.has(id)?'on':''}" ${RM?`data-pick="${id}" aria-pressed="${SEL.has(id)}"`:`data-open="${id}"`}><img src="${cover(id)}" alt="" loading="lazy"><span>${esc(tubNm(id))}</span><i class="ck">✓</i></button>`;
 const grpAttr=ids=>RM?`data-grp="${ids.join(',')}" role="button"`:'';
+const DMS=[['photo','사진으로 보기'],['name','이름으로 보기'],['both','같이 보기']];
 function vShelf(){if(!canEdit()){RM=false;SEL.clear()}const sv=D.sv==='tax'?'tax':'shelf';
   const cols=SHELF.filter(x=>x.id!=='fl'),fl=SHELF.find(x=>x.id==='fl');
   const body=sv==='shelf'
@@ -533,9 +541,11 @@ function vShelf(){if(!canEdit()){RM=false;SEL.clear()}const sv=D.sv==='tax'?'tax
    :taxGroups().map(g=>`<section class="sh2"><div class="shl" ${grpAttr(g.ids)}><b>${g.t}</b><small>${esc(g.d)} · ${g.ids.length}통</small></div><div class="stk">${g.ids.map(tileH).join('')}</div></section>`).join('');
   $('#app').innerHTML=`<div class="shh"><div class="seg"><button data-sv="shelf" aria-pressed="${sv==='shelf'}">🗄 선반 배열</button><button data-sv="tax" aria-pressed="${sv==='tax'}">🧬 계통별</button></div><button class="btn sm edonly ${RM?'pri':''}" id="rmBtn">${RM?'✕ 기록 모드 끄기':'✏️ 기록 모드'}</button></div>
    ${RM?'<p class="rmh">통을 눌러 고르세요 · 칸·묶음 이름을 누르면 한꺼번에 골라져요</p>':''}
-   <div class="shv ${sv} ${RM?'rm':''}" id="shv">${body}</div>
+   <div class="shv ${sv} dm-${DMS.some(x=>x[0]===D.dm)?D.dm:'both'} ${RM?'rm':''}" id="shv">${body}</div>
+   <div class="dmbar seg" id="dmbar">${DMS.map(([k,n])=>`<button data-dm="${k}" aria-pressed="${(DMS.some(x=>x[0]===D.dm)?D.dm:'both')===k}">${n}</button>`).join('')}</div>
    ${RM?`<div class="rmbar" id="rmbar"><span id="rmN"></span><button class="btn sm" id="rmClr">선택 해제</button><button class="btn pri" id="rmGo">기록하기</button></div>`:''}`;
   document.querySelectorAll('[data-sv]').forEach(b=>b.onclick=()=>{D.sv=b.dataset.sv;save();vShelf()});
+  document.querySelectorAll('[data-dm]').forEach(b=>b.onclick=()=>{D.dm=b.dataset.dm;save();vShelf()});
   $('#rmBtn').onclick=()=>{if(!needEdit())return;RM=!RM;SEL.clear();vShelf()};
   if(RM){const bar=$('#rmbar');bar.style.bottom=($('#tabs').offsetHeight||64)+'px';
     const upd=()=>{document.querySelectorAll('[data-pick]').forEach(b=>{const on=SEL.has(b.dataset.pick);b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)});$('#rmN').innerHTML=SEL.size?`<b>${SEL.size}</b>통 골랐어요`:'<span class="mut">고른 통 없음</span>';$('#rmGo').disabled=!SEL.size;$('#rmClr').disabled=!SEL.size};
@@ -561,7 +571,7 @@ function rmSheet(){if(!needEdit())return;const ids=ALL.filter(id=>SEL.has(id));
       if(!L.length){toast('마릿수를 하나 이상 적어 주세요');return}
       sync();closeSheet();const nm=RKS.find(x=>x[0]===RK);RM=false;SEL.clear();
       toast(`${nm[1]} ${L.length}통 ${nm[2]} 기록했어요`,()=>{L.forEach(l=>delItem(l.cid));render()});render()}})}
-function fitShelf(){const v=$('#shv');if(!v)return;const W=v.clientWidth,top=v.getBoundingClientRect().top+window.scrollY,tabs=($('#tabs').offsetHeight||0)+($('#rmbar')?$('#rmbar').offsetHeight:0),H=window.innerHeight-top-tabs-22,G=4;
+function fitShelf(){const v=$('#shv');if(!v)return;const W=v.clientWidth,top=v.getBoundingClientRect().top+window.scrollY,tabs=($('#tabs').offsetHeight||0)+($('#rmbar')?$('#rmbar').offsetHeight:0),H=window.innerHeight-top-tabs-22-($('#dmbar')?$('#dmbar').offsetHeight+8:0),G=4;
   if(v.classList.contains('shelf')){const cols=SHELF.filter(x=>x.id!=='fl'),mx=Math.max(...cols.map(c=>c.tubs.length)),cw=(W-2*6)/3,
       lab=v.querySelector('.shl').offsetHeight,fixed=lab*2+10+12+8+G*mx;
     let h=Math.floor((H-fixed)/(mx+1));h=Math.max(42,Math.min(h,Math.floor(cw*.75)));
