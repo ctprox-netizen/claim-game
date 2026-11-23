@@ -33,6 +33,8 @@
 .rmpb{overflow:auto;padding:4px 12px 10px;overscroll-behavior:contain}.rmpb .covl{margin:4px 0}.rmpb .gmd{margin:6px 0;font-size:13px}
 .rmpa{position:absolute;top:-8px;width:12px;height:12px;background:#fffdf8;border-left:2px solid #1d1a17;border-top:2px solid #1d1a17;transform:rotate(45deg)}
 .rmpop.up .rmpa{top:auto;bottom:-8px;transform:rotate(225deg)}
+
+.frin{margin-top:14px;padding-top:10px;border-top:2px dashed #d9d2c6}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700;800;900&family=Nanum+Myeongjo:wght@800&display=swap" rel="stylesheet">
 <style>
@@ -1349,8 +1351,7 @@ function policyHTML(c,res){
     return gh+`<div class="cov${k==='pay'?' wide':''}${lk?' locked':''}" ${lk?'aria-disabled="true"':''}><div><div class="nm">${C.n}${tag(k)}${lk?mag(k).replace('<button ','<button disabled tabindex="-1" '):mag(k)}</div></div>${lk?ctl.replace(/<button /g,'<button disabled tabindex="-1" '):ctl}
     ${res&&(c.flag||c.inv||c.nd||c.xfr||isBig(c))?`<div class="res"><span class="mk">— ${c.inv?'현장조사 의뢰로 심사 생략':c.flag?'조사 의뢰로 심사 생략':c.xfr?'표준부서 이관으로 심사 생략':isBig(c)?'표준부서 이관 대상 · 간편심사 대상 아님':'현장조사 대상 건 · 지급 심사 대상 아님'}</span></div>`:res?(()=>{const a=c.ans[i],ok=okP(c,i),lab=isDay(k)?(a.d?aDays(c,i)+dUnit(k):'부지급'):C.grade||C.carG||C.opts?L[a.d]:['부지급','','지급'][a.d];return`<div class="res"><span class="mk ${ok?'ok':'bad'}">${ok?'✓ 정답':'✗ 오답'}</span><span>정답: <b>${lab}${a.amt&&!C.grade&&!C.carG&&!C.opts?' '+won(a.amt):''}</b> · ${a.w}</span></div>`})():''}
   </div>`});const em=c.groups.filter((g,j)=>!c.covs.some((k,i)=>c.gi[i]===j)).map(g=>g[0]);
-    return`<section class="slide list"><div class="gh">심사 담보 <small>${c.covs.filter(k=>k!=='pay').length}개</small></div>${RW.join('')}${em.length?`<p class="nog">가입 담보가 없는 청구 항목: <b>${em.join(', ')}</b>${res&&st.notice?' (미가입)':''}</p>`:''}<div class="dvw"><button class="dvb" id="dvb">📂 서류 보기 <small>좌우로 넘기기 · 톡 누르면 닫기</small></button></div></section>`})()}
-  ${st.notice&&!(res&&(c.nd||c.flag||c.inv||c.xfr||isBig(c)))&&(res?(c.fr||sumPick(c)===0):sumPick(c)===0)?`<section class="slide">${noticeHTML(c,res)}</section>`:''}
+    return`<section class="slide list"><div class="gh">심사 담보 <small>${c.covs.filter(k=>k!=='pay').length}개</small></div>${RW.join('')}${em.length?`<p class="nog">가입 담보가 없는 청구 항목: <b>${em.join(', ')}</b>${res&&st.notice?' (미가입)':''}</p>`:''}${st.notice&&!(res&&(c.nd||c.flag||c.inv||c.xfr||isBig(c)))&&(res?(c.fr||sumPick(c)===0):sumPick(c)===0)?`<div class="frin">${noticeHTML(c,res)}</div>`:''}<div class="dvw"><button class="dvb" id="dvb">📂 서류 보기 <small>좌우로 넘기기 · 톡 누르면 닫기</small></button></div></section>`})()}
   </div>
   <div class="pfoot">
 <div class="snav"><button id="sp" aria-label="이전 항목">‹ 이전</button><span id="sn"></span><button id="snx" aria-label="다음 항목">다음 ›</button></div>
@@ -1517,7 +1518,7 @@ function openDp(i,btn){closeCalc();closeInfo(false);closeDoc(false);gpFrom=btn;c
   gpop._dp=i;W.focus({preventScroll:true})}
 function dpClose(){const i=gpop._dp;if(i==null)return;const W=document.getElementById('whl');if(W&&!st.done)dSet(st.c,i,Math.max(0,Math.round(W.scrollTop/44)));gpop._dp=null;closeGp(false);render(false);const t=document.querySelector(`[data-dp="${i}"]`);t&&t.focus({preventScroll:true})}
 function openFr(btn){closeCalc();closeInfo(false);closeDoc(false);gpFrom=btn;const c=st.c;gpop.className='pop gpop frp';
-  gpop.innerHTML=`<div class="ph"><b>최종 부지급 사유</b><button id="gpx" aria-label="닫기">✕</button></div><div class="gpl">${Object.entries(RS).filter(([k])=>k!=='reduce').map(([k,t])=>`<button role="option" data-frv="${k}" aria-selected="${c.frP===k}">${t}</button>`).join('')}</div>`;
+  gpop.innerHTML=`<div class="ph"><b>부지급 사유</b><button id="gpx" aria-label="닫기">✕</button></div><div class="gpl">${Object.entries(RS).filter(([k])=>k!=='reduce').map(([k,t])=>`<button role="option" data-frv="${k}" aria-selected="${c.frP===k}">${t}</button>`).join('')}</div>`;
   gpop.hidden=false;btn.setAttribute('aria-expanded','true');place(btn,gpop);const s=gpop.querySelector('[aria-selected="true"]');s&&s.focus({preventScroll:true})}
 function closeGp(focus){if(gpop.hidden)return;if(gpop._dp!=null){const i=gpop._dp,W=document.getElementById('whl');gpop._dp=null;if(W&&!st.done)dSet(st.c,i,Math.max(0,Math.round(W.scrollTop/44)));gpop.hidden=true;gpFrom&&gpFrom.setAttribute('aria-expanded','false');render(false);return}gpop.hidden=true;gpFrom&&gpFrom.setAttribute('aria-expanded','false');focus&&gpFrom&&gpFrom.focus({preventScroll:true})}
 gpop.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.id==='dpok')return dpClose();if(b.id==='gpx')return closeGp(true);
@@ -1641,11 +1642,11 @@ function openQ(i){const it=st.queue[i];if(!it)return;st.xfo=false;if(st.scnRun&&
 function noticeHTML(c,res){
   const okT=[...c.ntA].sort().join()===[...c.nt].sort().join(),okS=c.ns===c.nsA;
   const showFr=res?(c.fr||sumPick(c)===0):sumPick(c)===0,okF=c.frP===c.fr;
-  const fr=showFr?`<p class="q">최종 부지급 사유</p>
-   <button class="sel selb frb" data-frp="1" aria-haspopup="listbox" aria-label="최종 부지급 사유: ${c.frP?RS[c.frP]:'선택 안 함'}" ${res?'disabled':''}><span>${c.frP?RS[c.frP]:'사유 선택'}</span><i aria-hidden="true">▾</i></button>
-   ${res?(c.fr?`<div class="res"><span class="mk ${okF&&sumPick(c)===0?'ok':'bad'}">${okF&&sumPick(c)===0?'✓ 정답':'✗ 오답'}</span><span>정답 사유: <b>${RS[c.fr]}</b>${c.pn?` (${c.pn})`:''}</span></div>`:`<div class="res"><span class="mk bad">✗ 오답</span><span>이 건은 지급액이 있어서 최종 부지급 사유가 필요 없어요.</span></div>`):''}`:'';
-  if(res&&!c.fr)return`<div class="gh">최종 부지급</div><div class="notice"><div class="res"><span class="mk bad">✗ 사유 불필요</span><span>이 건은 지급액이 있어서 최종 부지급 대상이 아니에요.</span></div></div>`;
-  return`<div class="gh">최종 부지급 <small>지급액 0원 건</small></div><div class="notice">${fr}</div>`;
+  const fr=showFr?`<p class="q">부지급 사유</p>
+   <button class="sel selb frb" data-frp="1" aria-haspopup="listbox" aria-label="부지급 사유: ${c.frP?RS[c.frP]:'선택 안 함'}" ${res?'disabled':''}><span>${c.frP?RS[c.frP]:'사유 선택'}</span><i aria-hidden="true">▾</i></button>
+   ${res?(c.fr?`<div class="res"><span class="mk ${okF&&sumPick(c)===0?'ok':'bad'}">${okF&&sumPick(c)===0?'✓ 정답':'✗ 오답'}</span><span>정답 사유: <b>${RS[c.fr]}</b>${c.pn?` (${c.pn})`:''}</span></div>`:`<div class="res"><span class="mk bad">✗ 오답</span><span>이 건은 지급액이 있어서 부지급 사유가 필요 없어요.</span></div>`):''}`:'';
+  if(res&&!c.fr)return`<div class="gh">부지급</div><div class="notice"><div class="res"><span class="mk bad">✗ 사유 불필요</span><span>이 건은 지급액이 있어서 부지급 대상이 아니에요.</span></div></div>`;
+  return`<div class="gh">부지급 <small>지급액 0원 건</small></div><div class="notice">${fr}</div>`;
 }
 const PERS=[{n:'차분한 고객',t:1,w:.3},{n:'깐깐한 고객',t:2,w:.25},{n:'버럭하는 고객',t:2,w:.15,angry:1},{n:'집요한 고객',t:3,w:.1},{n:'어르신 고객',t:2,w:.1,old:1},{n:'급한 고객',t:1,w:.1,rush:1},{n:'의심 많은 고객',t:2,w:.08,doubt:1},{n:'가족 대리 고객',t:1,w:.08,proxy:1},{n:'말 바꾸는 고객',t:1,w:.06,flip:1},{n:'전직 설계사 고객',t:2,w:.06,pro:1}];
 function followUps(c){const ben=c.ben,r=c.cr||c.prim;
@@ -1885,7 +1886,7 @@ function tutStart(){const c=tutPrep();st.tut=true;st.callAll=true;st.notice=true
    {sel:'#inf',t:`담보마다 <b>지급 조건</b>이 있어요. 이 조건과 서류 내용을 대조하는 게 심사의 핵심이에요.`,btn:'확인'},
    {sel:()=>!gpop.hidden?gpop:row(t1)(),t:`<b>${N(t1)}</b>: ${c.ans[t1].w}<br>→ 조건을 충족하니 ${isDay(c.covs[t1])?`<b>[▾]</b>를 누르고 위아래로 굴려서 <b>${aDays(c,t1)}${dUnit(c.covs[t1])}</b>을 눌러요.`:'<b>[지급]</b>을 눌러요.'}`,done:()=>gpop.hidden&&decOk(c,t1)},
    {sel:()=>!gpop.hidden?gpop:row(t0)(),t:`<b>${N(t0)}</b>: ${c.ans[t0].w}<br>→ 조건에 안 맞으니 <b>부지급</b>이 맞아요. ${c.pick[t0]===0?'기본값이 부지급이라 그대로 두면 돼요.':isDay(c.covs[t0])?'[▾]를 눌러 <b>0일</b>로 굴려요.':'[부지급]을 눌러요.'}`,done:()=>decOk(c,t0),btn:'알겠어요'},
-   {sel:()=>{const g=document.getElementById('go'),s=document.getElementById('slides');if(g&&s){const r=g.getBoundingClientRect(),R=s.getBoundingClientRect();if(r.left>=R.left-2&&r.right<=R.right+2){if(r.bottom>R.bottom||r.top<R.top)g.scrollIntoView({block:'nearest'});return g}}return document.getElementById('snx')},t:`<b>결정 지급액 합계</b>로 금액을 확인하고, <b>다음 ›</b>으로 심사표 <b>마지막 장</b>까지 넘기면 나오는 <b>[심사 완료 · 도장 찍기]</b>를 눌러요.`,done:()=>st.queue[0].done},
+   {sel:()=>{const g=document.getElementById('go'),s=document.getElementById('slides');if(g&&s){const r=g.getBoundingClientRect(),R=s.getBoundingClientRect();if(r.left>=R.left-2&&r.right<=R.right+2){if(r.bottom>R.bottom||r.top<R.top)g.scrollIntoView({block:'nearest'});return g}}return document.getElementById('snx')},t:`<b>결정 지급액 합계</b>로 금액을 확인하고, 심사표 <b>맨 아래</b>의 <b>[심사 완료 · 도장 찍기]</b>를 눌러요.`,done:()=>st.queue[0].done},
    {sel:'.res',t:`도장을 찍으면 담보별 <b>✓ 정답 / ✗ 오답</b>과 판정 사유가 나와요. 틀린 건 여기서 복습해요.`,btn:'다음'},
    {sel:()=>{const sl=document.getElementById('slides');if(!sl)return document.getElementById('back');const btns=[...sl.querySelectorAll('.go')];const v=btns.find(g=>{const r=g.getBoundingClientRect(),R=sl.getBoundingClientRect();return r.width>0&&r.left>=R.left-2&&r.right<=R.right+2});const g=v||document.getElementById('go')||btns[0];if(g){const R=sl.getBoundingClientRect(),r=g.getBoundingClientRect();if(r.bottom>R.bottom||r.top<R.top)g.scrollIntoView({block:'nearest'});return g}return document.getElementById('back')},free:true,t:`다 봤으면 아래 <b>[일정창으로 돌아가기 →]</b> 버튼을 눌러 목록으로 돌아가요.`,done:()=>st.scr==='inbox',
     after:()=>{if(!c.call){c.call=makeCall(c);if(c.call)c.call.state='pending'}if(c.call)c.call.at=st.gm}},
@@ -1893,7 +1894,7 @@ function tutStart(){const c=tutPrep();st.tut=true;st.callAll=true;st.notice=true
    {sel:'#cctg',t:`어떤 건 문의인지 <b>[📋 이 건 심사 결과 보기]</b>를 눌러 확인하며 응대해요.`,done:()=>!!st.ccOpen,skip:()=>!c.call},
    {pos:'top',sel:'#copts',t:`고객 말이 끝나면 답변이 나와요. <b>사유·근거·다음 절차</b>를 정확하고 정중하게 안내하는 답을 고르세요.`,done:()=>!st.inCall||!!document.getElementById('cend'),skip:()=>!c.call},
    {sel:'#cend',t:`통화 결과가 나와요. <b>[통화 종료]</b>를 눌러요.`,done:()=>!st.inCall,skip:()=>!c.call},
-   {sel:null,t:`🎉 <b>튜토리얼 끝!</b> 실제 게임에서는<ul><li>시간이 계속 흘러요 (하루 = 실제 15분)</li><li>필요한 서류가 <b>미제출</b>이면 그 담보는 부지급</li><li>지급액이 0원이면 <b>최종 부지급 사유</b> 선택</li><li>실손 포함이면 영수증으로 <b>실손 금액</b> 계산 (🧮 계산기)</li><li>서류끼리 이름·병원이 다르거나 날짜를 고친 흔적이 있으면 <b>🚩 사기 조사 의뢰</b></li><li>연속 정답 <b>🔥콤보</b>, 빠른 처리 <b>⚡보너스</b>, 매일 <b>🎯미션</b>으로 승진하세요!</li></ul>처음엔 <b>매우 쉬움 · 실손 제외</b>로 시작해 보세요. 서류가 어려우면 ⚙️ 설정에서 <b>간편 서류</b>로 바꿀 수 있어요.`,btn:'처음 화면으로',fin:true}];
+   {sel:null,t:`🎉 <b>튜토리얼 끝!</b> 실제 게임에서는<ul><li>시간이 계속 흘러요 (하루 = 실제 15분)</li><li>필요한 서류가 <b>미제출</b>이면 그 담보는 부지급</li><li>지급액이 0원이면 <b>부지급 사유</b> 선택</li><li>실손 포함이면 영수증으로 <b>실손 금액</b> 계산 (🧮 계산기)</li><li>서류끼리 이름·병원이 다르거나 날짜를 고친 흔적이 있으면 <b>🚩 사기 조사 의뢰</b></li><li>연속 정답 <b>🔥콤보</b>, 빠른 처리 <b>⚡보너스</b>, 매일 <b>🎯미션</b>으로 승진하세요!</li></ul>처음엔 <b>매우 쉬움 · 실손 제외</b>로 시작해 보세요. 서류가 어려우면 ⚙️ 설정에서 <b>간편 서류</b>로 바꿀 수 있어요.`,btn:'처음 화면으로',fin:true}];
   tsI=0;st.lv=0;inbox();window.scrollTo({top:0});startT();coach.hidden=false;tutRender();clearInterval(tsTimer);tsTimer=setInterval(tutPoll,250)}
 function tutEnd(go){clearInterval(tsTimer);tsTimer=null;coach.hidden=true;tspot.hidden=true;if(tsHl)tsHl.classList.remove('chl');tsHl=null;st.tut=false;st.callAll=false;st.ccOpen=false;
   if(go){st.lv=0;st.pick=false;st.newbie=!!CR.nb;st.vol=0}else if(st._keep)Object.assign(st,st._keep);start()}
@@ -1939,7 +1940,7 @@ function start(){document.body.classList.remove('ingame','scene','endm','subm');
    <p class="intro">처음이라면 <b>튜토리얼 모드</b>부터! 사수와 함께 심사를 하나씩 배워요. 익숙해지면 <b>샌드박스 모드</b>에서 원하는 조건으로 자유롭게 심사해요.</p>
    <button class="begin scnbtn" id="scnbeg">시나리오 모드<small>${CR.scn&&!CR.scn.end?`${CR.scn.day}일차 · 잔고 ${f(CR.scn.money)}원`:'출근해서 번 돈으로 햄스터·콩벌레와 20일 버티기'}</small></button>
    <button class="begin stbtn" id="stbeg">튜토리얼 모드<small>신입 심사자의 성장기 · ${Object.keys(storyDone()).length}/${STORY.length}장 클리어</small></button>
-   <button class="begin sbbtn" id="sbbeg">샌드박스 모드<small>난이도 · 실손 · 접수량 · AI 대결을 직접 골라요${vsRec}</small></button><p class="mobnote">Optimized for mobile · 모바일 세로 화면 기준으로 제작</p><p class="fictnote">이 게임은 가상의 보험금 심사 시뮬레이션으로, 등장하는 인물·기관·상품·심사 기준은 모두 게임용 가상 설정이며 실제 보험사 및 약관·실무와는 무관합니다.</p><p class="bldline"><span class="bld" id="bld">build 230 · 2026.11.23</span></p></section>`;
+   <button class="begin sbbtn" id="sbbeg">샌드박스 모드<small>난이도 · 실손 · 접수량 · AI 대결을 직접 골라요${vsRec}</small></button><p class="mobnote">Optimized for mobile · 모바일 세로 화면 기준으로 제작</p><p class="fictnote">이 게임은 가상의 보험금 심사 시뮬레이션으로, 등장하는 인물·기관·상품·심사 기준은 모두 게임용 가상 설정이며 실제 보험사 및 약관·실무와는 무관합니다.</p><p class="bldline"><span class="bld" id="bld">build 231 · 2026.11.23</span></p></section>`;
   else app.innerHTML=`<section class="paper end start wz"><h2 class="wzh">🧪 샌드박스 모드</h2><p class="wzp">조건을 고르고 아래 버튼을 누르세요.</p>
    <h3 class="wzs">진행 방식</h3>
    <div class="lvs two" role="group" aria-label="진행 방식"><button data-vsm="0" aria-pressed="${!st.vs}">👤 혼자 심사 <small>최고 기록 도전</small></button><button data-vsm="1" aria-pressed="${!!st.vs}">🤖 AI 대결 <small>${CR.vsW||CR.vsL?`전적 ${CR.vsW||0}승 ${CR.vsL||0}패`:'AI 동료와 점수 대결'}</small></button></div>
@@ -2293,7 +2294,7 @@ function lesKit(){const K={},D=DESKQ();K.D=D;K.cs=LS.cs;
   K.miss=()=>{const e=document.querySelector('.file.miss');if(e)e.scrollIntoView({block:'nearest',inline:'nearest'});return e};
   K.missName=c=>{const e=items().find(a=>a.classList.contains('missing'));return e?e.dataset.t:'서류'};
   K.go=()=>{const g=document.getElementById('go'),s=document.getElementById('slides');if(g&&s){const r=g.getBoundingClientRect(),R=s.getBoundingClientRect();if(r.left>=R.left-2&&r.right<=R.right+2){if(r.bottom>R.bottom||r.top<R.top)g.scrollIntoView({block:'nearest'});return g}}return document.getElementById('snx')};
-  K.goT='다 정했으면 <b>다음 ›</b>으로 심사표 마지막 장까지 넘기고, <b>[심사 완료 · 도장 찍기]</b>를 눌러요.';
+  K.goT='다 정했으면 <b>다음 ›</b>으로 심사표로 넘어가서 맨 아래 <b>[심사 완료 · 도장 찍기]</b>를 눌러요.';
   K.stamp=c=>({sel:K.go,t:()=>vis('#go')?'다 정했으면 <b>[심사 완료 · 도장 찍기]</b>를 눌러요. 도장을 찍으면 결정이 확정돼요.':K.goT,done:K.dn(c)});
   K.res=tx=>({sel:()=>document.querySelector('.slide.list .res'),t:tx,btn:'네'});
   K.allOk=c=>{const it=K.itOf(c);return!!it&&it.right===it.items};
@@ -2461,7 +2462,7 @@ function lesBeats3(K){const [a,b,c,d,e]=K.cs,{inG,doc,nav,openDocs,closeDocs,row
   open(c,'세 번째 건. 이번엔 병원비가 좀 적어요.'),
   {when:inG(c),steps:()=>[
     {sel:row(0),t:'계산했는데 <b>0원 이하</b>가 나오면? 실손은 <b>0원</b>, 부지급이에요. 기본값 그대로 두면 돼요.',btn:'네'},
-    K.fr(c,'지급액이 전부 0원이면 다음 장에서 <b>최종 부지급 사유</b>를 골라야 해요. <b>공제·자기부담 후 0원</b>을 골라요.'),
+    K.fr(c,'지급액이 전부 0원이면 아래에서 <b>부지급 사유</b>를 골라야 해요. <b>공제·자기부담 후 0원</b>을 골라요.'),
     stamp(c),back(c,'좋아요. 목록으로 돌아가요.',3)]},
   open(d,'여기부터 두 건은 <b>혼자</b>예요. 네 번째는 <b>입원</b>이에요.'),
   review(d,()=>`완벽해요! ${W(d)}`,()=>`실손: ${W(d)}`),
@@ -2572,7 +2573,7 @@ function lesBeats4(K){const [a,b,c,d,e]=K.cs,{inG,doc,nav,openDocs,closeDocs,row
     doc('진단서',null,`진단서에선 <b>상병명</b>과 <b>질병분류기호</b>. 이 건은 <b>${a.s.code} ${a.s.name}</b>이에요.`),
     closeDocs('서류를 닫아요.'),
     {sel:row(0),t:`독감 치료비를 청구했는데 진단은 <b>감기(${a.s.code})</b>예요. 독감은 <b>J09~J11</b>만 돼요. 이름이 비슷해도 코드가 다르면 안 줘요. 이런 게 <b>함정 진단</b>이에요.`,btn:'함정이다'},
-    K.fr(a,'담보 지급액이 <b>전부 0원</b>이면 다음 장에서 <b>최종 부지급 사유</b>를 하나 골라야 해요. 고객 안내문에 들어가요. 이번엔 <b>보장 대상 아님</b>이에요.'),
+    K.fr(a,'담보 지급액이 <b>전부 0원</b>이면 아래에서 <b>부지급 사유</b>를 하나 골라야 해요. 고객 안내문에 들어가요. 이번엔 <b>보장 대상 아님</b>이에요.'),
     stamp(a),res('다 맞았어요! 함정 하나 피했네요.'),back(a,'목록으로 돌아가요.',1)]},
   open(b,'두 번째 건. 이번엔 <b>날짜</b>가 핵심이에요.'),
   {when:inG(b),steps:()=>[
@@ -2583,7 +2584,7 @@ function lesBeats4(K){const [a,b,c,d,e]=K.cs,{inG,doc,nav,openDocs,closeDocs,row
     doc('진단서',null,`진단일 <b>${fd(b.inc)}</b>. 계약하고 얼마 안 됐죠? 대상포진 같은 진단비는 계약일부터 <b>90일 이내</b> 진단이면 <b>면책</b>이에요.<br><small>${W(b,'shingles')}</small>`,'면책!'),
     closeDocs('서류를 닫아요.'),
     K.payStep(b,'예금주 확인부터 해요. 같으면 <b>[일치]</b>.'),
-    K.fr(b,'최종 부지급 사유는 <b>면책기간 내 진단</b>.'),
+    K.fr(b,'부지급 사유는 <b>면책기간 내 진단</b>.'),
     stamp(b),back(b,'목록으로 돌아가요.',2)]},
   open(c,'세 번째 건이에요. 이번엔 <b>예금주</b>를 배울 거예요.'),
   {when:inG(c),steps:()=>[
@@ -4007,7 +4008,7 @@ function wrongNote(){const out=[];if(!st.queue.some(it=>it.done))return'';
     if(isBig(c)&&!c.xfr)E.push(['🏢 놓친 이관 건',`<b>${bigTxt(c)}</b> — 모든 담보 지급액 합계가 200만원을 넘으면 표준부서로 이관해요`]);
     if(!c.flag&&!c.inv&&!c.nd&&!c.xfr&&!isBig(c)){const pI=c.covs.indexOf('pay'),pSkip=pI>=0&&sumPick(c)===0;
       c.covs.forEach((k,i)=>{if((i===pI&&pSkip)||okP(c,i))return;E.push([COV[k].n,`내 결정 <s>${DL(c,i,c.pick[i],0)}</s> → 정답 <b>${DL(c,i,c.ans[i].d,1)}</b><br><small>${c.ans[i].w}</small>`])});
-      if(st.notice&&c.fr&&sumPick(c)===0&&c.frP!==c.fr)E.push(['최종 부지급 사유',`정답 <b>${RS[c.fr]}</b>`])}
+      if(st.notice&&c.fr&&sumPick(c)===0&&c.frP!==c.fr)E.push(['부지급 사유',`정답 <b>${RS[c.fr]}</b>`])}
     if(E.length&&!st.queue._wn&&!st.sty&&!st.tut)(st._wnNew=st._wnNew||[]).push({t:Date.now(),m:st.wnMode||(st.chR?'데일리 챌린지':st.vs?'AI 대결':'샌드박스'),who:c.who,code:c.s.code,nm:short(c.s),E});
     if(E.length)out.push(`<div class="wn"><p class="wnh">${it.id} · ${c.who} · <small>${c.s.code} ${short(c.s)}</small></p>${E.map(e=>`<p class="wni"><b>${e[0]}</b><br>${e[1]}</p>`).join('')}</div>`)});
   if(!st.queue._wn){st.queue._wn=1;if(st._wnNew&&st._wnNew.length){CR.wnb=(st._wnNew.concat(CR.wnb||[])).slice(0,60);saveCR()}st._wnNew=null}
