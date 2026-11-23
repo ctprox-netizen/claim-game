@@ -141,12 +141,12 @@ grant execute on function iso_write(json) to authenticated;
 grant execute on function iso_write_photo(json) to authenticated;
 grant execute on function iso_remove(text) to authenticated;
 
--- ===== 통마다 사진 9칸 (v3) =====
--- 칸(1~9)마다 사진 한 장. 교체하면 예전 사진은 서버에서 지워져요.
+-- ===== 대표 사진 · 앨범 9칸 · 메모장 (v4) =====
+-- 0번 칸 = 대표 사진, 1~9번 칸 = 앨범. 교체하면 예전 사진은 서버에서 지워져요.
 create table if not exists iso_gal(
   fam text not null,
   tub text not null check (length(tub) <= 8),
-  slot int not null check (slot between 0 and 9),
+  slot int not null check (slot between -1 and 9),
   thumb text not null,
   data text not null,
   who text,
@@ -154,13 +154,16 @@ create table if not exists iso_gal(
   primary key (fam, tub, slot)
 );
 alter table iso_gal enable row level security;
+alter table iso_gal drop constraint if exists iso_gal_slot_check;
+alter table iso_gal add constraint iso_gal_slot_check check (slot between -1 and 9);
+drop function if exists iso_gal_swap(text, int, int);
 
--- 목록 (누구나): 모든 칸의 위치·시각, 미리보기는 since 이후 바뀐 칸만
+-- 목록 (누구나): 대표(0)와 앨범(1~9) 칸의 위치·시각, 미리보기는 since 이후 바뀐 칸만
 create or replace function iso_gal_list(since timestamptz default '1970-01-01')
 returns json language sql stable security definer set search_path = public as $$
   select coalesce(json_agg(json_build_object('tub', tub, 'slot', slot, 'who', who, 'upd', upd,
            'thumb', case when upd > since then thumb end) order by tub, slot), '[]'::json)
-  from iso_gal where fam = iso_fam() and slot between 1 and 9;
+  from iso_gal where fam = iso_fam() and slot between 0 and 9;
 $$;
 
 -- 원본 사진 (누구나)
@@ -175,7 +178,7 @@ language plpgsql security definer set search_path = public as $$
 declare me text := iso_me(); u timestamptz := clock_timestamp();
 begin
   if me is null then raise exception 'not allowed' using errcode = '42501'; end if;
-  if s < 1 or s > 9 then raise exception 'bad slot'; end if;
+  if s < 0 or s > 9 then raise exception 'bad slot'; end if;
   if length(d) > 1000000 or length(th) > 120000 then raise exception 'photo too large'; end if;
   insert into iso_gal(fam, tub, slot, thumb, data, who, upd) values (iso_fam(), t, s, th, d, me, u)
   on conflict (fam, tub, slot) do update set thumb = excluded.thumb, data = excluded.data, who = excluded.who, upd = excluded.upd;
@@ -190,23 +193,53 @@ begin
   delete from iso_gal where fam = iso_fam() and tub = t and slot = s;
 end $$;
 
--- 두 칸 자리 바꾸기 (대표 사진 정하기 등)
-create or replace function iso_gal_swap(t text, a int, b int) returns void
+-- 앨범 사진을 대표 사진(0번)으로 복사
+create or replace function iso_gal_cover(t text, s int) returns void
 language plpgsql security definer set search_path = public as $$
-declare f text := iso_fam(); u timestamptz := clock_timestamp();
+declare me text := iso_me(); f text := iso_fam();
 begin
-  if iso_me() is null then raise exception 'not allowed' using errcode = '42501'; end if;
-  if a = b or a < 1 or a > 9 or b < 1 or b > 9 then return; end if;
-  update iso_gal set slot = 0 where fam = f and tub = t and slot = a;
-  update iso_gal set slot = a, upd = u where fam = f and tub = t and slot = b;
-  update iso_gal set slot = b, upd = u where fam = f and tub = t and slot = 0;
+  if me is null then raise exception 'not allowed' using errcode = '42501'; end if;
+  insert into iso_gal(fam, tub, slot, thumb, data, who, upd)
+  select fam, tub, 0, thumb, data, me, clock_timestamp() from iso_gal where fam = f and tub = t and slot = s
+  on conflict (fam, tub, slot) do update set thumb = excluded.thumb, data = excluded.data, who = excluded.who, upd = excluded.upd;
+end $$;
+
+-- 사육통마다 메모장 하나
+create table if not exists iso_memo(
+  fam text not null,
+  tub text not null check (length(tub) <= 8),
+  body text not null default '',
+  who text,
+  upd timestamptz not null default now(),
+  primary key (fam, tub)
+);
+alter table iso_memo enable row level security;
+
+create or replace function iso_memo_list(since timestamptz default '1970-01-01')
+returns json language sql stable security definer set search_path = public as $$
+  select coalesce(json_agg(json_build_object('tub', tub, 'body', body, 'who', who, 'upd', upd)), '[]'::json)
+  from iso_memo where fam = iso_fam() and upd > since;
+$$;
+
+create or replace function iso_memo_set(t text, b text) returns timestamptz
+language plpgsql security definer set search_path = public as $$
+declare me text := iso_me(); u timestamptz := clock_timestamp();
+begin
+  if me is null then raise exception 'not allowed' using errcode = '42501'; end if;
+  if length(b) > 20000 then raise exception 'memo too long'; end if;
+  insert into iso_memo(fam, tub, body, who, upd) values (iso_fam(), t, coalesce(b, ''), me, u)
+  on conflict (fam, tub) do update set body = excluded.body, who = excluded.who, upd = excluded.upd;
+  return u;
 end $$;
 
 revoke execute on function iso_gal_set(text, int, text, text) from public, anon;
 revoke execute on function iso_gal_del(text, int) from public, anon;
-revoke execute on function iso_gal_swap(text, int, int) from public, anon;
+revoke execute on function iso_gal_cover(text, int) from public, anon;
+revoke execute on function iso_memo_set(text, text) from public, anon;
 grant execute on function iso_gal_list(timestamptz) to anon, authenticated;
 grant execute on function iso_gal_get(text, int) to anon, authenticated;
 grant execute on function iso_gal_set(text, int, text, text) to authenticated;
 grant execute on function iso_gal_del(text, int) to authenticated;
-grant execute on function iso_gal_swap(text, int, int) to authenticated;
+grant execute on function iso_gal_cover(text, int) to authenticated;
+grant execute on function iso_memo_list(timestamptz) to anon, authenticated;
+grant execute on function iso_memo_set(text, text) to authenticated;
