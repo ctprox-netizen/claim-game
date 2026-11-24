@@ -362,6 +362,10 @@ header.top,.detail,.detail .dh{background:#e8f0e7!important}
 .card,.sheet .sb,.ctl,.valb,.vmemo{background:#fffefa}
 nav.tabs{background:#263d31!important}
 .btn.pri,.fab,.toast{background:#426e50!important;border-color:#426e50!important}
+
+/* 하단 빌드 정보 */
+.build-info{max-width:1100px;margin:18px auto 96px;padding:12px 16px;text-align:center;border-top:1px solid var(--line);color:var(--mut);font-size:12px;line-height:1.7}
+.build-info strong{color:var(--ink);font-weight:800}
 </style>
 </head>
 <body>
@@ -375,6 +379,12 @@ nav.tabs{background:#263d31!important}
  <button data-tab="log"><b>📜</b>기록</button>
 </nav>
 <div id="detail" class="detail" hidden></div>
+
+<!-- BUILD-INFO: 2026-11-25-01 -->
+<footer class="build-info" aria-label="사이트 빌드 정보">
+ <div><strong>빌드 버전</strong> v2026.11.25-01</div>
+ <div><strong>최종 수정일</strong> 2026.11.25</div>
+</footer>
 <script>
 /* ===== 게임(간편심사)에서 가져온 콩벌레 엔진: 종 데이터 · 3D 도트 모델 · 사육통 단면 ===== */
 const ZM={t:0};let zmMsg=t=>{};
