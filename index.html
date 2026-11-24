@@ -752,6 +752,11 @@ const COV={shingles:{n:'대상포진진단비',amt:3e5,dx:1},gout:{n:'통풍진�
   dSurg:{n:'질병수술비',amt:3e5},appx:{n:'충수염수술비',amt:3e5},hemo:{n:'치핵수술비',amt:2e5},iSurg:{n:'상해수술비',amt:3e5},dSurgS:{n:'질병수술비(상급종합병원)',amt:5e5,hl:2},
   dGrade:{n:'질병 1~5종 수술비',lv2:1,grade:1,am:'1종 10만 ~ 5종 200만원'},iGrade:{n:'상해 1~5종 수술비',lv2:1,grade:1,am:'1종 10만 ~ 5종 200만원'},
   carinj:{n:'자동차사고부상위로금(1~14급)',lv2:1,carG:1,am:'14급 2만 ~ 1급 200만원'},carDrv:{n:'자동차사고부상위로금(운전자)',carG:1,cond:'drv',lv3:1,am:'14급 2만 ~ 1급 200만원 · 운전·탑승·보행 중 모두'},carNon:{n:'자동차사고부상위로금(비운전자)',carG:1,cond:'non',lv3:1,am:'14급 2만 ~ 1급 200만원 · 운전 외 사고'},surch:{n:'자동차보험료 할증지원금',amt:2e5,lv2:1,am:'1사고당 20만원 (운전 중 사고로 자동차보험 할증 시)'},carC2C:{n:'자동차사고부상위로금(차대차)',carG:1,cond:'c2c',lv3:1,am:'14급 2만 ~ 1급 200만원 · 차대차 사고'},frac:{n:'골절진단비(치아파절 제외)',amt:3e5},fracT:{n:'골절진단비(치아파절 포함)',amt:2e5},tooth:{n:'치아파절진단비',amt:1e5},fracSurg:{n:'골절수술비',amt:3e5},cast:{n:'깁스치료비',amt:2e5},splint:{n:'부목치료비',amt:1e5},sil:{n:'실손의료비',sil:1},pay:{n:'지급 계좌 예금주 확인',opts:['일치 · 지급 진행','불일치 · 지급 보류'],vals:[0,0],pay:1}};
+const SURG_EDI={
+  '내시경적 위 용종절제술':{codes:['Q2521'],note:'기본코드 · 세부 산정코드는 청구 조건에 따라 달라질 수 있음'},
+  '내시경적 결장 용종절제술':{codes:['Q7701'],note:'기본코드 · 실제 산정코드 예시 Q7701001, Q7701081'},
+  '수정체유화술 및 인공수정체 삽입술':{codes:['S5119','S5117'],note:'수정체유화술 + 일차 인공수정체삽입술 기본코드'}
+};
 const GRADE={'치핵 절제술':1,'항문열창 절제술':1,'내시경적 결장 용종절제술':1,'내시경적 위 용종절제술':1,'내시경적 직장 용종절제술':1,'피부 열상 봉합술':1,'수정체유화술 및 인공수정체 삽입술':2,'서혜부 탈장 교정술':2,'복강경 충수절제술':3,'복강경 담낭절제술':3,'요골 관혈적 정복 및 내고정술':3,'슬개골 관혈적 정복술':3,
   '갑상선 반절제술':4,'관상동맥 스텐트 삽입술':4,'요추 디스크 제거술':4,'위 부분절제술':5,'인공 슬관절 치환술':5};
 const uniqD=a=>[...new Set(a.map(d=>fd(d)))];
@@ -1134,7 +1139,7 @@ function buildLines(c){const b=c.bill,s=c.s;
   const n=ng.slice(),L=[];
   const GN={'진찰료':c.days?'입원 진찰료':'초진 진찰료','입원료':'입원료(일반병실)','검사료':'혈액·소변 검사','영상진단료':'단순 방사선 촬영','처치 및 수술료':s.cast?'석고붕대(Cast) 고정술':c.surg||'처치료','주사료':'주사 수기료','투약 및 조제료':'원내 조제료'};
   const NN={'진찰료':'비급여 진찰','입원료':'비급여 입원 물품','검사료':'비급여 검사(특수 혈액검사)','영상진단료':pick(['초음파 검사','CT 촬영(비급여)']),'처치 및 수술료':'비급여 치료재료','투약 및 조제료':'비급여 약제'};
-  rows.forEach((r,i)=>{if(g[i])L.push({row:r,name:GN[r],kind:'급여(본인부담)',amt:g[i]});if(ng[i])L.push({row:r,name:NN[r],kind:'비급여',amt:ng[i]})});
+  rows.forEach((r,i)=>{if(g[i]){const x={row:r,name:GN[r],kind:'급여(본인부담)',amt:g[i]};if(r==='처치 및 수술료'&&c.surg&&SURG_EDI[c.surg]){x.edi=SURG_EDI[c.surg].codes.join(' + ');x.ediNote=SURG_EDI[c.surg].note}L.push(x)}if(ng[i])L.push({row:r,name:NN[r],kind:'비급여',amt:ng[i]})});
   if(b.n3){const r={dosu:'처치 및 수술료',mri:'영상진단료',inj:'주사료'}[b.n3.k];n[rows.indexOf(r)]+=b.n3.amt;L.push({row:r,name:{dosu:'도수치료',mri:'MRI 촬영(비급여)',inj:'비급여 주사(치료 목적)'}[b.n3.k],kind:'비급여',amt:b.n3.amt,t3:1})}
   b.cuts.forEach(x=>{n[rows.indexOf(x.row)]+=x.amt;L.push({row:x.row,name:x.n,kind:'비급여',amt:x.amt,cut:1})});
   const order=r=>rows.indexOf(r);L.sort((a,z)=>order(a.row)-order(z.row));
@@ -1261,7 +1266,7 @@ function docsSimple(c){
   if(c.visits)h+=c.docs.visit?F('통원 진료 확인서','',[['의료기관',c.hos],['진료과',c.dept],['외래 진료일',c.visits.map(v=>fd(v.d)).join('<br>')],['진료 횟수',`${c.visits.length}회`]]):miss('통원 진료 확인서');
   if(c.pt)h+=c.docs.pt?F('물리치료 확인서','',[['치료 내용','열·전기치료, 운동치료'],['치료 일자',c.pt.map(d=>fd(d)).join('<br>')],['총 치료 횟수',`${c.pt.length}회`]]):miss('물리치료 확인서');
   if(c.surg)h+=c.docs.surg?F('수술 확인서','',[['수술명',`<b>${c.surg}</b>`],['의료기관 종별',`<b>${c.htype}</b>`]]):miss('수술 확인서');
-  if(st.sil)h+=c.docs.rcpt?F('진료비 계산서·영수증','',[['의료기관 종별',`<b>${c.htype}</b>`],['진료비 처리',c.car&&c.autoPay?'<b>🚗 자동차보험 지급보증</b> (자동차보험사가 병원에 직접 지급)':'건강보험'],['진료 구분',c.days?`입원 ${c.days}일`:'외래 1회'],['급여 본인부담금',`<b>${f(b.gb)}원</b>`],['비급여',`<b>${f(b.ntot)}원</b>`]]).replace(/<\/article>$/,`<table class="mt"><tr><th>세부 항목</th><th>구분</th><th>금액</th></tr>${b.L.map(x=>`<tr><td>${lnm(c,x)}</td><td>${x.kind==='비급여'?'비급여':'급여'}</td><td class="num">${f(x.amt)}</td></tr>`).join('')}</table></article>`):miss('진료비 영수증');
+  if(st.sil)h+=c.docs.rcpt?F('진료비 계산서·영수증','',[['의료기관 종별',`<b>${c.htype}</b>`],['진료비 처리',c.car&&c.autoPay?'<b>🚗 자동차보험 지급보증</b> (자동차보험사가 병원에 직접 지급)':'건강보험'],['진료 구분',c.days?`입원 ${c.days}일`:'외래 1회'],['급여 본인부담금',`<b>${f(b.gb)}원</b>`],['비급여',`<b>${f(b.ntot)}원</b>`]]).replace(/<\/article>$/,`<table class="mt"><tr><th>세부 항목</th><th>EDI 코드</th><th>구분</th><th>금액</th></tr>${b.L.map(x=>`<tr><td>${lnm(c,x)}</td><td>${x.edi?`<b>${x.edi}</b><small>${x.ediNote||'기본코드'}</small>`:'—'}</td><td>${x.kind==='비급여'?'비급여':'급여'}</td><td class="num">${f(x.amt)}</td></tr>`).join('')}</table></article>`):miss('진료비 영수증');
   if(fixDetOnly(c))h+=F('진료비 세부산정내역','',fixRows(c).map(x=>[x.row,lnm(c,x)]));
   return h}
 function docsHTML(c){if(st.newbie)return docsSimple(c);
