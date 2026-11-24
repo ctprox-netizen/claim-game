@@ -1280,7 +1280,7 @@ function docsSimple(c){
   if(c.days)h+=c.docs.hosp?F('입원 확인서','',[['입원 기간',`${fd(c.inc)} ~ ${fd(out)} (<b>${c.days}일</b>)`],['의료기관 종별',`<b>${c.htype}</b>`],...(c.rooms?[['병실 이력',c.rooms.map(([t,n])=>`${t} ${n}일`).join(' → ')]]:[]),['간호·간병통합서비스',c.nhs?`<b>${c.nhs}일 이용</b>`:'이용 안 함']]):miss('입원 확인서');
   if(c.visits)h+=c.docs.visit?F('통원 진료 확인서','',[['의료기관',c.hos],['진료과',c.dept],['외래 진료일',c.visits.map(v=>fd(v.d)).join('<br>')],['진료 횟수',`${c.visits.length}회`]]):miss('통원 진료 확인서');
   if(c.pt)h+=c.docs.pt?F('물리치료 확인서','',[['치료 내용','열·전기치료, 운동치료'],['치료 일자',c.pt.map(d=>fd(d)).join('<br>')],['총 치료 횟수',`${c.pt.length}회`]]):miss('물리치료 확인서');
-  if(c.surg)h+=c.docs.surg?F('수술 확인서','',[['수술명',`<b>${c.surg}</b>`],...(SURG_EDI[c.surg]?[['EDI 수가코드',`<b>${SURG_EDI[c.surg].codes.join(' + ')||'세부조건 확인'}</b><small>${SURG_EDI[c.surg].note}</small>`]]:[]),['의료기관 종별',`<b>${c.htype}</b>`]]):miss('수술 확인서');
+  if(c.surg)h+=c.docs.surg?F('수술 확인서','',[['수술명',`<b>${c.surg}</b>`],...(SURG_EDI[c.surg]?[['EDI 수가코드',`<b>${SURG_EDI[c.surg].codes.join(' + ')||'세부조건 확인'}</b>`]]:[]),['의료기관 종별',`<b>${c.htype}</b>`]]):miss('수술 확인서');
   if(st.sil)h+=c.docs.rcpt?F('진료비 계산서·영수증','',[['의료기관 종별',`<b>${c.htype}</b>`],['진료비 처리',c.car&&c.autoPay?'<b>🚗 자동차보험 지급보증</b> (자동차보험사가 병원에 직접 지급)':'건강보험'],['진료 구분',c.days?`입원 ${c.days}일`:'외래 1회'],['급여 본인부담금',`<b>${f(b.gb)}원</b>`],['비급여',`<b>${f(b.ntot)}원</b>`]]).replace(/<\/article>$/,`<table class="mt"><tr><th>세부 항목</th><th>EDI 코드</th><th>구분</th><th>금액</th></tr>${b.L.map(x=>`<tr><td>${lnm(c,x)}</td><td>${x.edi?`<b>${x.edi}</b><small>${x.ediNote||'기본코드'}</small>`:'—'}</td><td>${x.kind==='비급여'?'비급여':'급여'}</td><td class="num">${f(x.amt)}</td></tr>`).join('')}</table></article>`):miss('진료비 영수증');
   if(fixDetOnly(c))h+=F('진료비 세부산정내역','',fixRows(c).map(x=>[x.row,lnm(c,x)]));
   return h}
@@ -1382,7 +1382,7 @@ function docsHTML(c){if(st.newbie)return docsSimple(c);
   if(c.surg){const sd=addD(c.inc,c.days>1?1:0);h+=c.docs.surg?F('수술 확인서','',`등록번호 ${c.chart}`,`<table>${pt}
     <tr><th>병명</th><td>${s.name}</td><th>질병분류기호</th><td><b>${s.code}</b></td></tr>
     <tr><th>수술명</th><td colspan="3"><b>${c.surg}</b></td></tr>
-    ${SURG_EDI[c.surg]?'<tr><th>EDI 수가코드</th><td colspan="3"><b>'+ (SURG_EDI[c.surg].codes.join(' + ')||'세부조건 확인') +'</b><small>'+SURG_EDI[c.surg].note+'</small></td></tr>':''}
+    ${SURG_EDI[c.surg]?'<tr><th>EDI 수가코드</th><td colspan="3"><b>'+ (SURG_EDI[c.surg].codes.join(' + ')||'세부조건 확인') +'</b></td></tr>':''}
     <tr><th>수술 일자</th><td>${fd(sd)}</td><th>마취 방법</th><td>${/내시경|봉합|수정체|열상|임플란트/.test(c.surg)?'국소마취':'전신마취'}</td></tr>
     <tr><th>집도의</th><td colspan="3">${c.dept} ${c.dr}</td></tr>
     <tr><th>의료기관 종별</th><td colspan="3">${HTk()}</td></tr></table>`,hosSign(addD(sd,1),'위 사람은 상기 수술을 시행하였음을 확인합니다.')):miss('수술 확인서')}
