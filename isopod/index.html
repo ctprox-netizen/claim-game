@@ -188,6 +188,11 @@ details summary{cursor:pointer;font-weight:800}
 .dmbar{display:flex;margin:6px 0 4px;max-width:520px}
 .dmbar button{flex:1;padding:7px 2px;font-size:12.5px}
 .dm-photo .tb2 span{display:none}
+.tb2 em.cnt{display:none}
+.dm-cnt .tb2 span{display:none}
+.dm-cnt .tb2 em.cnt{display:block;position:absolute;left:0;right:0;top:0;background:rgba(20,16,12,.78);color:#fff;font-style:normal;font-weight:900;font-size:clamp(11px,calc(var(--tw,90px)*.14),17px);line-height:1.2;padding:2px 4px 3px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dm-cnt .tb2 em.cnt small{font-size:.8em;font-weight:800}
+.sg.sg4{grid-template-columns:repeat(4,1fr)}.sg.sg4 button{font-size:12.5px;letter-spacing:-.04em}
 .dm-name .tb2{background:var(--paper)}
 .dm-name .tb2 img{display:none}
 .dm-name .tb2 span{inset:0;bottom:0;background:none;color:var(--ink);display:flex;align-items:center;justify-content:center;font-size:clamp(12px,calc(var(--tw,90px)*.15),19px);padding:2px 4px}
@@ -661,9 +666,10 @@ let RM=false;const SEL=new Set();
 /* 계통별 묶음 (IGRP 순서) + 톡토기 */
 function taxGroups(){const g=IGRP.map(([f,gn,sp])=>({k:gn,t:`<i>${gn}</i>`,d:f,ids:sp.flatMap(n=>ALL.filter(id=>!XSP[id]&&parseInt(id)===n))})).filter(x=>x.ids.length);
   Object.keys(XSP).forEach(id=>{if(ALL.includes(id))g.push({k:id,t:esc(XSP[id].n),d:XSP[id].fam,ids:[id]})});return g}
-const tileH=id=>`<button class="tb2 ${RM&&SEL.has(id)?'on':''}" ${RM?`data-pick="${id}" aria-pressed="${SEL.has(id)}"`:`data-open="${id}"`}><img src="${cover(id)}" alt="" loading="lazy"><span>${esc(tubNm(id))}</span><i class="ck">✓</i></button>`;
+const cntTxt=id=>{if(XSP[id]&&XSP[id].pet)return'';const c=countOf(id);if(c.n==null)return c.b?`🐣 ${c.b}`:'? 마리';const q={ge:'+',le:'↓',ap:'±'}[c.q]||'';return`${c.n}${q}마리${c.b?` <small>+🐣${c.b}</small>`:''}`};
+const tileH=id=>`<button class="tb2 ${RM&&SEL.has(id)?'on':''}" ${RM?`data-pick="${id}" aria-pressed="${SEL.has(id)}"`:`data-open="${id}"`}><img src="${cover(id)}" alt="" loading="lazy"><span>${esc(tubNm(id))}</span><em class="cnt">${cntTxt(id)}</em><i class="ck">✓</i></button>`;
 const grpAttr=ids=>RM?`data-grp="${ids.join(',')}" role="button"`:'';
-const DMS=[['photo','사진만'],['name','이름만'],['both','사진+이름']];
+const DMS=[['photo','사진만'],['name','이름만'],['both','사진+이름'],['cnt','사진+개체수']];
 let MV=false,MVP=null;
 const cuOrder=()=>{const o=(D.co||[]).filter(id=>ALL.includes(id));ALL.forEach(id=>{if(!o.includes(id))o.push(id)});return o};
 function vPet(){const P=PETS[SEC],st=P.stages?P.stages[D.tab==='larva'?'larva':'shelf']:null,ids=st?st.ids:P.ids,U=unit();if(!canEdit()){RM=false;SEL.clear()}MV=false;
@@ -688,7 +694,7 @@ function vShelf(){if(PETS[SEC])return vPet();if(!canEdit()){RM=false;SEL.clear()
    :taxGroups().map(g=>`<section class="sh2"><div class="shl" ${grpAttr(g.ids)}><b>${g.t}</b><small>${esc(g.d)} · ${g.ids.length}통</small></div><div class="stk">${g.ids.map(tileH).join('')}</div></section>`).join('');
   const dm=DMS.some(x=>x[0]===D.dm)?D.dm:'both';
   $('#app').innerHTML=`<div class="ctl"><span>배열</span><div class="sg">${[['shelf','선반 배열'],['tax','계통별'],['cu','사용자 지정']].map(([k,n])=>`<button data-sv="${k}" aria-pressed="${sv===k}">${n}</button>`).join('')}</div>
-     <span>보기</span><div class="sg">${DMS.map(([k,n])=>`<button data-dm="${k}" aria-pressed="${dm===k}">${n}</button>`).join('')}</div></div>
+     <span>보기</span><div class="sg sg4">${DMS.map(([k,n])=>`<button data-dm="${k}" aria-pressed="${dm===k}">${n}</button>`).join('')}</div></div>
    ${RM?'<p class="rmh">통을 눌러 고르세요 · 칸·묶음 이름을 누르면 한꺼번에 골라져요</p>':''}
    <div class="shv ${sv} dm-${DMS.some(x=>x[0]===D.dm)?D.dm:'both'} ${RM?'rm':''}" id="shv">${body}</div>
 `;
