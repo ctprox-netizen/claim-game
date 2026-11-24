@@ -2,34 +2,63 @@
   "title": "보험금 심사 게임 수술·처치 EDI 코드 기초 데이터",
   "schemaVersion": 1,
   "compiledAt": "2026-11-25",
-  "status": "curated-seed",
+  "status": "expanded-curated",
   "notes": [
-    "이 파일은 공식 심평원 자료에서 확인한 일부 수술 코드의 시작 데이터이며 전체 수가 마스터가 아니다.",
-    "코드는 기본코드 기준으로 수록했다. 실제 청구 산정코드는 기관 종별, 야간·공휴·제2수술 등 가산 조건에 따라 세분될 수 있다.",
+    "게임에 등장하는 수술명과 건강보험 EDI 기본코드를 연결한 참고 데이터이며 전체 수가 마스터가 아니다.",
+    "여러 코드가 표시된 경우 수술명만으로 단일 코드를 확정할 수 없으며 실제 수술기록, 부위, 방법, 난이도, 가산 조건에 따라 달라진다.",
+    "복강경 부가코드 ADC03은 기본 행위코드와 별도로 적용되는 부가코드다.",
     "EDI 코드 존재만으로 보험약관상 수술 해당 여부나 보험금 지급 여부를 자동 판정하지 않는다.",
-    "게임 적용 전 진료일 기준 유효기간과 최신 수가파일 반영 여부를 확인해야 한다."
+    "비급여 치과 임플란트는 건강보험 의과 수가코드로 임의 연결하지 않고 별도 확인 대상으로 표시한다."
   ],
   "sources": [
     {
-      "id": "hira-2026-kdrg",
+      "id": "hira-kdrg-2026",
       "publisher": "건강보험심사평가원",
-      "title": "2026 건강보험요양급여비용 제3부 질병군 분류번호 결정요령",
-      "url": "https://www.hira.or.kr/ebooksc/2026/02/BZ202602273023260.pdf",
-      "note": "위폴립절제술, 수정체 수술, 충수절제술, 탈장수술 등 시술명·수가코드 확인"
+      "title": "2026 질병군 분류번호 결정요령(KDRG)",
+      "url": "https://www.hira.or.kr/ebooksc/2026/01/BZ202601272870642.pdf",
+      "note": "담낭절제술 Q7380 및 ADC03, 갑상선수술 P4551/P4553, 슬관절치환술 N2072, 창상봉합술 등 확인"
     },
     {
       "id": "hira-appendix-2025",
       "publisher": "건강보험심사평가원",
-      "title": "포괄수가제 요양급여비용 및 청구방법",
+      "title": "포괄수가제 요양급여비용 및 청구방법(2025)",
       "url": "https://www.hira.or.kr/ebooksc/2025/03/BZ202503051269788.pdf",
-      "note": "충수절제술 및 탈장수술 코드 확인"
+      "note": "충수절제술 Q2861~Q2863, 서혜부탈장 Q2755~Q2756, 치열수술 Q2950, 치핵수술 코드군 확인"
     },
     {
-      "id": "hira-colon-polyp-2024",
+      "id": "hira-claims-2025",
       "publisher": "건강보험심사평가원",
-      "title": "결장의 0.5cm 미만 용종에 시행한 자770 결장경하종양수술 인정여부",
-      "url": "https://www.hira.or.kr/rc/insu/insuadtcrtr/InsuAdtCrtrPopup.do?brdScnBltNo=4&mtgHmeDd=20240628&mtgMtrRegSno=18&sno=2",
-      "note": "Q7701, Q7702, Q7703 및 실제 산정코드 예시 확인"
+      "title": "수술일자 기재 수술코드(2025)",
+      "url": "https://www.hira.or.kr/ebooksc/2025/12/BZ202512192693303.pdf",
+      "note": "관상동맥 스텐트삽입술 M6561~M6567 확인"
+    },
+    {
+      "id": "hira-spine-2025",
+      "publisher": "건강보험심사평가원",
+      "title": "요추 추간판제거술 공개심의사례(2025.02.27)",
+      "url": "https://www.hira.or.kr/rc/insu/insuadtcrtr/InsuAdtCrtrPopup.do?brdBltNo=&brdScnBltNo=4&mtgHmeDd=20250227&mtgMtrRegSno=4&sno=1",
+      "note": "관혈적 요추 추간판제거술 N1493 확인"
+    },
+    {
+      "id": "hira-cataract-2026",
+      "publisher": "건강보험심사평가원",
+      "title": "2026 건강보험요양급여비용 제3부 질병군 분류번호 결정요령",
+      "url": "https://www.hira.or.kr/ebooksc/2026/02/BZ202602273023260.pdf",
+      "note": "위폴립절제술, 결장 용종절제술, 수정체 수술 등 기존 기초코드"
+    },
+    {
+      "id": "hira-wound-2026",
+      "publisher": "건강보험심사평가원",
+      "title": "2026 KDRG 수가코드 분류",
+      "url": "https://www.hira.or.kr/ebooksc/2026/01/BZ202601272870642.pdf",
+      "note": "창상봉합술(안면·경부 외) SB/SC 코드군 확인"
+    },
+    {
+      "id": "hira-hemorrhoid-2025",
+      "publisher": "건강보험심사평가원",
+      "title": "치핵수술시 수가 산정방법(2025.09.01)",
+      "url": "https://www.hira.or.kr/rc/insu/insuadtcrtr/InsuAdtCrtrPopup.do?mtgHmeDd=20250901&mtgMtrRegSno=0001&sno=4",
+      "note": "치핵근치술 Q3013, 혈전성 치핵절제술 Q3012 등 구분 확인"
     }
   ],
   "items": [
@@ -150,6 +179,267 @@
       "family": "intraocular-lens",
       "sourceIds": [
         "hira-2026-kdrg"
+      ]
+    },
+    {
+      "baseCode": "Q3012",
+      "name": "혈전성치핵(내치핵) 절제술",
+      "group": "항문 수술",
+      "family": "Q3012",
+      "sourceIds": [
+        "hira-hemorrhoid-2025"
+      ]
+    },
+    {
+      "baseCode": "Q3013",
+      "name": "치핵근치술",
+      "group": "항문 수술",
+      "family": "Q3013",
+      "sourceIds": [
+        "hira-hemorrhoid-2025"
+      ]
+    },
+    {
+      "baseCode": "Q3014",
+      "name": "교액성환상치핵수술",
+      "group": "항문 수술",
+      "family": "Q3014",
+      "sourceIds": [
+        "hira-hemorrhoid-2025"
+      ]
+    },
+    {
+      "baseCode": "Q3017",
+      "name": "치핵근치술-원형자동문합기",
+      "group": "항문 수술",
+      "family": "Q3017",
+      "sourceIds": [
+        "hira-hemorrhoid-2025"
+      ]
+    },
+    {
+      "baseCode": "Q2950",
+      "name": "치열수술",
+      "group": "항문 수술",
+      "family": "Q2950",
+      "sourceIds": [
+        "hira-appendix-2025"
+      ]
+    },
+    {
+      "baseCode": "Q7380",
+      "name": "담낭절제술",
+      "group": "복부 수술",
+      "family": "Q7380",
+      "sourceIds": [
+        "hira-kdrg-2026"
+      ]
+    },
+    {
+      "baseCode": "P4551",
+      "name": "갑상선엽 전절제술-편측",
+      "group": "내분비 수술",
+      "family": "P4551",
+      "sourceIds": [
+        "hira-kdrg-2026"
+      ]
+    },
+    {
+      "baseCode": "P4553",
+      "name": "갑상선엽 아전절제술-편측",
+      "group": "내분비 수술",
+      "family": "P4553",
+      "sourceIds": [
+        "hira-kdrg-2026"
+      ]
+    },
+    {
+      "baseCode": "N1493",
+      "name": "관혈적 추간판제거술-요추",
+      "group": "척추 수술",
+      "family": "N1493",
+      "sourceIds": [
+        "hira-spine-2025"
+      ]
+    },
+    {
+      "baseCode": "N2072",
+      "name": "인공관절치환술-전치환(슬관절)",
+      "group": "정형외과 수술",
+      "family": "N2072",
+      "sourceIds": [
+        "hira-kdrg-2026"
+      ]
+    },
+    {
+      "baseCode": "N2077",
+      "name": "인공관절치환술-전치환(슬관절)-복잡",
+      "group": "정형외과 수술",
+      "family": "N2077",
+      "sourceIds": [
+        "hira-kdrg-2026"
+      ]
+    },
+    {
+      "baseCode": "M6561",
+      "name": "경피적 관상동맥스텐트삽입술-단일혈관",
+      "group": "심혈관 중재술",
+      "family": "M6561",
+      "sourceIds": [
+        "hira-claims-2025"
+      ]
+    },
+    {
+      "baseCode": "M6562",
+      "name": "경피적 관상동맥스텐트삽입술-추가혈관",
+      "group": "심혈관 중재술",
+      "family": "M6562",
+      "sourceIds": [
+        "hira-claims-2025"
+      ]
+    },
+    {
+      "baseCode": "M6563",
+      "name": "경피적 관상동맥스텐트삽입술-단일혈관(확장술 등 동시)",
+      "group": "심혈관 중재술",
+      "family": "M6563",
+      "sourceIds": [
+        "hira-claims-2025"
+      ]
+    },
+    {
+      "baseCode": "M6564",
+      "name": "경피적 관상동맥스텐트삽입술-추가혈관(확장술 등 동시)",
+      "group": "심혈관 중재술",
+      "family": "M6564",
+      "sourceIds": [
+        "hira-claims-2025"
+      ]
+    },
+    {
+      "baseCode": "M6565",
+      "name": "경피적 관상동맥스텐트삽입술-급성심근경색 일차중재",
+      "group": "심혈관 중재술",
+      "family": "M6565",
+      "sourceIds": [
+        "hira-claims-2025"
+      ]
+    },
+    {
+      "baseCode": "M6566",
+      "name": "경피적 관상동맥스텐트삽입술-만성폐쇄성병변",
+      "group": "심혈관 중재술",
+      "family": "M6566",
+      "sourceIds": [
+        "hira-claims-2025"
+      ]
+    },
+    {
+      "baseCode": "M6567",
+      "name": "경피적 관상동맥스텐트삽입술-만성폐쇄성병변(확장술 등 동시)",
+      "group": "심혈관 중재술",
+      "family": "M6567",
+      "sourceIds": [
+        "hira-claims-2025"
+      ]
+    },
+    {
+      "baseCode": "N1601",
+      "name": "사지골절정복술-관혈적(전완골 요골)",
+      "group": "골절 수술",
+      "family": "N1601",
+      "sourceIds": [
+        "hira-kdrg-2026"
+      ]
+    },
+    {
+      "baseCode": "N1611",
+      "name": "사지골절정복술-관혈적(전완골 요골)-복잡",
+      "group": "골절 수술",
+      "family": "N1611",
+      "sourceIds": [
+        "hira-kdrg-2026"
+      ]
+    },
+    {
+      "baseCode": "N0604",
+      "name": "사지골절정복술-관혈적(쇄골·슬개골·수근골·족근골)",
+      "group": "골절 수술",
+      "family": "N0604",
+      "sourceIds": [
+        "hira-kdrg-2026"
+      ]
+    },
+    {
+      "baseCode": "SB029",
+      "name": "창상봉합술(안면·경부 외, 표재성, 5~10cm)",
+      "group": "창상봉합술",
+      "family": "SB029",
+      "sourceIds": [
+        "hira-wound-2026"
+      ]
+    },
+    {
+      "baseCode": "SB031",
+      "name": "창상봉합술(안면·경부 외, 근육, 2.5cm 미만)",
+      "group": "창상봉합술",
+      "family": "SB031",
+      "sourceIds": [
+        "hira-wound-2026"
+      ]
+    },
+    {
+      "baseCode": "SB032",
+      "name": "창상봉합술(안면·경부 외, 근육, 2.5~5cm)",
+      "group": "창상봉합술",
+      "family": "SB032",
+      "sourceIds": [
+        "hira-wound-2026"
+      ]
+    },
+    {
+      "baseCode": "SB039",
+      "name": "창상봉합술(안면·경부 외, 근육, 5~10cm)",
+      "group": "창상봉합술",
+      "family": "SB039",
+      "sourceIds": [
+        "hira-wound-2026"
+      ]
+    },
+    {
+      "baseCode": "SC029",
+      "name": "창상봉합술(안면·경부 외, 변연절제 포함, 표재성, 5~10cm)",
+      "group": "창상봉합술",
+      "family": "SC029",
+      "sourceIds": [
+        "hira-wound-2026"
+      ]
+    },
+    {
+      "baseCode": "SC031",
+      "name": "창상봉합술(안면·경부 외, 변연절제 포함, 근육, 2.5cm 미만)",
+      "group": "창상봉합술",
+      "family": "SC031",
+      "sourceIds": [
+        "hira-wound-2026"
+      ]
+    },
+    {
+      "baseCode": "SC032",
+      "name": "창상봉합술(안면·경부 외, 변연절제 포함, 근육, 2.5~5cm)",
+      "group": "창상봉합술",
+      "family": "SC032",
+      "sourceIds": [
+        "hira-wound-2026"
+      ]
+    },
+    {
+      "baseCode": "SC039",
+      "name": "창상봉합술(안면·경부 외, 변연절제 포함, 근육, 5~10cm)",
+      "group": "창상봉합술",
+      "family": "SC039",
+      "sourceIds": [
+        "hira-wound-2026"
       ]
     }
   ]
