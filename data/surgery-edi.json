@@ -441,6 +441,16 @@
       "sourceIds": [
         "hira-wound-2026"
       ]
+    },
+    {
+      "baseCode": "ADC03",
+      "name": "복강경 시술 부가코드",
+      "group": "부가코드",
+      "family": "laparoscopy-addon",
+      "sourceIds": [
+        "hira-kdrg-2026"
+      ],
+      "note": "기본 행위 수가코드에 별도로 붙는 부가코드"
     }
   ]
 }
