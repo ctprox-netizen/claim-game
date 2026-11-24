@@ -585,7 +585,12 @@ async function sync(manual){if(SY.busy||!BOOT)return;SY.busy=true;setSync('ing')
     await syncGal();await syncMemo();
     SY.st='ok';SY.msg='';if(manual)toast('🔄 동기화했어요')}
   catch(e){if(/not allowed|42501/.test(e.message)){D.ed=null;save()}SY.st=e.nosql?'nosql':'off';SY.msg=String(e.message||e).slice(0,140);if(manual)toast(e.nosql?'⚠ 서버 설정(SQL)이 아직 안 돼 있어요':'⚠ 인터넷 연결을 확인해 주세요')}
-  SY.busy=false;setSync();if(!$('#detail').hidden){if(!MEDIT)refreshDetail()}else render()}
+  SY.busy=false;setSync();if(!$('#detail').hidden){if(!MEDIT)refreshDetail()}else if(typingInApp())LATER=true;else render()}
+/* 입력 중일 때 자동 동기화가 화면을 다시 그리면 쓰던 글이 지워져요 → 입력이 끝난 뒤에 다시 그려요 */
+let LATER=false;
+function typingInApp(){const a=document.activeElement;if(a&&a.closest&&a.closest('#app')&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))return true;
+  return[...document.querySelectorAll('#app input:not([type=range]):not([type=file]),#app textarea')].some(i=>i.value&&i.value.trim()&&i.id!=='cz')}
+document.addEventListener('focusout',()=>setTimeout(()=>{if(LATER&&!typingInApp()&&$('#detail').hidden&&!document.querySelector('.sheet')){LATER=false;render()}},300));
 let GAL_OK=true,MEMO_OK=true;
 async function syncMemo(){try{const r=await rpc('iso_memo_list',{since:D.msince||'1970-01-01T00:00:00Z'});MEMO_OK=true;if(!Array.isArray(r))return;
     r.forEach(x=>{D.memo[x.tub]={body:x.body,who:x.who,upd:x.upd};if(!D.msince||x.upd>D.msince)D.msince=x.upd});if(r.length)save()}catch(e){if(e.nosql)MEMO_OK=false}}
@@ -830,7 +835,7 @@ let TABS=['today','shelf','log'];const tabsNow=()=>SEC==='worm'?['today','shelf'
 function goTab(t,dir){const b=document.querySelector(`#tabs [data-tab="${t}"]`);if(!b)return;b.click();const a=$('#app');a.style.transition='none';a.style.transform=`translateX(${dir*40}%)`;a.style.opacity='.3';
   requestAnimationFrame(()=>requestAnimationFrame(()=>{a.style.transition='transform .2s ease-out,opacity .2s';a.style.transform='';a.style.opacity=''}))}
 (function(){const a=$('#app');let sx=0,sy=0,dx=0,on=false,lock=null;
-  const ok=e=>SEC!=='home'&&!CUR&&!RM&&!MV&&!document.querySelector('.sheet')&&!e.target.closest('.tubf,.filters,.album,input,textarea,select,.sg,#detail,#tabs,header,.sheet,.rmbar,.fab,.toast');
+  const ok=e=>SEC!=='home'&&SEC!=='set'&&!CUR&&!RM&&!MV&&!document.querySelector('.sheet')&&!e.target.closest('.tubf,.filters,.album,input,textarea,select,.sg,#detail,#tabs,header,.sheet,.rmbar,.fab,.toast');
   document.addEventListener('touchstart',e=>{if(e.touches.length!==1||!ok(e)){on=false;return}sx=e.touches[0].clientX;sy=e.touches[0].clientY;dx=0;on=true;lock=null;a.style.transition='none'},{passive:true});
   document.addEventListener('touchmove',e=>{if(!on)return;const x=e.touches[0].clientX-sx,y=e.touches[0].clientY-sy;if(lock===null&&(Math.abs(x)>10||Math.abs(y)>10))lock=Math.abs(x)>Math.abs(y)*1.3?'h':'v';
     if(lock==='h'){TABS=tabsNow();const i=TABS.indexOf(D.tab),edge=x<0&&i>=TABS.length-1;dx=x;a.style.transform=`translateX(${edge?x*.15:x*.5}px)`}},{passive:true});
