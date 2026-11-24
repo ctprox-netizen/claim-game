@@ -1765,7 +1765,7 @@ function makeCall(c){
 }
 const ANGRY=['지금 그걸 말이라고 해요? 민원 넣을 거예요.','됐어요, 상급자 바꿔 주세요.','말이 안 통하네. 금감원에 바로 접수할게요.'];
 function callChoiceText(s){
-  const t=String(s||'').replace(/^(불편을 드려 죄송합니다|기다리게 해 드려 죄송합니다|말씀해 주셔서 감사합니다)\\.\\s*/,'').replace(/^안타깝지만\\s*/,'').replace(/\\s+/g,' ').trim();
+  const t=String(s||'').replace(/^(불편을 드려 죄송합니다|기다리게 해 드려 죄송합니다|말씀해 주셔서 감사합니다)\.\s*/,'').replace(/^안타깝지만\s*/,'').replace(/\s+/g,' ').trim();
   const rules=[
     [/수익자 명의 계좌로 변경/, '수익자 계좌로 변경 후 지급'],
     [/예금주가 수익자.*가족 계좌/, '가족 계좌로 즉시 입금 가능'],
