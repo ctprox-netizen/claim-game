@@ -358,7 +358,7 @@ main{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:24px;p
 .nt{min-height:44px;border:2px solid #1d1a17;background:#fff;color:#1d1a17;border-radius:22px;padding:0 14px;font-weight:700;font-size:14px}
 .nt[aria-pressed=true]{background:#1d4ed8;border-color:#1d4ed8;color:#fff}
 .nss{display:grid;gap:8px}
-.ns{display:flex;gap:10px;align-items:flex-start;text-align:left;min-height:48px;border:2px solid #1d1a17;background:#fff;color:#1d1a17;border-radius:8px;padding:10px 12px;font-size:14.5px;line-height:1.45}
+.ns{display:flex;gap:10px;align-items:flex-start;text-align:left;min-height:48px;border:2px solid #1d1a17;background:#fff;color:#1d1a17;border-radius:8px;padding:9px 11px;font-size:13.5px;line-height:1.35;overflow:hidden}.ns:not(.right){min-width:0}.ns .ntxt{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden;overflow-wrap:anywhere;min-width:0}
 .ns span{flex:none;font-weight:800}.ns[aria-pressed=true]{background:#e8eefc;border-color:#1d4ed8}
 .ns.right{outline:3px solid #1d4ed8;outline-offset:1px}
 .notice .res,.call .res{margin-top:8px}
@@ -542,7 +542,7 @@ table.sil th{background:#f3efe7}
 body.app .dslide{position:relative;background:#fffdf7;border-radius:8px}.dsh{position:sticky;top:0;z-index:2;background:#1d1a17;color:#fff;font-weight:800;font-size:13.5px;padding:7px 10px;border-radius:8px 8px 0 0}.dsh small{font-weight:500;font-size:11px;opacity:.85;margin-left:4px}
 .dsec{padding:6px 2px 10px;border-bottom:3px double #1d1a17}.dst{font-weight:800;font-size:13px;color:#1d4ed8;margin:4px 4px 6px}.dsec .doc{margin:0}.dmiss{margin:10px 6px;font-size:13px;color:#e08a00}.dend{text-align:center;font-size:12px;color:#6b625a;margin:12px 0 16px}
 body.app .policy.ondocs .total,body.app .policy.ondocs .flag,body.app .policy.ondocs .rqn,body.app .policy.ondocs .gorow,body.app .policy.ondocs .phead,body.app .policy.ondocs .stamp{display:none}
-.ccw{position:relative}.ccw .ccase{position:absolute;left:0;right:0;bottom:calc(100% + 6px);margin:0;max-height:45vh;z-index:6;box-shadow:0 -8px 24px -6px #000a}
+.ccw{position:relative;min-width:0}.ccw .ccase{position:static;left:auto;right:auto;bottom:auto;margin:6px 0;max-height:min(28dvh,220px);overflow-y:auto;overscroll-behavior:contain;z-index:auto;box-shadow:0 3px 12px -5px #0005}
 .pfoot .gorow .go,.pfoot .gorow .back2{margin-top:0}.pfoot .gorow{margin:2px 0 6px}
 .stw{display:flex;justify-content:center;padding:18px 0 12px}.stw .go{width:auto;min-width:72%;margin:0 auto;padding:0 22px;background:#1d4ed8;border-color:#1d4ed8;color:#fff}
 body.app.ingame>header,body.app.ingame>.bar{display:none}
@@ -1765,11 +1765,66 @@ function makeCall(c){
 }
 const ANGRY=['지금 그걸 말이라고 해요? 민원 넣을 거예요.','됐어요, 상급자 바꿔 주세요.','말이 안 통하네. 금감원에 바로 접수할게요.'];
 function callChoiceText(s){
-  return String(s||'')
-    .replace(/^(불편을 드려 죄송합니다|기다리게 해 드려 죄송합니다|말씀해 주셔서 감사합니다)\.\\s*/,'')
-    .replace(/^안타깝지만\\s*/,'')
-    .replace(/\\s+/g,' ')
-    .trim();
+  const t=String(s||'').replace(/^(불편을 드려 죄송합니다|기다리게 해 드려 죄송합니다|말씀해 주셔서 감사합니다)\\.\\s*/,'').replace(/^안타깝지만\\s*/,'').replace(/\\s+/g,' ').trim();
+  const rules=[
+    [/수익자 명의 계좌로 변경/, '수익자 계좌로 변경 후 지급'],
+    [/예금주가 수익자.*가족 계좌/, '가족 계좌로 즉시 입금 가능'],
+    [/영업일 기준 3일 이내/, '지급 결정 · 3영업일 내 입금'],
+    [/매달 말일에 모아서/, '월말 일괄 지급 안내'],
+    [/계좌 비밀번호/, '계좌 비밀번호 확인 후 송금'],
+    [/실제로 이식술을 받으신 경우/, '실제 이식 확인 후 서류 보완 시 재심사'],
+    [/치조골 이식 없이 임플란트만/, '임플란트만 식립했다면 수술비 제외'],
+    [/치조골 이식을 함께 받으셨더라도/, '이식 여부와 관계없이 임플란트 수술비 제외'],
+    [/치과 진료비 영수증만 추가/, '영수증 추가 제출 시 수술비 지급 약속'],
+    [/자동차보험으로 이미 처리된/, '자동차보험 처리분은 실손 중복 보상 불가'],
+    [/자동차보험 접수 취소/, '자동차보험 취소 후 실손 전액 지급 약속'],
+    [/실손보험이 아예 보장하지 않는/, '교통사고는 실손 보장 제외 안내'],
+    [/90일 면책기간/, '약관상 90일 면책기간 및 안내 조항 설명'],
+    [/면책기간은 적용되지 않는/, '안내 누락 시 면책 제외 · 재심사 약속'],
+    [/설계사가 따로 안내/, '설계사에게 안내 책임 전가'],
+    [/납입하신 보험료는 가입하신 담보/, '보험료는 가입 담보에 대한 비용 · 담보 목록 안내'],
+    [/비슷한 담보로 대신 지급/, '유사 담보로 대체 지급 약속'],
+    [/소급해서 보장/, '추가 가입 시 과거 사고도 보장 약속'],
+    [/진단 내용이 약관에서 정한 보장 대상/, '진단과 별개로 약관상 보장 대상 여부 안내'],
+    [/자문의 소견으로 주치의 진단/, '자문의 판단으로 주치의 진단 불인정 안내'],
+    [/진단명이 바뀐 진단서/, '보장 대상 진단명으로 변경 요청'],
+    [/충족되지 않은 조건/, '미충족 지급 조건과 사유 구체 안내'],
+    [/조건은 심사 편의를 위한 기준/, '일부 조건 미충족이어도 지급 약속'],
+    [/필요한 서류를 문자로 정리/, '필요 서류 안내 후 접수 즉시 우선 심사'],
+    [/서류 없이 먼저 지급/, '서류 없이 선지급 약속'],
+    [/홈페이지와 앱에 다 안내/, '기존 안내 확인 책임을 고객에게 전가'],
+    [/공제금액과 자기부담금/, '공제금·자기부담금 차감 결과 0원'],
+    [/한 번에 병원비가 10만원/, '1회 병원비 10만원 초과 시 지급이라고 잘못 안내'],
+    [/몇 번 모아서 한꺼번에/, '청구를 모으면 공제 1회라고 잘못 안내'],
+    [/가입 이후 발생한 사고/, '가입 후 발생한 사고부터 보장'],
+    [/경찰.*정정|사건 처리 결과가 일방 피해/, '공식 사고자료 정정 후 재심사'],
+    [/경위서를 직접 써서 보내/, '고객 진술서만으로 재심사 약속'],
+    [/보험금 판단은 바뀌지 않습니다/, '경찰 결과가 바뀌어도 재심사 불가 안내'],
+    [/이의신청이나 분쟁조정/, '보장 제외 사유·약관 기준 및 이의신청 안내'],
+    [/이의신청이나 재심사는 받으실 수 없는/, '이의신청·재심사 모두 불가 안내'],
+    [/이번 한 번만 예외로 절반/, '이번만 예외로 절반 지급 약속'],
+    [/가입 이후 발생한 사고/, '가입 후 사고부터 보장 · 이번 사고 제외'],
+    [/민원과 분쟁조정 신청은 고객님의 권리/, '민원·분쟁조정은 고객 권리 · 접수 방법 안내'],
+    [/민원을 넣으시면 앞으로 보험금 청구 심사/, '민원 제기 시 불이익이 있다고 부당하게 경고'],
+    [/민원까지 가시면 서로 번거로우니/, '민원 취하 조건으로 지급 재검토 약속'],
+    [/송금 요청을 올려 최대한 빨리/, '오늘 송금 요청 · 입금 시각은 확답 불가'],
+    [/오늘 오후 2시까지는 반드시/, '오후 2시까지 입금 확약'],
+    [/정해진 순서대로만 처리/, '지급 순서 변경 불가 안내'],
+    [/본인 동의가 있어야 안내/, '본인 동의 확인 후 상세 내용 안내'],
+    [/주민등록번호 뒷자리/, '가족에게 주민번호 뒷자리 확인 후 안내'],
+    [/신분증을 가지고 가까운 지점/, '본인 방문만 가능하다고 잘못 안내'],
+    [/서류와 다르면 의료기관에서 서류를 정정/, '의료기관 서류 정정 후 재청구·재심사'],
+    [/방금 말씀하신 내용을 근거로 재심사/, '통화 진술만으로 재심사·지급 약속'],
+    [/고지의무 위반이 되어 계약이 해지/, '서류와 다른 진술 시 계약 해지 경고'],
+    [/수익자 명의 계좌로만 지급/, '수익자 명의 계좌로 지급 · 변경 절차 안내'],
+    [/어떤 절차로도 고객님께 지급될 수 없습니다/, '어떤 경우에도 지급 불가라고 잘못 안내']
+  ];
+  for(const [re,label] of rules) if(re.test(t)) return label;
+  if(/재심사해 드리겠습니다/.test(t)) return '자료 보완 후 재심사 안내';
+  if(/이의신청/.test(t)) return '심사 사유 안내 · 이의신청 절차 안내';
+  if(/지급/.test(t)&&/약관/.test(t)) return '약관상 지급 기준과 처리 결과 안내';
+  const first=t.split(/[.!?。]/)[0].trim();
+  return first.length>30?first.slice(0,29)+'…':first||'답변 내용을 확인해 주세요';
 }
 function callHTML(c){return''}
 const ringEl=document.getElementById('ring'),callM=document.getElementById('callm');
@@ -1789,14 +1844,14 @@ function callCase(it){const c=it.c,LB=(C,v)=>(C.carG?CGL:C.grade?GRL:C.opts||['�
     return`<li><div class="ccn">${k==='sil'?'실손의료비':C.n} <span class="mk ${ok?'ok':'bad'}">${ok?'✓':'✗'}</span></div><div>내 결정 <b>${mine}</b>${ok?'':` · 정답 <b>${right}</b>`}</div><div class="ccw">${a.w}</div></li>`}).join('');
   const T=sumPick(c);
   return`<div class="ccase" id="ccase" ${st.ccOpen?'':'hidden'}><div class="cch">접수 ${it.id} · 피보험자 <b>${c.who}</b>${c.ben!==c.who?` · 수익자 <b>${c.ben}</b>`:''} · 계약일 ${fd(c.con)}</div><ul>${rows}</ul><div class="cct">결정 지급액 합계 <b>${won(T)}</b>${c.ns>=0&&c.nsO?` · 보낸 안내: ${c.nsO[c.ns]}`:''}</div></div>`}
-function ccFit(){const p=document.getElementById('ccase');if(p&&!p.hidden)p.style.maxHeight='min(38dvh, 340px)'}
+function ccFit(){const p=document.getElementById('ccase');if(p&&!p.hidden){p.style.maxHeight='min(28dvh, 220px)';p.style.overflowY='auto'}}
 function callRender(){const it=st.inCall,c=it.c,k=c.call,cur=k.turns[k.t];
   const L=k.hist.length-1,bub=k.hist.map((x,i)=>`<p class="cb c">${x.q}</p><p class="cb me${x.ok?'':' bad'}">${x.ans}</p>${x.ok?'':`<p class="cb c"${i===L?' id="crx"':''}>${i===L&&!k.typedEnd?'':x.rx}</p>`}`).join('')+(k.end===1?`<p class="cb c" id="crx">${k.typedEnd?'네, 자세히 설명해 주셔서 감사합니다.':''}</p>`:'');
   const prog=`${k.end?k.hist.length:k.t+1} / ${k.turns.length}턴`;
   callM.innerHTML=`<div class="cm"><div class="cmh"><span>📞 통화 중 · <b>${c.ben}</b> 고객</span><small>🕘 <b id="cclk">${hm(st.gm)}</b> · ${k.P.n} · ${prog} · 접수 ${it.id}</small></div>
    <div class="ccw">${callCase(it)}<button class="cctg" id="cctg" aria-expanded="${!!st.ccOpen}">📋 이 건 심사 결과 ${st.ccOpen?'접기 ▼':'보기 ▲'}</button></div>
    <div class="cmb" id="cmb">${bub}${k.end?`<div class="res"><span class="mk ${k.end===1?'ok':'bad'}">${k.end===1?`✓ 응대 완료 +${k.got}`:`✗ 응대 실패 ${k.got?(k.got>0?'+':'')+k.got:''}`}</span><span>${k.end===1?'꼬리 질문까지 모두 정확하고 정중하게 응대했어요.':'그럴듯해 보여도 지킬 수 없는 약속, 틀린 규정, 고객 권리를 막는 말, 서류 조작을 권하는 말은 모두 민원으로 이어져요. 답변의 <b>세부 내용</b>을 끝까지 읽어 보세요.'}</span></div>`
-     :`<p class="cb c now" id="cnow"></p><div class="nss" id="copts" hidden>${cur.o.map((t,j)=>`<button class="ns" data-call="${j}"><span>○</span>${callChoiceText(t)}</button>`).join('')}</div>`}</div>
+     :`<p class="cb c now" id="cnow"></p><div class="nss" id="copts" hidden>${cur.o.map((t,j)=>`<button class="ns" data-call="${j}"><span>○</span><span class="ntxt">${callChoiceText(t)}</span></button>`).join('')}</div>`}</div>
    ${k.end?'<button class="go" id="cend">통화 종료</button>':`<p class="hint" id="chint">${k.P.rush&&!st.tut?'⏱ 급한 고객! 답변이 나오면 <b>8초 안에</b> 골라야 해요.':k.P.old?'👵 어르신 고객이에요. 어려운 말보다 차근차근 정확하게 안내하는 답을 고르세요.':k.P.doubt&&!st.tut?'🔎 의심 많은 고객! <b>📋 심사 결과</b>를 펼쳐 근거를 확인해야 답변할 수 있어요.':k.P.proxy?'👪 가족이 대신 건 전화예요. 개인정보 안내 원칙을 지키세요.':k.P.flip?'🔄 말을 바꾸는 고객이에요. 서류 기준 원칙을 지키세요.':k.P.pro?'💼 전직 설계사! 점수 <b>2배</b>, 실수하면 <b>−10점</b> 민원이에요.':'고객 말이 끝나면 답변이 나와요. 말풍선을 누르면 바로 넘어가요.'}</p>`}</div>`;
   const B=document.getElementById('cmb');B.scrollTop=B.scrollHeight;ccFit();
   if(!k.end){const n=document.getElementById('cnow');k.typed=0;typeInto(n,cur.q,()=>{k.typed=1;if(k.P.doubt&&!st.ccOpen&&!st.tut)return;document.getElementById('copts').hidden=false;B.scrollTop=B.scrollHeight;if(k.P.rush&&!st.tut)rushStart(k,cur)})}
