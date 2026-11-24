@@ -938,7 +938,15 @@ function act(k){if(!needEdit())return;const id=CUR;
       if(k==='env'){val={t:s.querySelector('#ft').value,h:s.querySelector('#fh').value};if(val.t===''&&val.h===''){toast('온도나 습도를 하나는 적어 주세요');return}}
       if(noteReq&&!note){toast('메모를 적어 주세요');return}
       const at=s.querySelector('#fat').value?new Date(s.querySelector('#fat').value).toISOString():null;addLog(id,k,val,note,at);closeSheet();toast(`${KIND[k][0]} ${KIND[k][1]} 기록했어요`);refreshDetail()}})}
-function sheet(html,bind){closeSheet();const s=document.createElement('div');s.className='sheet';s.innerHTML=`<div class="sb" role="dialog">${html}</div>`;document.body.appendChild(s);s.onclick=e=>{if(e.target===s||e.target.closest('[data-x]'))closeSheet()};bind&&bind(s);const f=s.querySelector('input,textarea');f&&setTimeout(()=>f.focus(),60)}
+function sheet(html,bind){closeSheet();const s=document.createElement('div');s.className='sheet';s.innerHTML=`<div class="sb" role="dialog">${html}</div>`;document.body.appendChild(s);s.onclick=e=>{if(e.target===s||e.target.closest('[data-x]'))closeSheet()};bind&&bind(s);
+  /* 휴대폰에서는 창이 열리자마자 키보드가 올라오지 않게, 마우스가 있는 컴퓨터에서만 자동으로 입력칸에 커서를 둬요 */
+  if(matchMedia('(hover:hover) and (pointer:fine)').matches){const f=s.querySelector('input:not([type=date]):not([type=range]),textarea');f&&setTimeout(()=>f.focus({preventScroll:true}),60)}
+  fitSheet()}
+/* 키보드가 올라오면 창 높이를 보이는 화면에 맞추고, 입력 중인 칸만 보이게 살짝 스크롤 */
+function fitSheet(){const s=document.querySelector('.sheet');if(!s||!window.visualViewport)return;const v=visualViewport,sb=s.querySelector('.sb');
+  s.style.top=v.offsetTop+'px';s.style.height=v.height+'px';s.style.bottom='auto';sb.style.maxHeight=Math.max(220,v.height-24)+'px'}
+if(window.visualViewport){visualViewport.addEventListener('resize',fitSheet);visualViewport.addEventListener('scroll',fitSheet)}
+document.addEventListener('focusin',e=>{const sb=e.target.closest&&e.target.closest('.sheet .sb');if(sb&&/^(INPUT|TEXTAREA)$/.test(e.target.tagName))setTimeout(()=>e.target.scrollIntoView({block:'nearest',behavior:'smooth'}),250)});
 function closeSheet(){document.querySelectorAll('.sheet').forEach(e=>e.remove())}
 /* --- 사진 --- */
 function pickPhoto(id){if(!needEdit())return;const i=pickerInput();i.onchange=()=>{const f=i.files[0];if(!f)return;
