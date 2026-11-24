@@ -1030,6 +1030,16 @@ function judgeRule(k,c){
     if(c.days<4)return no(`입원 ${c.days}일 — 4일 이상 입원 조건 미충족`);
     return{d:2,amt:2e4*(c.days-3),w:`입원 ${c.days}일 − 3일 = ${c.days-3}일 × 2만원`};
   }
+  // 일반·종합·상급종합병원 입원일당은 깁스 판정으로 빠지지 않도록 별도 판정한다.
+  if(['dHosp','iHosp','dHospG','dHospS','iHospG'].includes(k)){
+    const disease=k==='dHosp'||k==='dHospG'||k==='dHospS';
+    if(s.cause!==(disease?'d':'i'))return no(`${s.cause==='d'?'질병':'상해'} 원인 — ${N} 대상 아님`);
+    if(!c.days)return no('입원 없이 통원 치료');
+    if(!c.docs.hosp)return no('입원확인서 미제출 — 서류가 없으면 지급 불가');
+    if((k==='dHospG'||k==='iHospG')&&!['종합병원','상급종합병원'].includes(c.htype))return no(`${c.htype} 입원 — 종합병원 이상 입원 조건 미충족`);
+    if(k==='dHospS'&&c.htype!=='상급종합병원')return no(`${c.htype} 입원 — 상급종합병원 입원 조건 미충족`);
+    return{d:2,amt:COV[k].amt*c.days,w:`${c.htype} · ${c.days}일 입원 × ${won(COV[k].amt)} — 지급`};
+  }
   if(k==='tooth'){
     if(s.cause!=='i')return no(`${s.code} ${short(s)} — 질병(충치 등)은 치아파절진단비 대상 아님`);
     if(!s.code.startsWith('S02.5'))return no(`${s.code} ${short(s)}은(는) 치아파절(S02.5)이 아님`);
@@ -1139,6 +1149,7 @@ function judgeRule(k,c){
     if(!s.frac)return no(`${s.code} ${short(s)}은(는) 골절이 아님`);
     return{d:2,amt:COV[k].amt,w:`${s.code} 골절 확인 — 지급`};
   }
+  if(k!=='cast'&&k!=='splint')return no(`${N} 판정 규칙 누락 — 개발 점검 필요`);
   if(!c.docs.cast)return no(k==='splint'?'부목 시행 기록 없음':'깁스 시행 기록 없음');
   const T=k==='splint'?'부목(T615x)':'통깁스(T60xx)';
   if(!fixSeen(c))return no(`진단서·세부내역서에 ${T} 수가코드 없음`);
