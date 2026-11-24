@@ -772,7 +772,8 @@ const SURG_EDI={
   '치조골 이식술 동반 임플란트 식립술':{codes:[],note:'치과 임플란트·치조골이식은 의과 수가코드로 단정 연결하지 않음 · 치과 EDI 및 급여/비급여 구분 별도 확인'},
   '임플란트 식립술 (치조골 이식 없음)':{codes:[],note:'치과 임플란트는 치과 수가·급여기준 및 실제 세부내역 별도 확인'}
 };
-const GRADE={'치핵 절제술':1,'항문열창 절제술':1,'내시경적 결장 용종절제술':1,'내시경적 위 용종절제술':1,'내시경적 직장 용종절제술':1,'피부 열상 봉합술':1,'수정체유화술 및 인공수정체 삽입술':2,'서혜부 탈장 교정술':2,'복강경 충수절제술':3,'복강경 담낭절제술':3,'요골 관혈적 정복 및 내고정술':3,'슬개골 관혈적 정복술':3,
+const surgCodeLabel=name=>{const e=SURG_EDI[name];if(!e)return'수가코드 미확인';if(!e.codes.length)return'치과 EDI 별도 확인';return e.codes.length===1?e.codes[0]:'실제 청구코드 확인 필요'};
+ const GRADE={'치핵 절제술':1,'항문열창 절제술':1,'내시경적 결장 용종절제술':1,'내시경적 위 용종절제술':1,'내시경적 직장 용종절제술':1,'피부 열상 봉합술':1,'수정체유화술 및 인공수정체 삽입술':2,'서혜부 탈장 교정술':2,'복강경 충수절제술':3,'복강경 담낭절제술':3,'요골 관혈적 정복 및 내고정술':3,'슬개골 관혈적 정복술':3,
   '갑상선 반절제술':4,'관상동맥 스텐트 삽입술':4,'요추 디스크 제거술':4,'위 부분절제술':5,'인공 슬관절 치환술':5};
 const uniqD=a=>[...new Set(a.map(d=>fd(d)))];
 function visN(c){const all=uniqD((c.visits||[]).map(v=>v.d)),hs=new Set(c.days?Array.from({length:c.days},(_,i)=>fd(addD(c.inc,i))):[]),ok=all.filter(d=>!hs.has(d));return{raw:(c.visits||[]).length,u:all.length,ins:all.length-ok.length,n:ok.length}}
@@ -973,7 +974,7 @@ function judgeDiseaseSurgery(k,c,s,N,no){
     if(!c.surg)return no('수술 시행 내역 없음');
     if(s.cause!=='d')return no(`${s.cause==='d'?'질병':'상해'} 원인 수술 — ${N} 대상 아님`);
     if(!c.docs.surg)return no('수술확인서 미제출 — 서류가 없으면 지급 불가');
-    const g=GRADE[c.surg];return{d:g,amt:GR[g],w:`${c.surg} — ${g}종 ${won(GR[g])}`};
+    const g=GRADE[c.surg];if(!g)return no(`${c.surg} — 1~5종 수술분류표 종별 확인 필요`);return{d:g,amt:GR[g],w:`${c.surg} — ${g}종 ${won(GR[g])}`};
   }
   if(k==='dSurgS'){
     const lv=COV[k].hl,ok=lv===1?/종합/.test(c.htype):c.htype==='상급종합병원';
@@ -1003,7 +1004,7 @@ function judgeAccidentSurgery(k,c,s,N,no){
     if(!c.surg)return no('수술 시행 내역 없음');
     if(s.cause!=='i')return no(`${s.cause==='d'?'질병':'상해'} 원인 수술 — ${N} 대상 아님`);
     if(!c.docs.surg)return no('수술확인서 미제출 — 서류가 없으면 지급 불가');
-    const g=GRADE[c.surg];return{d:g,amt:GR[g],w:`${c.surg} — ${g}종 ${won(GR[g])}`};
+    const g=GRADE[c.surg];if(!g)return no(`${c.surg} — 1~5종 수술분류표 종별 확인 필요`);return{d:g,amt:GR[g],w:`${c.surg} — ${g}종 ${won(GR[g])}`};
   }
   if(k==='iSurg'){
     if(!c.surg)return no('수술 시행 내역 없음');
@@ -1131,7 +1132,8 @@ function judgeRule(k,c){
     return{d:2,amt:A,w:`${s.code} 골절 확인 — 지급`};
   }
   if(k==='fracSurg'){
-    if(s.cause!=='i'||!s.frac)return no(`${s.code} ${short(s)}은(는) 골절이 아님`);
+    if(s.cause!=='i')return no('질병 원인 — 골절수술비 대상 아님');
+     if(!s.frac)return no(`${s.code} ${short(s)}은(는) 골절이 아님`);
     if(!c.surg)return no('골절에 대한 수술 없음(깁스·보존 치료)');
     if(!c.docs.surg)return no('수술확인서 미제출 — 서류가 없으면 지급 불가');
     return{d:2,amt:A,w:`${c.surg} — 지급`};
@@ -1165,7 +1167,7 @@ function buildLines(c){const b=c.bill,s=c.s;
   const n=ng.slice(),L=[];
   const GN={'진찰료':c.days?'입원 진찰료':'초진 진찰료','입원료':'입원료(일반병실)','검사료':'혈액·소변 검사','영상진단료':'단순 방사선 촬영','처치 및 수술료':s.cast?'석고붕대(Cast) 고정술':c.surg||'처치료','주사료':'주사 수기료','투약 및 조제료':'원내 조제료'};
   const NN={'진찰료':'비급여 진찰','입원료':'비급여 입원 물품','검사료':'비급여 검사(특수 혈액검사)','영상진단료':pick(['초음파 검사','CT 촬영(비급여)']),'처치 및 수술료':'비급여 치료재료','투약 및 조제료':'비급여 약제'};
-  rows.forEach((r,i)=>{if(g[i]){const x={row:r,name:GN[r],kind:'급여(본인부담)',amt:g[i]};if(r==='처치 및 수술료'&&c.surg&&SURG_EDI[c.surg]){x.edi=SURG_EDI[c.surg].codes.length?SURG_EDI[c.surg].codes.join(' + '):'세부조건 확인';x.ediNote=SURG_EDI[c.surg].note}L.push(x)}if(ng[i])L.push({row:r,name:NN[r],kind:'비급여',amt:ng[i]})});
+  rows.forEach((r,i)=>{if(g[i]){const x={row:r,name:GN[r],kind:'급여(본인부담)',amt:g[i]};if(r==='처치 및 수술료'&&c.surg&&SURG_EDI[c.surg]){x.edi=surgCodeLabel(c.surg);x.ediNote=SURG_EDI[c.surg].note}L.push(x)}if(ng[i])L.push({row:r,name:NN[r],kind:'비급여',amt:ng[i]})});
   if(b.n3){const r={dosu:'처치 및 수술료',mri:'영상진단료',inj:'주사료'}[b.n3.k];n[rows.indexOf(r)]+=b.n3.amt;L.push({row:r,name:{dosu:'도수치료',mri:'MRI 촬영(비급여)',inj:'비급여 주사(치료 목적)'}[b.n3.k],kind:'비급여',amt:b.n3.amt,t3:1})}
   b.cuts.forEach(x=>{n[rows.indexOf(x.row)]+=x.amt;L.push({row:x.row,name:x.n,kind:'비급여',amt:x.amt,cut:1})});
   const order=r=>rows.indexOf(r);L.sort((a,z)=>order(a.row)-order(z.row));
@@ -1393,7 +1395,7 @@ function docsHTML(c){if(st.newbie)return docsSimple(c);
   if(c.surg){const sd=addD(c.inc,c.days>1?1:0);h+=c.docs.surg?F('수술 확인서','',`등록번호 ${c.chart}`,`<table>${pt}
     <tr><th>병명</th><td>${s.name}</td><th>질병분류기호</th><td><b>${s.code}</b></td></tr>
     <tr><th>수술명</th><td colspan="3"><b>${c.surg}</b></td></tr>
-    ${SURG_EDI[c.surg]?'<tr><th>EDI 수가코드</th><td colspan="3"><b>'+ (SURG_EDI[c.surg].codes[0]||'세부조건 확인') +'</b></td></tr>':''}
+    ${SURG_EDI[c.surg]?'<tr><th>EDI 수가코드</th><td colspan="3"><b>'+ surgCodeLabel(c.surg) +'</b></td></tr>':''}
     <tr><th>수술 일자</th><td>${fd(sd)}</td><th>마취 방법</th><td>${/내시경|봉합|수정체|열상|임플란트/.test(c.surg)?'국소마취':'전신마취'}</td></tr>
     <tr><th>집도의</th><td colspan="3">${c.dept} ${c.dr}</td></tr>
     <tr><th>의료기관 종별</th><td colspan="3">${HTk()}</td></tr></table>`,hosSign(addD(sd,1),'위 사람은 상기 수술을 시행하였음을 확인합니다.')):miss('수술 확인서')}
