@@ -1,0 +1,156 @@
+{
+  "title": "보험금 심사 게임 수술·처치 EDI 코드 기초 데이터",
+  "schemaVersion": 1,
+  "compiledAt": "2026-11-25",
+  "status": "curated-seed",
+  "notes": [
+    "이 파일은 공식 심평원 자료에서 확인한 일부 수술 코드의 시작 데이터이며 전체 수가 마스터가 아니다.",
+    "코드는 기본코드 기준으로 수록했다. 실제 청구 산정코드는 기관 종별, 야간·공휴·제2수술 등 가산 조건에 따라 세분될 수 있다.",
+    "EDI 코드 존재만으로 보험약관상 수술 해당 여부나 보험금 지급 여부를 자동 판정하지 않는다.",
+    "게임 적용 전 진료일 기준 유효기간과 최신 수가파일 반영 여부를 확인해야 한다."
+  ],
+  "sources": [
+    {
+      "id": "hira-2026-kdrg",
+      "publisher": "건강보험심사평가원",
+      "title": "2026 건강보험요양급여비용 제3부 질병군 분류번호 결정요령",
+      "url": "https://www.hira.or.kr/ebooksc/2026/02/BZ202602273023260.pdf",
+      "note": "위폴립절제술, 수정체 수술, 충수절제술, 탈장수술 등 시술명·수가코드 확인"
+    },
+    {
+      "id": "hira-appendix-2025",
+      "publisher": "건강보험심사평가원",
+      "title": "포괄수가제 요양급여비용 및 청구방법",
+      "url": "https://www.hira.or.kr/ebooksc/2025/03/BZ202503051269788.pdf",
+      "note": "충수절제술 및 탈장수술 코드 확인"
+    },
+    {
+      "id": "hira-colon-polyp-2024",
+      "publisher": "건강보험심사평가원",
+      "title": "결장의 0.5cm 미만 용종에 시행한 자770 결장경하종양수술 인정여부",
+      "url": "https://www.hira.or.kr/rc/insu/insuadtcrtr/InsuAdtCrtrPopup.do?brdScnBltNo=4&mtgHmeDd=20240628&mtgMtrRegSno=18&sno=2",
+      "note": "Q7701, Q7702, Q7703 및 실제 산정코드 예시 확인"
+    }
+  ],
+  "items": [
+    {
+      "baseCode": "Q2521",
+      "name": "위폴립절제술",
+      "group": "소화기 내시경 수술",
+      "family": "stomach-polypectomy",
+      "sourceIds": [
+        "hira-2026-kdrg"
+      ]
+    },
+    {
+      "baseCode": "Q7701",
+      "name": "결장경하 종양 수술-폴립절제술",
+      "group": "소화기 내시경 수술",
+      "family": "colon-polypectomy",
+      "sourceIds": [
+        "hira-colon-polyp-2024"
+      ],
+      "claimCodeExamples": [
+        "Q7701001",
+        "Q7701081"
+      ],
+      "note": "기관 종별·가산 조건 등에 따라 산정코드가 달라질 수 있음"
+    },
+    {
+      "baseCode": "Q7702",
+      "name": "결장경하 종양 수술-폴립절제술(초과 폴립 1개당)",
+      "group": "소화기 내시경 수술",
+      "family": "colon-polypectomy-additional",
+      "sourceIds": [
+        "hira-colon-polyp-2024"
+      ]
+    },
+    {
+      "baseCode": "Q7703",
+      "name": "결장경하 종양 수술-점막절제술 및 점막하종양수술",
+      "group": "소화기 내시경 수술",
+      "family": "colon-emr-esd",
+      "sourceIds": [
+        "hira-colon-polyp-2024"
+      ]
+    },
+    {
+      "baseCode": "Q2861",
+      "name": "충수절제술(단순)",
+      "group": "복부 수술",
+      "family": "appendectomy",
+      "sourceIds": [
+        "hira-2026-kdrg",
+        "hira-appendix-2025"
+      ]
+    },
+    {
+      "baseCode": "Q2862",
+      "name": "충수절제술(천공성)",
+      "group": "복부 수술",
+      "family": "appendectomy",
+      "sourceIds": [
+        "hira-2026-kdrg",
+        "hira-appendix-2025"
+      ]
+    },
+    {
+      "baseCode": "Q2863",
+      "name": "충수절제술(충수농양절제 및 충수주위 농양배액술)",
+      "group": "복부 수술",
+      "family": "appendectomy",
+      "sourceIds": [
+        "hira-2026-kdrg",
+        "hira-appendix-2025"
+      ]
+    },
+    {
+      "baseCode": "Q2755",
+      "name": "서혜부허니아근본수술(고위결찰만)",
+      "group": "탈장 수술",
+      "family": "inguinal-hernia",
+      "sourceIds": [
+        "hira-2026-kdrg",
+        "hira-appendix-2025"
+      ]
+    },
+    {
+      "baseCode": "Q2756",
+      "name": "서혜부허니아근본수술(고위결찰 및 후벽보강)",
+      "group": "탈장 수술",
+      "family": "inguinal-hernia",
+      "sourceIds": [
+        "hira-2026-kdrg",
+        "hira-appendix-2025"
+      ]
+    },
+    {
+      "baseCode": "Q2757",
+      "name": "대퇴허니아수술",
+      "group": "탈장 수술",
+      "family": "femoral-hernia",
+      "sourceIds": [
+        "hira-2026-kdrg",
+        "hira-appendix-2025"
+      ]
+    },
+    {
+      "baseCode": "S5119",
+      "name": "백내장및수정체수술-수정체유화술",
+      "group": "안과 수술",
+      "family": "cataract-surgery",
+      "sourceIds": [
+        "hira-2026-kdrg"
+      ]
+    },
+    {
+      "baseCode": "S5117",
+      "name": "인공수정체삽입술-일차(백내장수술과 동시 실시)",
+      "group": "안과 수술",
+      "family": "intraocular-lens",
+      "sourceIds": [
+        "hira-2026-kdrg"
+      ]
+    }
+  ]
+}
