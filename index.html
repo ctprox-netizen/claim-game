@@ -914,13 +914,7 @@ function judgmentRecord(raw){
     rationale:{text:w}
   };
 }
-function judgeRule(k,c){
-  const s=c.s,N=COV[k].n,no=w=>({d:0,amt:0,w});
-  if(k==='pay')return c.holder===c.ben?{d:0,amt:0,w:`예금주 ${c.holder} = 수익자 ${c.ben} — 지급 진행`}:{d:1,amt:0,w:`예금주 ${c.holder} ≠ 수익자 ${c.ben} — 수익자 명의 계좌로 재요청(또는 위임 서류) 필요`};
-  if(!c.enr.has(k))return no(`${N} 미가입 — 보험증권에 없는 담보`);
-  if(c.off<0)return no(`${s.cause==='d'?'진단':'사고'}일(${fd(c.inc)})이 계약일보다 앞섬 — 계약 전 발생`);
-  if(c.moto==='ride'&&!c.motoRider&&k!=='sil')return no('이륜자동차·원동기(전동킥보드 포함) 운전 중 사고 — 약관상 면책, 이륜차 운전 중 상해 특약 미가입');
-  if(c.assault&&k!=='sil'){if(!c.docs.police)return no('폭행 사고 — 사고사실확인원 미제출, 서류가 없으면 지급 불가');if(!c.victim)return no('폭행 사고 — 사고사실확인원상 쌍방폭행(일방적 피해자 아님), 상해 담보 보상 불가');}
+function judgeMedicalExpense(k,c,s,N,no){
   if(k==='sil'){
     if(!c.docs.rcpt)return no('진료비 영수증 미제출 — 서류가 없으면 지급 불가');
     if(c.car&&c.autoPay)return no('자동차보험(대인·자손) 지급보증으로 처리된 진료비 — 자동차보험에서 보상받는 의료비, 실손 이중보상 불가');
@@ -944,6 +938,57 @@ function judgeRule(k,c){
     amt=Math.max(0,Math.round(amt));
     return amt?{d:2,amt,w:`계약일 ${fd(c.con)} → ${w} = ${f(amt)}원${cutW}`}:no(`계약일 ${fd(c.con)} → ${w} → 0원${cutW}`);
   }
+
+return no('실손의료비 판정 규칙을 찾을 수 없습니다');}
+function judgeSurgeryRule(k,c,s,N,no){
+  if(s.implant&&c.surg&&(k==='dGrade'||k==='iGrade'))return no('임플란트 식립술은 1~5종 수술 분류표에 없음 — 해당 없음');
+  if(s.implant&&c.surg&&(k==='iSurg'||k==='dSurg'||k==='dSurgS')){
+    if(s.cause==='d')return no('질병(치주질환 등)으로 인한 임플란트 — 면책');
+    if(k!=='iSurg')return no('상해 원인 수술 — 질병수술비 대상 아님');
+    if(s.implant===1)return no('치조골 이식 없는 임플란트 — 면책');
+    if(!c.docs.surg)return no('수술확인서 미제출 — 서류가 없으면 지급 불가');
+    return{d:2,amt:COV[k].amt,w:`치아파절(상해) · 치조골 이식 동반 임플란트 — 지급`};
+  }
+  if(k==='dGrade'||k==='iGrade'){
+    const need=k[0];
+    if(!c.surg)return no('수술 시행 내역 없음');
+    if(s.cause!==need)return no(`${s.cause==='d'?'질병':'상해'} 원인 수술 — ${N} 대상 아님`);
+    if(!c.docs.surg)return no('수술확인서 미제출 — 서류가 없으면 지급 불가');
+    const g=GRADE[c.surg];return{d:g,amt:GR[g],w:`${c.surg} — ${g}종 ${won(GR[g])}`};
+  }
+  if(COV[k].hl){
+    const need=k[0],isH=k.includes('Hosp'),lv=COV[k].hl,ok=lv===1?/종합/.test(c.htype):c.htype==='상급종합병원';
+    if(isH&&!c.days)return no('입원 없이 통원 치료');
+    if(!isH&&!c.surg)return no('수술 시행 내역 없음');
+    if(s.cause!==need)return no(`${s.cause==='d'?'질병':'상해'} 원인 — ${N} 대상 아님`);
+    if(isH&&!c.docs.hosp)return no('입원확인서 미제출 — 서류가 없으면 지급 불가');
+    if(!isH&&!c.docs.surg)return no('수술확인서 미제출 — 서류가 없으면 지급 불가');
+    if(!ok)return no(`${c.htype} ${isH?'입원':'수술'} — ${lv===1?'종합병원 이상':'상급종합병원'}만 보장`);
+    return isH?{d:2,amt:COV[k].amt*c.days,w:`${c.htype} 입원 ${c.days}일 × ${won(COV[k].amt)}`}:{d:2,amt:COV[k].amt,w:`${c.htype}에서 ${c.surg} — 지급`};
+  }
+  if(k==='dHosp'||k==='iHosp'||k==='dSurg'||k==='iSurg'){
+    const need=k[0]==='d'?'d':'i',isH=k.endsWith('Hosp');
+    if(isH&&!c.days)return no('입원 없이 통원 치료');
+    if(!isH&&!c.surg)return no('수술 시행 내역 없음');
+    if(s.cause!==need)return no(`${s.cause==='d'?'질병':'상해'} 원인 — ${N} 대상 아님`);
+    if(isH&&!c.docs.hosp)return no('입원확인서 미제출 — 서류가 없으면 지급 불가');
+    if(!isH&&!c.docs.surg)return no('수술확인서 미제출 — 서류가 없으면 지급 불가');
+    return isH?{d:2,amt:COV[k].amt*c.days,w:`입원 ${c.days}일 × ${won(COV[k].amt)}`}:{d:2,amt:COV[k].amt,w:`${c.surg} — 지급`};
+  }
+
+return null;}
+function judgeDiseaseSurgery(k,c,s,N,no){return judgeSurgeryRule(k,c,s,N,no)||no('질병수술비 판정 규칙을 찾을 수 없습니다');}
+function judgeAccidentSurgery(k,c,s,N,no){return judgeSurgeryRule(k,c,s,N,no)||no('상해수술비 판정 규칙을 찾을 수 없습니다');}
+function judgeRule(k,c){
+  if(k==='sil')return judgeMedicalExpense(k,c,s,N,no);
+  if(k==='dSurg'||k==='dGrade'||k==='dSurgS')return judgeDiseaseSurgery(k,c,s,N,no);
+  if(k==='iSurg'||k==='iGrade')return judgeAccidentSurgery(k,c,s,N,no);
+  const s=c.s,N=COV[k].n,no=w=>({d:0,amt:0,w});
+  if(k==='pay')return c.holder===c.ben?{d:0,amt:0,w:`예금주 ${c.holder} = 수익자 ${c.ben} — 지급 진행`}:{d:1,amt:0,w:`예금주 ${c.holder} ≠ 수익자 ${c.ben} — 수익자 명의 계좌로 재요청(또는 위임 서류) 필요`};
+  if(!c.enr.has(k))return no(`${N} 미가입 — 보험증권에 없는 담보`);
+  if(c.off<0)return no(`${s.cause==='d'?'진단':'사고'}일(${fd(c.inc)})이 계약일보다 앞섬 — 계약 전 발생`);
+  if(c.moto==='ride'&&!c.motoRider&&k!=='sil')return no('이륜자동차·원동기(전동킥보드 포함) 운전 중 사고 — 약관상 면책, 이륜차 운전 중 상해 특약 미가입');
+  if(c.assault&&k!=='sil'){if(!c.docs.police)return no('폭행 사고 — 사고사실확인원 미제출, 서류가 없으면 지급 불가');if(!c.victim)return no('폭행 사고 — 사고사실확인원상 쌍방폭행(일방적 피해자 아님), 상해 담보 보상 불가');}
   const A=COV[k].amt;
   if(k==='hosp4'){
     if(!c.days)return no('입원 없이 통원 치료');
@@ -1026,21 +1071,6 @@ function judgeRule(k,c){
     if(c.er===3)return erSx(c)?{d:2,amt:1e5,w:'KTAS 3등급 + 응급증상 확인 — 응급 내원 10만원'}:st.scnRule==='ktas3'?{d:2,amt:1e5,w:'KTAS 3등급 — 오늘 신규 지침으로 응급 인정 10만원'}:{d:1,amt:2e4,w:'KTAS 3등급이나 응급증상 미확인 — 비응급 내원 2만원'};
     return{d:1,amt:2e4,w:`KTAS ${c.er}등급 — 비응급 내원 2만원`};
   }
-  if(s.implant&&c.surg&&(k==='dGrade'||k==='iGrade'))return no('임플란트 식립술은 1~5종 수술 분류표에 없음 — 해당 없음');
-  if(s.implant&&c.surg&&(k==='iSurg'||k==='dSurg'||k==='dSurgS')){
-    if(s.cause==='d')return no('질병(치주질환 등)으로 인한 임플란트 — 면책');
-    if(k!=='iSurg')return no('상해 원인 수술 — 질병수술비 대상 아님');
-    if(s.implant===1)return no('치조골 이식 없는 임플란트 — 면책');
-    if(!c.docs.surg)return no('수술확인서 미제출 — 서류가 없으면 지급 불가');
-    return{d:2,amt:COV[k].amt,w:`치아파절(상해) · 치조골 이식 동반 임플란트 — 지급`};
-  }
-  if(k==='dGrade'||k==='iGrade'){
-    const need=k[0];
-    if(!c.surg)return no('수술 시행 내역 없음');
-    if(s.cause!==need)return no(`${s.cause==='d'?'질병':'상해'} 원인 수술 — ${N} 대상 아님`);
-    if(!c.docs.surg)return no('수술확인서 미제출 — 서류가 없으면 지급 불가');
-    const g=GRADE[c.surg];return{d:g,amt:GR[g],w:`${c.surg} — ${g}종 ${won(GR[g])}`};
-  }
   if(COV[k].carG){
     if(s.cause!=='i')return no('질병 건 — 자동차사고가 아님');
     if(!c.car)return no(`사고 경위(${c.acc}) — 자동차사고가 아님`);
@@ -1068,25 +1098,6 @@ function judgeRule(k,c){
     if(!c.docs.hosp)return no('입원확인서 미제출 — 서류가 없으면 지급 불가');
     if(!raw)return no(`병실 이력에 ${C.rm.join('·')} 입원 기록 없음`);
     return{d:2,amt:C.amt*n,w:`${C.rm.join('·')} ${raw}일${C.cap&&raw>C.cap?` → 최대 ${C.cap}일 한도`:''} × ${won(C.amt)}`};
-  }
-  if(COV[k].hl){
-    const need=k[0],isH=k.includes('Hosp'),lv=COV[k].hl,ok=lv===1?/종합/.test(c.htype):c.htype==='상급종합병원';
-    if(isH&&!c.days)return no('입원 없이 통원 치료');
-    if(!isH&&!c.surg)return no('수술 시행 내역 없음');
-    if(s.cause!==need)return no(`${s.cause==='d'?'질병':'상해'} 원인 — ${N} 대상 아님`);
-    if(isH&&!c.docs.hosp)return no('입원확인서 미제출 — 서류가 없으면 지급 불가');
-    if(!isH&&!c.docs.surg)return no('수술확인서 미제출 — 서류가 없으면 지급 불가');
-    if(!ok)return no(`${c.htype} ${isH?'입원':'수술'} — ${lv===1?'종합병원 이상':'상급종합병원'}만 보장`);
-    return isH?{d:2,amt:COV[k].amt*c.days,w:`${c.htype} 입원 ${c.days}일 × ${won(COV[k].amt)}`}:{d:2,amt:COV[k].amt,w:`${c.htype}에서 ${c.surg} — 지급`};
-  }
-  if(k==='dHosp'||k==='iHosp'||k==='dSurg'||k==='iSurg'){
-    const need=k[0]==='d'?'d':'i',isH=k.endsWith('Hosp');
-    if(isH&&!c.days)return no('입원 없이 통원 치료');
-    if(!isH&&!c.surg)return no('수술 시행 내역 없음');
-    if(s.cause!==need)return no(`${s.cause==='d'?'질병':'상해'} 원인 — ${N} 대상 아님`);
-    if(isH&&!c.docs.hosp)return no('입원확인서 미제출 — 서류가 없으면 지급 불가');
-    if(!isH&&!c.docs.surg)return no('수술확인서 미제출 — 서류가 없으면 지급 불가');
-    return isH?{d:2,amt:COV[k].amt*c.days,w:`입원 ${c.days}일 × ${won(COV[k].amt)}`}:{d:2,amt:COV[k].amt,w:`${c.surg} — 지급`};
   }
   if(k==='frac'){
     if(s.cause!=='i')return no('질병 건 — 골절진단비 대상 아님');
@@ -1979,7 +1990,7 @@ function start(){document.body.classList.remove('ingame','scene','endm','subm');
    <p class="intro">처음이라면 <b>튜토리얼 모드</b>부터! 사수와 함께 심사를 하나씩 배워요. 익숙해지면 <b>샌드박스 모드</b>에서 원하는 조건으로 자유롭게 심사해요.</p>
    <button class="begin scnbtn" id="scnbeg">시나리오 모드<small>${CR.scn&&!CR.scn.end?`${CR.scn.day}일차 · 잔고 ${f(CR.scn.money)}원`:'출근해서 번 돈으로 햄스터·콩벌레와 20일 버티기'}</small></button>
    <button class="begin stbtn" id="stbeg">튜토리얼 모드<small>신입 심사자의 성장기 · ${Object.keys(storyDone()).length}/${STORY.length}장 클리어</small></button>
-   <button class="begin sbbtn" id="sbbeg">샌드박스 모드<small>난이도 · 실손 · 접수량 · AI 대결을 직접 골라요${vsRec}</small></button><p class="mobnote">Optimized for mobile · 모바일 세로 화면 기준으로 제작</p><p class="fictnote">이 게임은 가상의 보험금 심사 시뮬레이션으로, 등장하는 인물·기관·상품·심사 기준은 모두 게임용 가상 설정이며 실제 보험사 및 약관·실무와는 무관합니다.</p><p class="bldline"><span class="bld" id="bld">build 240 · 2026.11.25</span></p></section>`;
+   <button class="begin sbbtn" id="sbbeg">샌드박스 모드<small>난이도 · 실손 · 접수량 · AI 대결을 직접 골라요${vsRec}</small></button><p class="mobnote">Optimized for mobile · 모바일 세로 화면 기준으로 제작</p><p class="fictnote">이 게임은 가상의 보험금 심사 시뮬레이션으로, 등장하는 인물·기관·상품·심사 기준은 모두 게임용 가상 설정이며 실제 보험사 및 약관·실무와는 무관합니다.</p><p class="bldline"><span class="bld" id="bld">build 241 · 2026.11.25</span></p></section>`;
   else app.innerHTML=`<section class="paper end start wz"><h2 class="wzh">🧪 샌드박스 모드</h2><p class="wzp">조건을 고르고 아래 버튼을 누르세요.</p>
    <h3 class="wzs">진행 방식</h3>
    <div class="lvs two" role="group" aria-label="진행 방식"><button data-vsm="0" aria-pressed="${!st.vs}">👤 혼자 심사 <small>최고 기록 도전</small></button><button data-vsm="1" aria-pressed="${!!st.vs}">🤖 AI 대결 <small>${CR.vsW||CR.vsL?`전적 ${CR.vsW||0}승 ${CR.vsL||0}패`:'AI 동료와 점수 대결'}</small></button></div>
