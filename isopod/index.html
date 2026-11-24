@@ -278,6 +278,7 @@ body:has(#float .fab) #app .petg{padding-bottom:64px}
 .tfgrid button{border:2px solid var(--line);background:#fff;border-radius:9px;padding:0;overflow:hidden;font-size:11.5px;font-weight:800}
 .tfgrid button img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}.tfgrid button span{display:block;padding:2px 2px 3px;line-height:1.2;word-break:keep-all;overflow-wrap:anywhere}
 .tfgrid button.on{border-color:var(--ink);outline:2px solid var(--ink)}.tfgrid button.on span{background:var(--ink);color:#fff}
+.fab.dfab{bottom:calc(18px + env(safe-area-inset-bottom));z-index:55}
 .kv input{width:64px;text-align:center;border:2px solid var(--ink);border-radius:8px;padding:4px}
 </style>
 </head>
@@ -739,7 +740,7 @@ const RKS_PET=[['etc','📝','기타']];
 let RKS=RKS_ISO;
 function rmSheet(){if(!needEdit())return;const ids=secIds().filter(id=>SEL.has(id));RKS=SEC==='worm'?RKS_WORM:PETS[SEC]?RKS_PET:RKS_ISO;if(!RKS.some(x=>x[0]===RK))RK=RKS[0][0];
   const nowL=(()=>{const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,16)})();
-  sheet(`<h3>✏️ ${ids.length}${unit()} 한 번에 기록</h3><p class="mut" style="margin:-4px 0 8px;font-size:13px">${ids.map(id=>esc(tubNm(id))).join(', ')}</p>
+  sheet(`<h3>✏️ ${ids.length===1?esc(tubNm(ids[0]))+' 기록':ids.length+unit()+' 한 번에 기록'}</h3>${ids.length>1?`<p class="mut" style="margin:-4px 0 8px;font-size:13px">${ids.map(id=>esc(tubNm(id))).join(', ')}</p>`:''}
    <div class="kpick">${RKS.map(([k,e,n])=>`<button data-k="${k}" aria-pressed="${k===RK}"><b>${e}</b>${n}</button>`).join('')}</div>
    <div id="rnums"></div><label id="rnl">메모 (선택)</label><textarea id="rnote" placeholder="고른 통 모두에 같은 메모가 남아요"></textarea>
    <label>언제</label><input id="rat" type="datetime-local" value="${nowL}">
@@ -753,7 +754,7 @@ function rmSheet(){if(!needEdit())return;const ids=secIds().filter(id=>SEL.has(i
       const L=[];for(const id of ids){let val=null;if(RK==='baby'||RK==='count'||RK==='wt'||RK==='pupa'){const i=sh.querySelector(`[data-n="${id}"]`);if(i.value.trim()==='')continue;val=RK==='wt'?{g:Math.max(0,Math.round((+i.value||0)*10)/10)}:{n:Math.max(0,+i.value||0)};if(RK==='count'){const qb=sh.querySelector(`.qrow[data-qid="${id}"] [aria-pressed="true"]`),q=qb?qb.dataset.q:'eq';if(q!=='eq')val.q=q}}L.push(addLog(id,RK,val,note,at,true))}
       if(!L.length){toast(RK==='wt'?'체중을 하나 이상 적어 주세요':'마릿수를 하나 이상 적어 주세요');return}
       sync();closeSheet();const nm=RKS.find(x=>x[0]===RK);RM=false;SEL.clear();
-      toast(`${nm[1]} ${L.length}${unit()} ${nm[2]} 기록했어요`,()=>{L.forEach(l=>delItem(l.cid));render()});render()}})}
+      toast(`${nm[1]} ${L.length}${unit()} ${nm[2]} 기록했어요`,()=>{L.forEach(l=>delItem(l.cid));render();if(CUR)refreshDetail()});render();if(CUR)refreshDetail()}})}
 /* 휴대폰은 스크롤할 때 주소창이 숨었다 나타나며 화면 높이가 바뀌어요. 높이는 폭이 바뀔 때(회전 등)만 다시 재서 사진 크기가 흔들리지 않게 해요 */
 const VP={w:0,h:0};const vpH=()=>{if(innerWidth!==VP.w){VP.w=innerWidth;VP.h=innerHeight}return VP.h};
 function fitShelf(){const v=$('#shv');if(!v)return;const W=v.clientWidth,top=v.getBoundingClientRect().top+window.scrollY,tabs=($('#tabs').offsetHeight||0)+($('#rmbar')?$('#rmbar').offsetHeight:0),H=vpH()-top-tabs-22,G=4;
@@ -848,7 +849,7 @@ $('#whoChip').onclick=openSet;$('#syncChip').onclick=()=>sync(true);
 /* --- 통 상세 --- */
 let CUR=null,VM='tub',RAF=0;
 function openTub(id){$('#float').innerHTML='';CUR=id;VM='memo';const d=$('#detail');d.hidden=false;document.body.style.overflow='hidden';refreshDetail(true);history.pushState({tub:id},'')}
-function closeTub(){CUR=null;MEDIT=null;cancelAnimationFrame(RAF);$('#detail').hidden=true;document.body.style.overflow='';render()}
+function closeTub(){const f=$('#dfab');if(f)f.remove();CUR=null;MEDIT=null;cancelAnimationFrame(RAF);$('#detail').hidden=true;document.body.style.overflow='';render()}
 /* 통 화면에서 왼쪽 → 오른쪽으로 밀면 뒤로 */
 (function(){const d=$('#detail');let sx=0,sy=0,dx=0,on=false,lock=null;
   d.addEventListener('touchstart',e=>{if(e.touches.length!==1||e.target.closest('.album,.tubf,.filters,input,textarea')){on=false;return}sx=e.touches[0].clientX;sy=e.touches[0].clientY;dx=0;on=true;lock=null;d.style.transition='none'},{passive:true});
@@ -902,6 +903,8 @@ function refreshDetail(first){const id=CUR;if(!id)return;const sp=spOf(id),E=env
       try{await rpc('iso_memo_set',{t:'b:'+id,b:Object.keys(o).length?JSON.stringify(o):''});await syncMemo();closeSheet();toast('🛒 매입 정보를 저장했어요');refreshDetail()}
       catch(e){bt.disabled=false;bt.textContent='저장';toast('⚠ 저장하지 못했어요. 인터넷을 확인해 주세요')}}})};
   memoBind(id);
+  {let f=$('#dfab');if(canEdit()){if(!f){f=document.createElement('button');f.id='dfab';f.className='fab dfab';f.textContent='✏️ 기록하기';document.body.appendChild(f)}
+    f.onclick=()=>{if(!needEdit()||!CUR)return;RM=false;SEL.clear();SEL.add(CUR);rmSheet()}}else if(f)f.remove()}
   startView(first||!keepCv)}
 function profSheet(id){if(!needEdit())return;const pf=profOf(id);
   sheet(`<h3>✏️ ${esc(tubNm(id))} 정보</h3><label>이름</label><input id="pf_name" maxlength="12" value="${esc(nmOv(id))}" placeholder="${esc(XSP[id].n)}">
