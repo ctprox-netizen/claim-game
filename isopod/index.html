@@ -910,7 +910,7 @@ function vSet(){const n=D.pend.length+D.pendP.length;
   <div class="card edonly"><b>🔗 공유 링크</b><p class="mut" style="margin:4px 0">이 주소는 누구에게 보내도 괜찮아요. 받은 사람은 도감과 기록을 볼 수만 있어요.</p><code class="k">${esc(shareLink())}</code><div class="row"><button class="btn pri" id="cpLink">링크 복사</button>${navigator.share?'<button class="btn" id="shLink">카톡 등으로 보내기</button>':''}</div></div>
   <div class="card edonly"><b>☁️ 공유 상태</b><p style="margin:6px 0">${SY.st==='ok'?`<span class="ok">✓ 온라인으로 공유되고 있어요.</span>`:SY.st==='nosql'?`<span class="warn">⚠ 서버 설정(SQL)이 아직 새 버전이 아니에요. 아래 SQL을 Supabase에서 한 번 실행해 주세요. 그 전까지 남긴 기록은 이 기기에 두었다가 자동으로 올라가요.</span>`:SY.st==='off'?`<span class="warn">📴 인터넷에 연결되지 않았어요. 연결되면 자동으로 올라가요.</span>`:'확인 중…'}${n?` (올라갈 기록 ${n}개)`:''}</p><button class="btn" id="syncNow">🔄 지금 동기화</button>
    <details style="margin-top:10px"><summary>Supabase 서버 설정 SQL</summary><p class="mut" style="font-size:13px">Supabase 대시보드 → SQL Editor에 붙여 넣고 Run을 한 번 누르면 돼요.</p><pre class="sql" id="sqlTxt">${esc(SQL)}</pre><button class="btn sm" id="cpSql">SQL 복사</button> <button class="btn sm" id="cpSqlGal">사진·메모장용 SQL만 복사</button> <button class="btn sm" id="cpSqlName">이름 바꾸기용 SQL만 복사</button><p class="mut" style="font-size:13px;margin-top:10px">기록할 사람 등록 (Authentication → Users에서 계정을 만든 뒤, 이메일을 바꿔서 Run)</p><pre class="sql">${esc(SQL_ED)}</pre><button class="btn sm" id="cpSqlEd">등록 SQL 복사</button></details></div>
-  <div class="card edonly"><b>💾 백업</b><p class="mut" style="margin:4px 0 8px">기록(사진 제외)을 파일로 저장하거나 불러와요.</p><div class="row"><button class="btn" id="exp">내보내기</button><label class="btn edonly" style="margin:0">불러오기<input type="file" id="imp" accept=".json,application/json" hidden></label></div></div>
+  <div class="card edonly"><b>💾 전체 백업</b><p class="mut" style="margin:4px 0 8px">사육 기록·메모·대표 사진·앨범 원본까지 한 파일로 저장해요. 복원은 기존 내용을 덮어쓰지 않고 비어 있는 항목만 채워요.</p><div class="row"><button class="btn" id="exp">📥 전체 백업 저장</button><label class="btn edonly" style="margin:0">📤 백업 불러오기<input type="file" id="imp" accept=".json,application/json" hidden></label></div><p class="mut" style="font-size:12px;margin:8px 0 0">사진이 많으면 파일 크기가 커질 수 있어요. 백업 파일은 휴대폰 외부에도 보관해 주세요.</p></div>
   <p class="mut" style="text-align:center;font-size:12px">🪲 3D 모델·사육통 단면은 게임 〈간편심사〉의 콩벌레 엔진을 그대로 가져왔어요.</p>`;
   if($('#li')){const go=async()=>{const e=$('#le').value.trim(),p=$('#lp').value;if(!e||!p){toast('이메일과 비밀번호를 적어 주세요');return}$('#li').disabled=true;$('#li').textContent='로그인 중…';
       try{const n=await login(e,p);toast(n?`✏️ ${n}(으)로 로그인했어요`:'⚠ 로그인은 됐지만 기록 권한이 없어요');sync()}catch(x){toast(/invalid|credentials/i.test(x.message)?'⚠ 이메일이나 비밀번호가 맞지 않아요':'⚠ 로그인하지 못했어요: '+x.message.slice(0,60))}render()};
@@ -925,8 +925,71 @@ function vSet(){const n=D.pend.length+D.pendP.length;
   if(canEdit())showUsage();
   $('#cpLink').onclick=()=>copy(shareLink(),'🔗 링크를 복사했어요');if($('#shLink'))$('#shLink').onclick=()=>navigator.share({title:'우리집 등각류 기록지',text:'콩벌레 기록지 같이 보자!',url:shareLink()}).catch(()=>{});
   $('#syncNow').onclick=()=>sync(true);$('#cpSql').onclick=()=>copy(SQL,'📋 SQL을 복사했어요');$('#cpSqlName').onclick=()=>copy(SQL_NAME,'📋 이름 바꾸기용 SQL을 복사했어요');$('#cpSqlGal').onclick=()=>copy(SQL_GAL,'📋 사진·메모장용 SQL을 복사했어요');
-  $('#exp').onclick=()=>{const b=new Blob([JSON.stringify({v:1,logs:D.logs,iv:D.iv},null,1)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`등각류기록-${new Date().toISOString().slice(0,10)}.json`;a.click()};
-  $('#imp').onchange=e=>{const f=e.target.files[0];if(!f||!needEdit())return;f.text().then(t=>{const j=JSON.parse(t);let n=0;Object.values(j.logs||{}).forEach(l=>{if(l&&l.cid&&!D.logs[l.cid]){D.logs[l.cid]=Object.assign({},l,{sv:0});D.pend.push(l.cid);n++}});save();toast(`📥 기록 ${n}개를 불러왔어요`);sync()}).catch(()=>toast('⚠ 파일을 읽을 수 없어요'))};
+  $('#exp').onclick=async()=>{
+    if(!needEdit())return;
+    const btn=$('#exp');btn.disabled=true;btn.textContent='백업 준비 중…';
+    try{
+      await sync();
+      const gallery=[];
+      for(const tub of Object.keys(D.gal||{}))for(const slot of Object.keys(D.gal[tub]||{})){
+        const g=D.gal[tub][slot];if(!g)continue;
+        const data=await galFull(tub,Number(slot));
+        if(!data)throw new Error('앨범 원본 사진을 가져오지 못했어요: '+tub+'/'+slot);
+        gallery.push({tub,slot:Number(slot),thumb:g.thumb,data,who:g.who||'',upd:g.upd||''});
+      }
+      const photos=[];
+      for(const cid of Object.keys(D.photos||{})){
+        const m=D.photos[cid];if(!m)continue;
+        let data=await IDB.get(cid).catch(()=>null);
+        if(!data){try{data=await rpc('iso_view_photo',{id:cid})}catch(e){}}
+        if(!data&&!m.del)throw new Error('기록 사진 원본을 가져오지 못했어요: '+cid);
+        photos.push({meta:m,data:data||null});
+      }
+      const pack={format:'isopod-full-backup',v:2,createdAt:new Date().toISOString(),
+        data:{logs:D.logs,photos,gallery,memo:D.memo,iv:D.iv}};
+      const blob=new Blob([JSON.stringify(pack)],{type:'application/json'});
+      const url=URL.createObjectURL(blob),a=document.createElement('a');
+      a.href=url;a.download='우리집생물기록-전체백업-'+new Date().toISOString().slice(0,10)+'.json';
+      a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);
+      toast('✅ 사진과 메모를 포함한 전체 백업 파일을 만들었어요');
+    }catch(e){toast('⚠ 백업을 만들지 못했어요: '+String(e.message||e).slice(0,90))}
+    finally{btn.disabled=false;btn.textContent='📥 전체 백업 저장'}
+  };
+  $('#imp').onchange=async e=>{
+    const f=e.target.files[0];if(!f||!needEdit())return;e.target.value='';
+    if(!confirm('백업을 불러올까요? 현재 데이터는 덮어쓰지 않고, 비어 있는 기록·메모·사진 칸에만 추가합니다.'))return;
+    try{
+      const j=JSON.parse(await f.text()),d=j.data||j;
+      if(!d||typeof d!=='object'||(!d.logs&&!Array.isArray(d.gallery)&&!Array.isArray(d.photos)&&!d.memo))throw new Error('백업 형식이 맞지 않아요');
+      let nl=0,np=0,ng=0,nm=0,skip=0,fail=0;
+      for(const l of Object.values(d.logs||{})){
+        if(!l||!l.cid||l.del||D.logs[l.cid]){skip++;continue}
+        D.logs[l.cid]=Object.assign({},l,{sv:0});D.pend.push(l.cid);nl++;
+      }
+      for(const p of (d.photos||[])){
+        const m=p.meta;if(!m||!m.cid||m.del||D.photos[m.cid]||!p.data){skip++;continue}
+        D.photos[m.cid]=Object.assign({},m,{sv:0});await IDB.put(m.cid,p.data);D.pendP.push(m.cid);np++;
+      }
+      for(const g of (d.gallery||[])){
+        if(!g||!g.tub||g.slot===undefined||!g.data){skip++;continue}
+        const slot=String(g.slot),cur=(D.gal[g.tub]||{})[slot];
+        if(cur){skip++;continue}
+        try{
+          const upd=await rpc('iso_gal_set',{t:g.tub,s:Number(g.slot),th:g.thumb,d:g.data});
+          (D.gal[g.tub]=D.gal[g.tub]||{})[slot]={thumb:g.thumb,who:g.who||D.who,upd:upd||g.upd||new Date().toISOString()};
+          await IDB.put(`g:${g.tub}:${slot}:${(D.gal[g.tub][slot]).upd}`,g.data);ng++;
+        }catch(err){fail++}
+      }
+      for(const [tub,m] of Object.entries(d.memo||{})){
+        if(!m||typeof m.body!=='string'){skip++;continue}
+        if(D.memo[tub]&&D.memo[tub].body){skip++;continue}
+        try{await rpc('iso_memo_set',{t:tub,b:m.body});D.memo[tub]=m;nm++}catch(err){fail++}
+      }
+      if(d.iv)D.iv=Object.assign({},D.iv,d.iv);
+      save();await sync();
+      toast(`복원 완료 · 기록 ${nl}개, 사진 ${np}개, 앨범 ${ng}칸, 메모 ${nm}개${fail?' · 실패 '+fail+'건':''}`);
+    }catch(err){toast('⚠ 백업을 불러오지 못했어요: '+String(err.message||err).slice(0,90))}
+  };
   bindCommon()}
 function copy(t,msg){const ok=()=>toast(msg);if(navigator.clipboard)navigator.clipboard.writeText(t).then(ok,fb);else fb();function fb(){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');ok()}catch(e){prompt('복사해 주세요',t)}a.remove()}}
 function bindCommon(){document.querySelectorAll('#app [data-open]').forEach(b=>b.onclick=()=>openTub(b.dataset.open));
