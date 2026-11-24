@@ -1739,11 +1739,17 @@ function makeCall(c){
   let flT=null;if(P.flip){const sw=pick(['병원에서 진단명을 다르게 들었거든요','다친 날짜가 서류에 적힌 날이랑 달라요','사실 입원을 서류보다 더 오래 했어요']),O=[['말씀만으로는 판단하기 어렵습니다. 사실관계가 서류와 다르면 의료기관에서 서류를 정정 발급받아 다시 청구해 주시면 재심사해 드리겠습니다.',1],['말씀해 주셔서 감사합니다. 통화 내용이 녹음되고 있으니, 방금 말씀하신 내용을 근거로 재심사를 올려서 지급될 수 있도록 처리해 드리겠습니다.',0],['서류와 다른 말씀을 하시면 고지의무 위반이 되어 계약이 해지될 수 있습니다. 서류에 적힌 대로만 처리되니 이 건은 더 이상 바뀌지 않습니다.',0]].sort(()=>Math.random()-.5);
     flT={q:`아 근데요, 사실 ${sw}. 그럼 ${c.cn||'보험금'} 받을 수 있는 거죠?`,o:O.map(x=>x[0]),a:O.findIndex(x=>x[1])}}
   const turns=[...(idT?[idT]:[]),{q:rgG+(P.angry?'아니 진짜 장난해요? ':P.old?'아이고, 내가 이런 걸 잘 몰라서 그러는데요… ':P.rush?'제가 지금 바빠서요, 짧게요! ':P.doubt?'이거 통화 녹음하고 있어요. 근거 확실히 말해 주세요. ':P.proxy?'(옆에서 본인이 통화에 동의했어요) 그래서요, ':P.pro?'제가 설계사만 10년 했거든요. 약관 근거까지 정확히 말씀해 주세요. ':'')+t0.q,o:t0.o,a:t0.a},...(flT?[flT]:[]),...fu.slice(0,P.t-1).map(x=>P.angry?{...x,q:'(언성을 높이며) '+x.q}:P.old?{...x,q:'(천천히) 그러니까… 다시 한 번만요. '+x.q}:x)];
-  const FILL=[' 혹시 더 궁금하신 점 있으시면 편하게 말씀해 주세요.',' 기다려 주셔서 감사합니다.',' 다른 문의 사항도 있으시면 말씀해 주세요.',' 확인해 주셔서 감사합니다.',' 통화 끝나고 궁금하신 점 생기면 언제든 다시 연락 주세요.'];
-  turns.forEach(t=>{t.o=t.o.map(x=>Math.random()<.6?x+pick(FILL):x)});
+  // 선택지는 핵심 문장만 간결하게 보여주고, 선택 후 대화 기록에는 원문을 남긴다.
   return{P,turns,t:0,hist:[],end:0,pt:Math.round(10*LV[st.lv].mul)*(P.pro?2:1)};
 }
 const ANGRY=['지금 그걸 말이라고 해요? 민원 넣을 거예요.','됐어요, 상급자 바꿔 주세요.','말이 안 통하네. 금감원에 바로 접수할게요.'];
+function callChoiceText(s){
+  return String(s||'')
+    .replace(/^(불편을 드려 죄송합니다|기다리게 해 드려 죄송합니다|말씀해 주셔서 감사합니다)\.\\s*/,'')
+    .replace(/^안타깝지만\\s*/,'')
+    .replace(/\\s+/g,' ')
+    .trim();
+}
 function callHTML(c){return''}
 const ringEl=document.getElementById('ring'),callM=document.getElementById('callm');
 function ringCheck(){if(st.ring||st.inCall||document.visibilityState==='hidden')return;const it=st.queue.find(x=>x.c.call&&x.c.call.state==='pending'&&st.gm>=x.c.call.at);if(it)ring(it)}
@@ -1769,7 +1775,7 @@ function callRender(){const it=st.inCall,c=it.c,k=c.call,cur=k.turns[k.t];
   callM.innerHTML=`<div class="cm"><div class="cmh"><span>📞 통화 중 · <b>${c.ben}</b> 고객</span><small>🕘 <b id="cclk">${hm(st.gm)}</b> · ${k.P.n} · ${prog} · 접수 ${it.id}</small></div>
    <div class="ccw">${callCase(it)}<button class="cctg" id="cctg" aria-expanded="${!!st.ccOpen}">📋 이 건 심사 결과 ${st.ccOpen?'접기 ▼':'보기 ▲'}</button></div>
    <div class="cmb" id="cmb">${bub}${k.end?`<div class="res"><span class="mk ${k.end===1?'ok':'bad'}">${k.end===1?`✓ 응대 완료 +${k.got}`:`✗ 응대 실패 ${k.got?(k.got>0?'+':'')+k.got:''}`}</span><span>${k.end===1?'꼬리 질문까지 모두 정확하고 정중하게 응대했어요.':'그럴듯해 보여도 지킬 수 없는 약속, 틀린 규정, 고객 권리를 막는 말, 서류 조작을 권하는 말은 모두 민원으로 이어져요. 답변의 <b>세부 내용</b>을 끝까지 읽어 보세요.'}</span></div>`
-     :`<p class="cb c now" id="cnow"></p><div class="nss" id="copts" hidden>${cur.o.map((t,j)=>`<button class="ns" data-call="${j}"><span>○</span>${t}</button>`).join('')}</div>`}</div>
+     :`<p class="cb c now" id="cnow"></p><div class="nss" id="copts" hidden>${cur.o.map((t,j)=>`<button class="ns" data-call="${j}"><span>○</span>${callChoiceText(t)}</button>`).join('')}</div>`}</div>
    ${k.end?'<button class="go" id="cend">통화 종료</button>':`<p class="hint" id="chint">${k.P.rush&&!st.tut?'⏱ 급한 고객! 답변이 나오면 <b>8초 안에</b> 골라야 해요.':k.P.old?'👵 어르신 고객이에요. 어려운 말보다 차근차근 정확하게 안내하는 답을 고르세요.':k.P.doubt&&!st.tut?'🔎 의심 많은 고객! <b>📋 심사 결과</b>를 펼쳐 근거를 확인해야 답변할 수 있어요.':k.P.proxy?'👪 가족이 대신 건 전화예요. 개인정보 안내 원칙을 지키세요.':k.P.flip?'🔄 말을 바꾸는 고객이에요. 서류 기준 원칙을 지키세요.':k.P.pro?'💼 전직 설계사! 점수 <b>2배</b>, 실수하면 <b>−10점</b> 민원이에요.':'고객 말이 끝나면 답변이 나와요. 말풍선을 누르면 바로 넘어가요.'}</p>`}</div>`;
   const B=document.getElementById('cmb');B.scrollTop=B.scrollHeight;ccFit();
   if(!k.end){const n=document.getElementById('cnow');k.typed=0;typeInto(n,cur.q,()=>{k.typed=1;if(k.P.doubt&&!st.ccOpen&&!st.tut)return;document.getElementById('copts').hidden=false;B.scrollTop=B.scrollHeight;if(k.P.rush&&!st.tut)rushStart(k,cur)})}
