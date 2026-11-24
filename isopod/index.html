@@ -264,6 +264,20 @@ body:has(#float .fab) #app .petg{padding-bottom:64px}
 .cmt .ctx{flex:1;min-width:120px;white-space:pre-wrap;word-break:break-word}.cmt small{font-size:11.5px}
 .cdel{border:0;background:none;color:var(--mut);font-size:13px;padding:0 4px}
 .cin{display:flex;gap:6px;margin-top:6px}.cin input{flex:1;min-width:0;border:2px solid var(--line);border-radius:10px;padding:7px 10px;background:#fff;font:inherit;font-size:14px}.cin input:focus{border-color:var(--ink);outline:0}
+.tfwrap{position:relative;display:flex;gap:6px;align-items:center;margin:2px 0 8px}
+.tfbtn{display:flex;align-items:center;gap:8px;flex:1;min-width:0;border:2px solid var(--ink);background:#fff;border-radius:12px;padding:6px 10px;font-size:15px;box-shadow:0 2px 0 var(--ink)}
+.tfbtn img{width:40px;height:30px;object-fit:cover;border-radius:6px;border:1.5px solid var(--ink)}.tfbtn b{flex:1;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tfbtn .tfcar{font-size:14px}.tfbtn[aria-expanded=true] .tfcar{transform:rotate(180deg)}
+.tfall{font-size:22px;line-height:1}
+.tfclr{flex:none;border:2px solid var(--line);background:#fff;border-radius:10px;padding:8px 10px;font-weight:800;font-size:13px;color:var(--mut)}
+.tfpop{position:fixed;z-index:30;background:var(--paper);border:2px solid var(--ink);border-radius:14px;box-shadow:0 10px 24px rgba(0,0,0,.25);padding:8px;overflow:auto;overscroll-behavior:contain}
+.tfh{display:flex;gap:6px;margin-bottom:4px}.tfo{flex:1;display:flex;align-items:center;gap:8px;border:2px solid var(--line);background:#fff;border-radius:10px;padding:7px 10px;font-weight:800;font-size:14px}.tfo.on{border-color:var(--ink);background:var(--ink);color:#fff}
+.tfx{border:2px solid var(--line);background:#fff;border-radius:10px;width:40px;font-weight:900}
+.tfg{font-size:12.5px;font-weight:900;color:var(--mut);margin:8px 2px 4px}
+.tfgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.tfgrid button{border:2px solid var(--line);background:#fff;border-radius:9px;padding:0;overflow:hidden;font-size:11.5px;font-weight:800}
+.tfgrid button img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}.tfgrid button span{display:block;padding:2px 2px 3px;line-height:1.2;word-break:keep-all;overflow-wrap:anywhere}
+.tfgrid button.on{border-color:var(--ink);outline:2px solid var(--ink)}.tfgrid button.on span{background:var(--ink);color:#fff}
 .kv input{width:64px;text-align:center;border:2px solid var(--ink);border-radius:8px;padding:4px}
 </style>
 </head>
@@ -635,7 +649,7 @@ function vHome(){const due=ALL.filter(id=>dueMist(id)||dueFeed(id)).length;
    <button class="hset" id="goSet">${canEdit()?`⚙️ 설정 <small>✏️ ${esc(D.ed)}(으)로 로그인</small>`:'🔒 로그인 <small>가족만 기록·설정할 수 있어요</small>'}</button>`;
   $('#goSet').onclick=openSet;
   document.querySelectorAll('[data-sec]').forEach(b=>b.onclick=()=>{const k=b.dataset.sec;if(k!=='iso'&&!PETS[k]){toast(`${b.querySelector('.hn').textContent} 기록지는 준비 중이에요`);return}SEC=k;D.tab='shelf';save();RM=false;SEL.clear();LF.tub=null;history.pushState({sec:k},'');window.scrollTo({top:0});render()})}
-function render(){if(D.tab==='set')D.tab='today';const home=SEC==='home',setp=SEC==='set';$('#float').innerHTML='';$('#top').hidden=false;$('#tabs').hidden=home||setp;$('#homeBtn').hidden=home;$('#ttl').textContent=home?'🏠 우리집 생물 기록지':setp?(canEdit()?'⚙️ 설정':'🔒 로그인'):PETS[SEC]?`${PETS[SEC].e} 우리집 ${PETS[SEC].full}`:'🪲 우리집 등각류';{const t=document.querySelector('#tabs [data-tab="shelf"]'),lv=document.querySelector('#tabs [data-tab="larva"]'),P=PETS[SEC];
+function render(){document.querySelectorAll('.tfpop').forEach(e=>e.remove());if(D.tab==='set')D.tab='today';const home=SEC==='home',setp=SEC==='set';$('#float').innerHTML='';$('#top').hidden=false;$('#tabs').hidden=home||setp;$('#homeBtn').hidden=home;$('#ttl').textContent=home?'🏠 우리집 생물 기록지':setp?(canEdit()?'⚙️ 설정':'🔒 로그인'):PETS[SEC]?`${PETS[SEC].e} 우리집 ${PETS[SEC].full}`:'🪲 우리집 등각류';{const t=document.querySelector('#tabs [data-tab="shelf"]'),lv=document.querySelector('#tabs [data-tab="larva"]'),P=PETS[SEC];
     if(t)t.innerHTML=P&&P.stages?`<b>${P.stages.shelf.e}</b>${P.stages.shelf.n}`:P?`<b>${P.e}</b>${P.n}`:'<b>🗄</b>선반';if(lv)lv.hidden=!(P&&P.stages);if(D.tab==='larva'&&!(P&&P.stages))D.tab='shelf'}document.body.classList.toggle('ro',!canEdit());$('#whoChip').textContent=canEdit()?`✏️ ${D.ed}`:AU?'🔒 권한 없음':'🔒 로그인';setSync();
   document.querySelectorAll('#tabs [data-tab]').forEach(b=>b.setAttribute('aria-current',b.dataset.tab===D.tab?'page':'false'));
   if(home){vHome();return}
@@ -777,10 +791,23 @@ function vLog(){if(LOGM==='diary')return vDiary();const whos=[...new Set(logs().
   const html=dayFeed(items,'log',e=>feedHTML([e],true));
   const base=SEC==='worm'?['wfeed','bed','count','pupa','etc']:PETS[SEC]?['etc']:['feed','mist','baby','count','etc'];const kinds=base.concat(ACTS.filter(k=>!base.includes(k)&&!PETS[SEC]&&(k==='photo'?photos().length:logs().some(l=>l.kind===k))));
   $('#app').innerHTML=`${logSeg()}<h2 class="sec">기록 <small>${LF.tub?esc(tubNm(LF.tub))+' · ':''}${items.length}개 · 최신순</small></h2>
-   <div class="tubf"><button class="all" data-ft="" aria-pressed="${!LF.tub}">전체<br>${PETS[SEC]?PETS[SEC].n:'사육통'}</button>${secIds().map(id=>`<button data-ft="${id}" aria-pressed="${LF.tub===id}"><img src="${cover(id)}" alt="" loading="lazy"><span>${esc(tubNm(id))}</span></button>`).join('')}</div><div class="filters"><button data-fw="" aria-pressed="${!LF.who}">모두</button>${whos.map(w=>`<button data-fw="${esc(w)}" aria-pressed="${LF.who===w}">${esc(w)}</button>`).join('')}</div>
+   <div class="tfwrap"><button class="tfbtn" id="tfBtn" aria-expanded="false">${LF.tub?`<img src="${cover(LF.tub)}" alt=""><b>${esc(tubNm(LF.tub))}</b>`:`<span class="tfall">🗂</span><b>전체 ${PETS[SEC]?PETS[SEC].n:'사육통'}</b>`}<span class="tfcar">▾</span></button>${LF.tub?'<button class="tfclr" data-ft="" aria-label="필터 지우기">✕ 전체 보기</button>':''}</div><div class="filters"><button data-fw="" aria-pressed="${!LF.who}">모두</button>${whos.map(w=>`<button data-fw="${esc(w)}" aria-pressed="${LF.who===w}">${esc(w)}</button>`).join('')}</div>
    <div class="filters"><button data-fk="" aria-pressed="${!LF.kind}">전체</button>${kinds.map(k=>`<button data-fk="${k}" aria-pressed="${LF.kind===k}">${KIND[k][0]} ${KIND[k][1]}</button>`).join('')}</div>${html||'<div class="card empty">기록이 없어요.</div>'}`;
   watchMore('log',vLog);bindLogSeg();document.querySelectorAll('[data-fw]').forEach(b=>b.onclick=()=>{LF.who=b.dataset.fw||null;PGN.log=60;vLog()});document.querySelectorAll('[data-fk]').forEach(b=>b.onclick=()=>{LF.kind=b.dataset.fk||null;PGN.log=60;vLog()});
-  document.querySelectorAll('[data-ft]').forEach(b=>b.onclick=()=>{const x=$('.tubf').scrollLeft;LF.tub=b.dataset.ft||null;PGN.log=60;vLog();$('.tubf').scrollLeft=x});bindCommon()}
+  document.querySelectorAll('[data-ft]').forEach(b=>b.onclick=()=>{LF.tub=b.dataset.ft||null;PGN.log=60;vLog()});
+  $('#tfBtn').onclick=e=>{e.stopPropagation();tfPop()};bindCommon()}
+/* 사육통 고르기 미니 팝업 */
+function tfGroups(){const P=PETS[SEC];if(!P)return SHELF.map(s=>({n:`${s.n}`,ids:s.tubs}));if(P.stages)return Object.values(P.stages).map(st=>({n:st.n,ids:st.ids}));return[{n:'',ids:P.ids}]}
+function tfPop(){const old=$('.tfpop');if(old){old.remove();$('#tfBtn').setAttribute('aria-expanded','false');return}
+  const w=$('.tfwrap'),pop=document.createElement('div');pop.className='tfpop';
+  pop.innerHTML=`<div class="tfh"><button class="tfo ${!LF.tub?'on':''}" data-pk=""><span class="tfall">🗂</span>전체 ${PETS[SEC]?PETS[SEC].n:'사육통'}</button><button class="tfx" aria-label="닫기">✕</button></div>${tfGroups().map(g=>`${g.n?`<div class="tfg">${esc(g.n)}</div>`:''}<div class="tfgrid">${g.ids.map(id=>`<button class="${LF.tub===id?'on':''}" data-pk="${id}"><img src="${cover(id)}" alt="" loading="lazy"><span>${esc(tubNm(id))}</span></button>`).join('')}</div>`).join('')}`;
+  document.body.appendChild(pop);const r=$('#tfBtn').getBoundingClientRect(),tb=($('#tabs').offsetHeight||0);pop.style.top=(r.bottom+6)+'px';pop.style.left=Math.max(8,r.left)+'px';pop.style.width=Math.min(innerWidth-16,Math.max(r.width,320))+'px';pop.style.maxHeight=Math.max(200,innerHeight-r.bottom-tb-16)+'px';$('#tfBtn').setAttribute('aria-expanded','true');
+  const onScroll=()=>close();addEventListener('scroll',onScroll,{once:true});
+  const close=()=>{pop.remove();document.removeEventListener('click',out,true);const b=$('#tfBtn');if(b)b.setAttribute('aria-expanded','false')};
+  const out=e=>{if(!pop.contains(e.target)&&e.target.id!=='tfBtn'&&!e.target.closest('#tfBtn'))close()};
+  setTimeout(()=>document.addEventListener('click',out,true),0);
+  pop.querySelector('.tfx').onclick=close;
+  pop.querySelectorAll('[data-pk]').forEach(b=>b.onclick=()=>{close();LF.tub=b.dataset.pk||null;PGN.log=60;vLog()})}
 function vSet(){const n=D.pend.length+D.pendP.length;
   $('#app').innerHTML=`<h2 class="sec">설정 <small>${canEdit()?'모든 동물 기록지에 함께 적용돼요':'로그인한 가족만 설정을 볼 수 있어요'}</small></h2>
   <div class="card login"><b>✏️ 기록하기 로그인</b>${canEdit()?`<p style="margin:6px 0"><span class="ok">✓ <b>${esc(D.ed)}</b>(으)로 기록하고 있어요.</span> <small class="mut">${esc(AU.email)}</small></p><div class="row"><button class="btn" id="myName">✏️ 내 이름 바꾸기</button><button class="btn" id="lo">로그아웃</button></div>`
@@ -835,7 +862,7 @@ let TABS=['today','shelf','log'];const tabsNow=()=>SEC==='worm'?['today','shelf'
 function goTab(t,dir){const b=document.querySelector(`#tabs [data-tab="${t}"]`);if(!b)return;b.click();const a=$('#app');a.style.transition='none';a.style.transform=`translateX(${dir*40}%)`;a.style.opacity='.3';
   requestAnimationFrame(()=>requestAnimationFrame(()=>{a.style.transition='transform .2s ease-out,opacity .2s';a.style.transform='';a.style.opacity=''}))}
 (function(){const a=$('#app');let sx=0,sy=0,dx=0,on=false,lock=null;
-  const ok=e=>SEC!=='home'&&SEC!=='set'&&!CUR&&!RM&&!MV&&!document.querySelector('.sheet')&&!e.target.closest('.tubf,.filters,.album,input,textarea,select,.sg,#detail,#tabs,header,.sheet,.rmbar,.fab,.toast');
+  const ok=e=>SEC!=='home'&&SEC!=='set'&&!CUR&&!RM&&!MV&&!document.querySelector('.sheet')&&!e.target.closest('.tubf,.tfpop,.filters,.album,input,textarea,select,.sg,#detail,#tabs,header,.sheet,.rmbar,.fab,.toast');
   document.addEventListener('touchstart',e=>{if(e.touches.length!==1||!ok(e)){on=false;return}sx=e.touches[0].clientX;sy=e.touches[0].clientY;dx=0;on=true;lock=null;a.style.transition='none'},{passive:true});
   document.addEventListener('touchmove',e=>{if(!on)return;const x=e.touches[0].clientX-sx,y=e.touches[0].clientY-sy;if(lock===null&&(Math.abs(x)>10||Math.abs(y)>10))lock=Math.abs(x)>Math.abs(y)*1.3?'h':'v';
     if(lock==='h'){TABS=tabsNow();const i=TABS.indexOf(D.tab),edge=x<0&&i>=TABS.length-1;dx=x;a.style.transform=`translateX(${edge?x*.15:x*.5}px)`}},{passive:true});
