@@ -343,9 +343,9 @@ main{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:24px;p
 .callm{position:fixed;inset:0;z-index:75;background:#000a;display:flex;align-items:flex-end;justify-content:center;padding:10px}
 .callm[hidden]{display:none}
 #copts[hidden],.cmb .res[hidden],#cend[hidden]{display:none}
-.cm{width:min(560px,100%);max-height:calc(100dvh - 20px);display:flex;flex-direction:column;background:#fff8e6;color:#1d1a17;border-radius:16px;padding:12px;box-shadow:0 -10px 30px -10px #0008}
+.cm{width:min(560px,100%);max-height:calc(100dvh - 20px);display:flex;flex-direction:column;overflow:hidden;background:#fff8e6;color:#1d1a17;border-radius:16px;padding:12px;box-shadow:0 -10px 30px -10px #0008}
 .cmh{display:flex;flex-direction:column;gap:2px;padding-bottom:8px;border-bottom:2px solid #1d1a17}.cmh span{font:800 18px "Noto Sans KR",sans-serif}.cmh small{font-size:12.5px;color:#5a4316;font-weight:700}
-.cmb{flex:1;min-height:120px;overflow-y:auto;padding:4px 0}
+.cmb{flex:1;min-height:0;overflow-y:auto;padding:4px 0}
 .cb.typing::after{content:'▍';animation:blink .8s infinite}@keyframes blink{50%{opacity:0}}
 .cm .go{margin-top:8px}
 .cctg{width:100%;margin-top:8px;min-height:40px;border:2px solid #1d1a17;border-radius:8px;background:#fff;color:#1d1a17;font:700 14.5px inherit;font-family:inherit;cursor:pointer;text-align:left;padding:0 12px}
@@ -1537,7 +1537,7 @@ function silMemo(c){const g=c.gen,t=c.htype,n3=c.bill.n3,N3=n3?` · 3대 비급�
   if(c.days)return`${g}세대 입원: 급여 ${[100,90,90,80][g-1]}% + 비급여 ${g===4&&!c.rider?'0% (비급여 특약 미가입)':[100,90,80,70][g-1]+'%'}${N3}`;
   const ded={의원:1e4,병원:15e3,종합병원:2e4,상급종합병원:2e4}[t];
   return [`1세대 통원: 총액 − 5,000원`,`2세대 통원: 총액 − 공제 ${f(ded)}원 (${t})`,`3세대 통원: 총액 − max(공제 ${f(ded)}원, 급여 10% + 비급여 20%)`,`4세대 통원: 급여 − max(20%, ${t.includes('종합')?'2만':'1만'}) + 비급여 ${c.rider?'− max(30%, 3만)':'0원 (특약 미가입)'}`][g-1]+N3}
-function openCalc(i,btn){closeInfo(false);closeDoc(false);cIdx=i;cFrom=btn;const c=st.c,b=c.bill;
+function openCalc(i,btn){closeInfo(false);closeDoc(false);cx='';cLast=null;cIdx=i;cFrom=btn;const c=st.c,b=c.bill;
   document.getElementById('csum').innerHTML=c.docs.rcpt?`<div class="cs1">영수증 · ${c.htype} · ${c.days?'입원 '+c.days+'일':'외래 1회'} · 계약일 ${fd(c.con)}${c.gen===4?` · 비급여 특약 ${c.rider?'가입':'미가입'}`:c.gen===3?` · 3종 특약 ${c.rider3?'가입':'미가입'}`:''}</div><div class="cs2"><button data-ins="${b.gb}">급여 ${f(b.gb)}</button>${c.docs.detail?b.L.filter(x=>x.kind==='비급여').map(x=>`<button data-ins="${x.amt}">${x.name.replace(/\(.*\)/,'')} ${f(x.amt)}</button>`).join(''):`<button data-ins="${b.ntot}">비급여 합계 ${f(b.ntot)}</button>`}</div>`:'<div class="cs1">진료비 영수증이 제출되지 않았어요.</div>';
   {const L=silLv();if(L&&c.docs.rcpt&&c.covs[i]==='sil'){const cs=document.getElementById('csum');cs.insertAdjacentHTML('afterbegin',`<div class="cs1 silm">📒 ${silMemo(c)}</div>`);
     if(L>=2&&!cx){const ng=b.ngb+(b.n3&&c.gen<=2?b.n3.amt:0);cx=c.gen===4&&!c.days?String(b.gb):`${b.gb}+${ng}`;cLast=null;cs.insertAdjacentHTML('beforeend',`<div class="cs1 silm">🧾 스캐너가 ${c.gen===4&&!c.days?'급여 본인부담금':'보상 대상 진료비 합계(급여+비급여'+(b.n3&&c.gen<=2?'+3대 비급여':'')+')'}를 입력했어요${b.cuts&&b.cuts.length?' · 삭감 항목은 빼고 계산했어요':''}.</div>`)}
@@ -1762,7 +1762,7 @@ function callCase(it){const c=it.c,LB=(C,v)=>(C.carG?CGL:C.grade?GRL:C.opts||['�
     return`<li><div class="ccn">${k==='sil'?'실손의료비':C.n} <span class="mk ${ok?'ok':'bad'}">${ok?'✓':'✗'}</span></div><div>내 결정 <b>${mine}</b>${ok?'':` · 정답 <b>${right}</b>`}</div><div class="ccw">${a.w}</div></li>`}).join('');
   const T=sumPick(c);
   return`<div class="ccase" id="ccase" ${st.ccOpen?'':'hidden'}><div class="cch">접수 ${it.id} · 피보험자 <b>${c.who}</b>${c.ben!==c.who?` · 수익자 <b>${c.ben}</b>`:''} · 계약일 ${fd(c.con)}</div><ul>${rows}</ul><div class="cct">결정 지급액 합계 <b>${won(T)}</b>${c.ns>=0&&c.nsO?` · 보낸 안내: ${c.nsO[c.ns]}`:''}</div></div>`}
-function ccFit(){const p=document.getElementById('ccase'),b=document.getElementById('cctg');if(p&&b&&!p.hidden)p.style.maxHeight=Math.max(120,b.getBoundingClientRect().top-12)+'px'}
+function ccFit(){const p=document.getElementById('ccase');if(p&&!p.hidden)p.style.maxHeight='min(38dvh, 340px)'}
 function callRender(){const it=st.inCall,c=it.c,k=c.call,cur=k.turns[k.t];
   const L=k.hist.length-1,bub=k.hist.map((x,i)=>`<p class="cb c">${x.q}</p><p class="cb me${x.ok?'':' bad'}">${x.ans}</p>${x.ok?'':`<p class="cb c"${i===L?' id="crx"':''}>${i===L&&!k.typedEnd?'':x.rx}</p>`}`).join('')+(k.end===1?`<p class="cb c" id="crx">${k.typedEnd?'네, 자세히 설명해 주셔서 감사합니다.':''}</p>`:'');
   const prog=`${k.end?k.hist.length:k.t+1} / ${k.turns.length}턴`;
@@ -2004,7 +2004,7 @@ function start(){document.body.classList.remove('ingame','scene','endm','subm');
    <p class="intro">처음이라면 <b>튜토리얼 모드</b>부터! 사수와 함께 심사를 하나씩 배워요. 익숙해지면 <b>샌드박스 모드</b>에서 원하는 조건으로 자유롭게 심사해요.</p>
    <button class="begin scnbtn" id="scnbeg">시나리오 모드<small>${CR.scn&&!CR.scn.end?`${CR.scn.day}일차 · 잔고 ${f(CR.scn.money)}원`:'출근해서 번 돈으로 햄스터·콩벌레와 20일 버티기'}</small></button>
    <button class="begin stbtn" id="stbeg">튜토리얼 모드<small>신입 심사자의 성장기 · ${Object.keys(storyDone()).length}/${STORY.length}장 클리어</small></button>
-   <button class="begin sbbtn" id="sbbeg">샌드박스 모드<small>난이도 · 실손 · 접수량 · AI 대결을 직접 골라요${vsRec}</small></button><p class="mobnote">Optimized for mobile · 모바일 세로 화면 기준으로 제작</p><p class="fictnote">이 게임은 가상의 보험금 심사 시뮬레이션으로, 등장하는 인물·기관·상품·심사 기준은 모두 게임용 가상 설정이며 실제 보험사 및 약관·실무와는 무관합니다.</p><p class="bldline"><span class="bld" id="bld">build 242 · 2026.11.25</span></p></section>`;
+   <button class="begin sbbtn" id="sbbeg">샌드박스 모드<small>난이도 · 실손 · 접수량 · AI 대결을 직접 골라요${vsRec}</small></button><p class="mobnote">Optimized for mobile · 모바일 세로 화면 기준으로 제작</p><p class="fictnote">이 게임은 가상의 보험금 심사 시뮬레이션으로, 등장하는 인물·기관·상품·심사 기준은 모두 게임용 가상 설정이며 실제 보험사 및 약관·실무와는 무관합니다.</p><p class="bldline"><span class="bld" id="bld">build 243 · 2026.11.25</span></p></section>`;
   else app.innerHTML=`<section class="paper end start wz"><h2 class="wzh">🧪 샌드박스 모드</h2><p class="wzp">조건을 고르고 아래 버튼을 누르세요.</p>
    <h3 class="wzs">진행 방식</h3>
    <div class="lvs two" role="group" aria-label="진행 방식"><button data-vsm="0" aria-pressed="${!st.vs}">👤 혼자 심사 <small>최고 기록 도전</small></button><button data-vsm="1" aria-pressed="${!!st.vs}">🤖 AI 대결 <small>${CR.vsW||CR.vsL?`전적 ${CR.vsW||0}승 ${CR.vsL||0}패`:'AI 동료와 점수 대결'}</small></button></div>
