@@ -1532,7 +1532,7 @@ function dsCur(ds){if(!ds)return;const secs=[...ds.querySelectorAll('.dsec')];if
   if(fb){fb.setAttribute('aria-expanded','true');fb.classList.add('seen');const fs=fb.parentElement;if(fs&&fs.scrollWidth>fs.clientWidth)fs.scrollTo({left:Math.max(0,fb.offsetLeft-fs.clientWidth/2+fb.offsetWidth/2),behavior:'smooth'})}}
 function dsTo(ds,sec,sm=true){const hd=(ds.querySelector('.dsh')||{}).offsetHeight||0,vh=ds.clientHeight-hd;let top=sec.offsetTop-hd-Math.max(0,(vh-sec.offsetHeight)/2);ds.scrollTo({top:Math.max(0,top),behavior:sm?'smooth':'auto'})}
 function dsStep(ds,d){const secs=[...ds.querySelectorAll('.dsec')];let k=secs.findIndex(s=>+s.dataset.j===cur);if(k<0)k=0;const n=secs[k+d];if(n){dsTo(ds,n);setTimeout(()=>dsCur(ds),450)}else if(d>0){ds.scrollTo({top:ds.scrollHeight,behavior:'smooth'})}}
-function openDoc(j){const its=items(),a=avail();if(!its[j]||a.indexOf(j)<0)return;
+function openDoc(j){const pageY=window.scrollY,its=items(),a=avail();if(!its[j]||a.indexOf(j)<0)return;
   if(DESKQ()&&document.getElementById('dpane')){showPane(j);return}
   const sl=document.getElementById('slides'),ds=sl&&sl.querySelector('.dslide');
   if(ds&&MOBQ()){const sec=ds.querySelector(`.dsec[data-j="${j}"]`);sl.scrollTo({left:0,behavior:'smooth'});if(sec)dsTo(ds,sec);setTimeout(()=>dsCur(ds),450);return}
@@ -1542,7 +1542,7 @@ function openDoc(j){const its=items(),a=avail();if(!its[j]||a.indexOf(j)<0)retur
     mb.innerHTML=`<div class="dcar" id="dcar">${a.map(i=>`<div class="dsl" data-j="${i}">${its[i].outerHTML}</div>`).join('')}</div>`;
     ov.hidden=false;dc=document.getElementById('dcar');dc.scrollLeft=a.indexOf(j)*dc.clientWidth;setCur(j);
     let tm;dc.addEventListener('scroll',()=>{clearTimeout(tm);const p=Math.round(dc.scrollLeft/dc.clientWidth),jj=a[p];if(jj!==undefined&&jj!==cur){setCur(jj,false);dc.children[p].scrollTop=0}tm=setTimeout(()=>setCur(cur),180)},{passive:true});
-    const tile=document.querySelector(`[data-f="${j}"]`);tile&&place(tile,ov);document.getElementById('mx').focus({preventScroll:true})}
+    const tile=document.querySelector(`[data-f="${j}"]`);if(tile&&!MOBQ())place(tile,ov);document.getElementById('mx').focus({preventScroll:true});if(MOBQ())requestAnimationFrame(()=>window.scrollTo({top:pageY,behavior:'instant'}))}
   else dc.scrollTo({left:a.indexOf(j)*dc.clientWidth,behavior:'smooth'})}
 function guideLock(){const s=st.tut?TS[tsI]:SG.cur;if(!s||s.allowClose)return false;const n=Date.now();if(!guideLock.t||n-guideLock.t>2500){guideLock.t=n;toast(st.tut?'👆 안내를 따라 진행해 주세요':'👆 사수 설명을 먼저 들어요')}return true}
 function userCloseDoc(){if(guideLock())return;closeDoc()}
