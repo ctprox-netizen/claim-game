@@ -825,12 +825,12 @@ function vShelf(){if(PETS[SEC])return vPet();if(!canEdit()){RM=false;SEL.clear()
     document.querySelectorAll('[data-grp]').forEach(b=>b.onclick=()=>{const t=b.dataset.grp.split(','),all=t.every(id=>SEL.has(id));t.forEach(id=>all?SEL.delete(id):SEL.add(id));upd()});
     $('#rmClr').onclick=()=>{SEL.clear();upd()};$('#rmGo').onclick=()=>{if(SEL.size)rmSheet()};upd()}
   bindCommon();fitShelf()}
-let RK='feed';
-const RKS_ISO=[['feed','🍂','먹이'],['mist','💧','분무'],['baby','🐣','새끼 발견'],['count','🔢','마릿수'],['etc','📝','기타']];
-const RKS_WORM=[['wfeed','🥕','먹이'],['bed','🧹','바닥재 교체'],['count','🔢','마릿수'],['pupa','🌀','번데기'],['etc','📝','기타']];
+let RK='etc';
+const RKS_ISO=[['etc','📝','기타'],['feed','🍂','먹이'],['mist','💧','분무'],['baby','🐣','새끼 발견'],['count','🔢','마릿수']];
+const RKS_WORM=[['etc','📝','기타'],['wfeed','🥕','먹이'],['bed','🧹','바닥재 교체'],['count','🔢','마릿수'],['pupa','🌀','번데기']];
 const RKS_PET=[['etc','📝','기타']];
 let RKS=RKS_ISO;
-function rmSheet(){if(!needEdit())return;const ids=secIds().filter(id=>SEL.has(id));RKS=SEC==='worm'?RKS_WORM:PETS[SEC]?RKS_PET:RKS_ISO;if(!RKS.some(x=>x[0]===RK))RK=RKS[0][0];
+function rmSheet(){if(!needEdit())return;const ids=secIds().filter(id=>SEL.has(id));RKS=SEC==='worm'?RKS_WORM:PETS[SEC]?RKS_PET:RKS_ISO;RK='etc';
   const nowL=(()=>{const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,16)})();
   sheet(`<h3>✏️ ${ids.length===1?esc(tubNm(ids[0]))+' 기록':ids.length+unit()+' 한 번에 기록'}</h3>${ids.length>1?`<p class="mut" style="margin:-4px 0 8px;font-size:13px">${ids.map(id=>esc(tubNm(id))).join(', ')}</p>`:''}
    <div class="kpick">${RKS.map(([k,e,n])=>`<button data-k="${k}" aria-pressed="${k===RK}"><b>${e}</b>${n}</button>`).join('')}</div>
