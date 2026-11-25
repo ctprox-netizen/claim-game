@@ -628,7 +628,7 @@ const nmOv=id=>{const m=D.memo&&D.memo['n:'+id];return m&&m.body?m.body.trim():'
 const tubNm=id=>nmOv(id)||(id==='12'?'데어리카우 성체':id==='12b'?'데어리카우 새끼':spOf(id).n);
 const famOf=id=>{if(XSP[id])return XSP[id].fam;const sp=parseInt(id),g=IGRP.find(x=>x[2].includes(sp));return g?`${g[0]} · ${g[1]}`:''};
 const envOf=id=>{const e=spOf(id).env,m=e.match(/(\d+)–(\d+)℃/),h=e.match(/(\d+)(?:–(\d+))?%/);return{t:m?[+m[1],+m[2]]:null,h:h?[+h[1],h[2]?+h[2]:100]:null,txt:e}};
-const KIND={wfeed:['🥕','먹이'],bed:['🧹','바닥재 교체'],pupa:['🌀','번데기'],dfeed:['🥜','먹이'],water:['💧','물 갈기'],cage:['🧹','청소'],wt:['⚖️','체중'],mist:['💧','분무'],feed:['🍂','먹이'],ca:['🦴','칼슘'],clean:['🧹','청소·흙 교체'],baby:['🐣','새끼 발견'],count:['🔢','마릿수'],molt:['🦐','탈피'],env:['🌡','온습도'],note:['📝','메모'],etc:['📝','기타'],photo:['📷','사진']};
+const KIND={wfeed:['🥕','먹이'],bed:['🧹','바닥재 교체'],pupa:['🌀','번데기'],dfeed:['🥜','먹이'],water:['💧','물 갈기'],cage:['🧹','청소'],wt:['⚖️','체중'],mist:['💧','분무'],feed:['🍂','먹이'],ca:['🦴','칼슘'],clean:['🧹','청소·흙 교체'],baby:['🐣','새끼 발견'],count:['🔢','마릿수'],molt:['🦐','탈피'],env:['🌡','온습도'],note:['📝','메모'],etc:['📝','메모'],photo:['📷','사진']};
 const ACTS=['mist','feed','ca','clean','molt','baby','count','env','note','photo'];
 const $=s=>document.querySelector(s);
 const esc=t=>String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
