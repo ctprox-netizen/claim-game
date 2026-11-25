@@ -382,7 +382,7 @@ nav.tabs{background:#263d31!important}
 
 <!-- BUILD-INFO: 2026-11-25-01 -->
 <footer class="build-info" aria-label="사이트 빌드 정보">
- <div><strong>빌드 버전</strong> v2026.11.25-04</div>
+ <div><strong>빌드 버전</strong> v2026.11.25-05</div>
  <div><strong>최종 수정일</strong> 2026.11.25</div>
 </footer>
 <script>
@@ -1142,7 +1142,7 @@ const albumGrid=id=>`${GAL_OK?`<div class="g9">${[1,2,3,4,5,6,7,8,9].map(n=>{con
 let MEDIT=null;
 function memoView(id){const b=(D.memo[id]||{}).body||'';if(!MEMO_OK)return'<p class="empty">메모장을 쓰려면 Supabase에서 사진·메모장용 SQL을 한 번 실행해 주세요.</p>';
   if(MEDIT===id)return`<textarea id="memoTa" placeholder="이 통에 대해 자유롭게 적어 두세요. 예: 입양처, 흙 배합, 번식 상황">${esc(b)}</textarea><div class="row" style="justify-content:flex-end;margin-top:6px"><button class="btn sm" id="memoNo">취소</button><button class="btn sm pri" id="memoOk">저장</button></div>`;
-  return`${b?`<div class="mtxt">${esc(b)}</div>`:`<p class="empty" style="padding:6px">${canEdit()?'아직 메모가 없어요.':'아직 메모가 없어요.'}</p>`}${canEdit()?'<div class="row" style="justify-content:flex-end"><button class="btn sm" id="memoEd">✏️ 메모 고치기</button></div>':''}`}
+  return`${b?`<div class="mtxt">${esc(b)}</div>`:`<p class="empty" style="padding:6px">${canEdit()?'아직 메모가 없어요.':'아직 메모가 없어요.'}</p>`}${canEdit()?'<div class="row" style="justify-content:flex-end"><button class="btn sm" id="memoEd">✏️ 소개 수정</button></div>':''}`}
 function memoBind(id){const box=$('#memoBox');if(!box)return;
   if($('#memoEd'))$('#memoEd').onclick=()=>{if(!needEdit())return;MEDIT=id;box.innerHTML=memoView(id);memoBind(id);const t=$('#memoTa');t.focus();t.setSelectionRange(t.value.length,t.value.length)};
   if($('#memoNo'))$('#memoNo').onclick=()=>{MEDIT=null;box.innerHTML=memoView(id);memoBind(id)};
