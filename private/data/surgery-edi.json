@@ -1,0 +1,1060 @@
+{
+  "title": "보험금 심사 게임 수술·처치 EDI 코드 기초 데이터",
+  "schemaVersion": 1,
+  "compiledAt": "2026-11-25",
+  "status": "curated-expanded",
+  "notes": [
+    "게임에 등장하는 수술명과 건강보험 EDI 기본코드를 연결한 참고 데이터이며 전체 수가 마스터가 아니다.",
+    "여러 코드가 표시된 경우 수술명만으로 단일 코드를 확정할 수 없으며 실제 수술기록, 부위, 방법, 난이도, 가산 조건에 따라 달라진다.",
+    "복강경 부가코드 ADC03은 기본 행위코드와 별도로 적용되는 부가코드다.",
+    "EDI 코드 존재만으로 보험약관상 수술 해당 여부나 보험금 지급 여부를 자동 판정하지 않는다.",
+    "비급여 치과 임플란트는 건강보험 의과 수가코드로 임의 연결하지 않고 별도 확인 대상으로 표시한다.",
+    "검색 데이터는 심평원 공개자료에서 코드와 행위명이 확인되는 선별 항목을 수록하며, 전체 수가마스터를 대체하지 않습니다.",
+    "코드군 단위로 공개된 항목은 세부 산정코드·행위명·적용기간을 진료 당시 수가마스터로 재확인해야 합니다.",
+    "EDI 코드 존재만으로 보험약관상 수술 해당 여부 또는 보험금 지급 여부를 확정하지 않습니다."
+  ],
+  "sources": [
+    {
+      "id": "hira-kdrg-2026",
+      "publisher": "건강보험심사평가원",
+      "title": "2026 질병군 분류번호 결정요령(KDRG)",
+      "url": "https://www.hira.or.kr/ebooksc/2026/01/BZ202601272870642.pdf",
+      "note": "담낭절제술 Q7380 및 ADC03, 갑상선수술 P4551/P4553, 슬관절치환술 N2072, 창상봉합술 등 확인"
+    },
+    {
+      "id": "hira-appendix-2025",
+      "publisher": "건강보험심사평가원",
+      "title": "포괄수가제 요양급여비용 및 청구방법(2025)",
+      "url": "https://www.hira.or.kr/ebooksc/2025/03/BZ202503051269788.pdf",
+      "note": "충수절제술 Q2861~Q2863, 서혜부탈장 Q2755~Q2756, 치열수술 Q2950, 치핵수술 코드군 확인"
+    },
+    {
+      "id": "hira-claims-2025",
+      "publisher": "건강보험심사평가원",
+      "title": "수술일자 기재 수술코드(2025)",
+      "url": "https://www.hira.or.kr/ebooksc/2025/12/BZ202512192693303.pdf",
+      "note": "관상동맥 스텐트삽입술 M6561~M6567 확인"
+    },
+    {
+      "id": "hira-spine-2025",
+      "publisher": "건강보험심사평가원",
+      "title": "요추 추간판제거술 공개심의사례(2025.02.27)",
+      "url": "https://www.hira.or.kr/rc/insu/insuadtcrtr/InsuAdtCrtrPopup.do?brdBltNo=&brdScnBltNo=4&mtgHmeDd=20250227&mtgMtrRegSno=4&sno=1",
+      "note": "관혈적 요추 추간판제거술 N1493 확인"
+    },
+    {
+      "id": "hira-cataract-2026",
+      "publisher": "건강보험심사평가원",
+      "title": "2026 건강보험요양급여비용 제3부 질병군 분류번호 결정요령",
+      "url": "https://www.hira.or.kr/ebooksc/2026/02/BZ202602273023260.pdf",
+      "note": "위폴립절제술, 결장 용종절제술, 수정체 수술 등 기존 기초코드"
+    },
+    {
+      "id": "hira-wound-2026",
+      "publisher": "건강보험심사평가원",
+      "title": "2026 KDRG 수가코드 분류",
+      "url": "https://www.hira.or.kr/ebooksc/2026/01/BZ202601272870642.pdf",
+      "note": "창상봉합술(안면·경부 외) SB/SC 코드군 확인"
+    },
+    {
+      "id": "hira-hemorrhoid-2025",
+      "publisher": "건강보험심사평가원",
+      "title": "치핵수술시 수가 산정방법(2025.09.01)",
+      "url": "https://www.hira.or.kr/rc/insu/insuadtcrtr/InsuAdtCrtrPopup.do?mtgHmeDd=20250901&mtgMtrRegSno=0001&sno=4",
+      "note": "치핵근치술 Q3013, 혈전성 치핵절제술 Q3012 등 구분 확인"
+    },
+    {
+      "id": "hira-oecd-surgery-2025",
+      "publisher": "건강보험심사평가원",
+      "title": "주요 OECD 보건통계 해설서 2025 - 외과 수술 수가코드",
+      "url": "https://www.hira.or.kr/ebooksc/2025/05/BZ202505191601866.pdf",
+      "note": "관상동맥확장술·절제술 M6551~M6554, M6571~M6572, 관상동맥우회술 O1640~O1649 및 OA640~OA649 일부, 제왕절개 관련 R4514 등, 고관절치환술 N0711 등 코드군 확인. 2025년 5월 발간자료"
+    },
+    {
+      "id": "hira-2026-11-fee",
+      "publisher": "건강보험심사평가원",
+      "title": "의·치과 수가파일(2026.11.1. 시행) 안내",
+      "url": "https://www.hira.or.kr/rc/drug/insuadtcrtr/bbsView.do?brdBltNo=53217&brdScnBltNo=4&pgmid=HIRAA030069000400",
+      "note": "처치 및 수술료 [코] 만성 비염 냉동치료(18세 이상 성인) OZ112 신설 확인"
+    }
+  ],
+  "items": [
+    {
+      "baseCode": "Q2521",
+      "name": "위폴립절제술",
+      "group": "소화기 내시경 수술",
+      "family": "stomach-polypectomy",
+      "sourceIds": [
+        "hira-2026-kdrg"
+      ]
+    },
+    {
+      "baseCode": "Q7701",
+      "name": "결장경하 종양 수술-폴립절제술",
+      "group": "소화기 내시경 수술",
+      "family": "colon-polypectomy",
+      "sourceIds": [
+        "hira-colon-polyp-2024"
+      ],
+      "claimCodeExamples": [
+        "Q7701001",
+        "Q7701081"
+      ],
+      "note": "기관 종별·가산 조건 등에 따라 산정코드가 달라질 수 있음"
+    },
+    {
+      "baseCode": "Q7702",
+      "name": "결장경하 종양 수술-폴립절제술(초과 폴립 1개당)",
+      "group": "소화기 내시경 수술",
+      "family": "colon-polypectomy-additional",
+      "sourceIds": [
+        "hira-colon-polyp-2024"
+      ]
+    },
+    {
+      "baseCode": "Q7703",
+      "name": "결장경하 종양 수술-점막절제술 및 점막하종양수술",
+      "group": "소화기 내시경 수술",
+      "family": "colon-emr-esd",
+      "sourceIds": [
+        "hira-colon-polyp-2024"
+      ]
+    },
+    {
+      "baseCode": "Q2861",
+      "name": "충수절제술(단순)",
+      "group": "복부 수술",
+      "family": "appendectomy",
+      "sourceIds": [
+        "hira-2026-kdrg",
+        "hira-appendix-2025"
+      ]
+    },
+    {
+      "baseCode": "Q2862",
+      "name": "충수절제술(천공성)",
+      "group": "복부 수술",
+      "family": "appendectomy",
+      "sourceIds": [
+        "hira-2026-kdrg",
+        "hira-appendix-2025"
+      ]
+    },
+    {
+      "baseCode": "Q2863",
+      "name": "충수절제술(충수농양절제 및 충수주위 농양배액술)",
+      "group": "복부 수술",
+      "family": "appendectomy",
+      "sourceIds": [
+        "hira-2026-kdrg",
+        "hira-appendix-2025"
+      ]
+    },
+    {
+      "baseCode": "Q2755",
+      "name": "서혜부허니아근본수술(고위결찰만)",
+      "group": "탈장 수술",
+      "family": "inguinal-hernia",
+      "sourceIds": [
+        "hira-2026-kdrg",
+        "hira-appendix-2025"
+      ]
+    },
+    {
+      "baseCode": "Q2756",
+      "name": "서혜부허니아근본수술(고위결찰 및 후벽보강)",
+      "group": "탈장 수술",
+      "family": "inguinal-hernia",
+      "sourceIds": [
+        "hira-2026-kdrg",
+        "hira-appendix-2025"
+      ]
+    },
+    {
+      "baseCode": "Q2757",
+      "name": "대퇴허니아수술",
+      "group": "탈장 수술",
+      "family": "femoral-hernia",
+      "sourceIds": [
+        "hira-2026-kdrg",
+        "hira-appendix-2025"
+      ]
+    },
+    {
+      "baseCode": "S5119",
+      "name": "백내장및수정체수술-수정체유화술",
+      "group": "안과 수술",
+      "family": "cataract-surgery",
+      "sourceIds": [
+        "hira-2026-kdrg"
+      ]
+    },
+    {
+      "baseCode": "S5117",
+      "name": "인공수정체삽입술-일차(백내장수술과 동시 실시)",
+      "group": "안과 수술",
+      "family": "intraocular-lens",
+      "sourceIds": [
+        "hira-2026-kdrg"
+      ]
+    },
+    {
+      "baseCode": "Q3012",
+      "name": "혈전성치핵(내치핵) 절제술",
+      "group": "항문 수술",
+      "family": "Q3012",
+      "sourceIds": [
+        "hira-hemorrhoid-2025"
+      ]
+    },
+    {
+      "baseCode": "Q3013",
+      "name": "치핵근치술",
+      "group": "항문 수술",
+      "family": "Q3013",
+      "sourceIds": [
+        "hira-hemorrhoid-2025"
+      ]
+    },
+    {
+      "baseCode": "Q3014",
+      "name": "교액성환상치핵수술",
+      "group": "항문 수술",
+      "family": "Q3014",
+      "sourceIds": [
+        "hira-hemorrhoid-2025"
+      ]
+    },
+    {
+      "baseCode": "Q3017",
+      "name": "치핵근치술-원형자동문합기",
+      "group": "항문 수술",
+      "family": "Q3017",
+      "sourceIds": [
+        "hira-hemorrhoid-2025"
+      ]
+    },
+    {
+      "baseCode": "Q2950",
+      "name": "치열수술",
+      "group": "항문 수술",
+      "family": "Q2950",
+      "sourceIds": [
+        "hira-appendix-2025"
+      ]
+    },
+    {
+      "baseCode": "Q7380",
+      "name": "담낭절제술",
+      "group": "복부 수술",
+      "family": "Q7380",
+      "sourceIds": [
+        "hira-kdrg-2026"
+      ]
+    },
+    {
+      "baseCode": "P4551",
+      "name": "갑상선엽 전절제술-편측",
+      "group": "내분비 수술",
+      "family": "P4551",
+      "sourceIds": [
+        "hira-kdrg-2026"
+      ]
+    },
+    {
+      "baseCode": "P4553",
+      "name": "갑상선엽 아전절제술-편측",
+      "group": "내분비 수술",
+      "family": "P4553",
+      "sourceIds": [
+        "hira-kdrg-2026"
+      ]
+    },
+    {
+      "baseCode": "N1493",
+      "name": "관혈적 추간판제거술-요추",
+      "group": "척추 수술",
+      "family": "N1493",
+      "sourceIds": [
+        "hira-spine-2025"
+      ]
+    },
+    {
+      "baseCode": "N2072",
+      "name": "인공관절치환술-전치환(슬관절)",
+      "group": "정형외과 수술",
+      "family": "N2072",
+      "sourceIds": [
+        "hira-kdrg-2026"
+      ]
+    },
+    {
+      "baseCode": "N2077",
+      "name": "인공관절치환술-전치환(슬관절)-복잡",
+      "group": "정형외과 수술",
+      "family": "N2077",
+      "sourceIds": [
+        "hira-kdrg-2026"
+      ]
+    },
+    {
+      "baseCode": "M6561",
+      "name": "경피적 관상동맥스텐트삽입술-단일혈관",
+      "group": "심혈관 중재술",
+      "family": "M6561",
+      "sourceIds": [
+        "hira-claims-2025"
+      ]
+    },
+    {
+      "baseCode": "M6562",
+      "name": "경피적 관상동맥스텐트삽입술-추가혈관",
+      "group": "심혈관 중재술",
+      "family": "M6562",
+      "sourceIds": [
+        "hira-claims-2025"
+      ]
+    },
+    {
+      "baseCode": "M6563",
+      "name": "경피적 관상동맥스텐트삽입술-단일혈관(확장술 등 동시)",
+      "group": "심혈관 중재술",
+      "family": "M6563",
+      "sourceIds": [
+        "hira-claims-2025"
+      ]
+    },
+    {
+      "baseCode": "M6564",
+      "name": "경피적 관상동맥스텐트삽입술-추가혈관(확장술 등 동시)",
+      "group": "심혈관 중재술",
+      "family": "M6564",
+      "sourceIds": [
+        "hira-claims-2025"
+      ]
+    },
+    {
+      "baseCode": "M6565",
+      "name": "경피적 관상동맥스텐트삽입술-급성심근경색 일차중재",
+      "group": "심혈관 중재술",
+      "family": "M6565",
+      "sourceIds": [
+        "hira-claims-2025"
+      ]
+    },
+    {
+      "baseCode": "M6566",
+      "name": "경피적 관상동맥스텐트삽입술-만성폐쇄성병변",
+      "group": "심혈관 중재술",
+      "family": "M6566",
+      "sourceIds": [
+        "hira-claims-2025"
+      ]
+    },
+    {
+      "baseCode": "M6567",
+      "name": "경피적 관상동맥스텐트삽입술-만성폐쇄성병변(확장술 등 동시)",
+      "group": "심혈관 중재술",
+      "family": "M6567",
+      "sourceIds": [
+        "hira-claims-2025"
+      ]
+    },
+    {
+      "baseCode": "N1601",
+      "name": "사지골절정복술-관혈적(전완골 요골)",
+      "group": "골절 수술",
+      "family": "N1601",
+      "sourceIds": [
+        "hira-kdrg-2026"
+      ]
+    },
+    {
+      "baseCode": "N1611",
+      "name": "사지골절정복술-관혈적(전완골 요골)-복잡",
+      "group": "골절 수술",
+      "family": "N1611",
+      "sourceIds": [
+        "hira-kdrg-2026"
+      ]
+    },
+    {
+      "baseCode": "N0604",
+      "name": "사지골절정복술-관혈적(쇄골·슬개골·수근골·족근골)",
+      "group": "골절 수술",
+      "family": "N0604",
+      "sourceIds": [
+        "hira-kdrg-2026"
+      ]
+    },
+    {
+      "baseCode": "SB029",
+      "name": "창상봉합술(안면·경부 외, 표재성, 5~10cm)",
+      "group": "창상봉합술",
+      "family": "SB029",
+      "sourceIds": [
+        "hira-wound-2026"
+      ]
+    },
+    {
+      "baseCode": "SB031",
+      "name": "창상봉합술(안면·경부 외, 근육, 2.5cm 미만)",
+      "group": "창상봉합술",
+      "family": "SB031",
+      "sourceIds": [
+        "hira-wound-2026"
+      ]
+    },
+    {
+      "baseCode": "SB032",
+      "name": "창상봉합술(안면·경부 외, 근육, 2.5~5cm)",
+      "group": "창상봉합술",
+      "family": "SB032",
+      "sourceIds": [
+        "hira-wound-2026"
+      ]
+    },
+    {
+      "baseCode": "SB039",
+      "name": "창상봉합술(안면·경부 외, 근육, 5~10cm)",
+      "group": "창상봉합술",
+      "family": "SB039",
+      "sourceIds": [
+        "hira-wound-2026"
+      ]
+    },
+    {
+      "baseCode": "SC029",
+      "name": "창상봉합술(안면·경부 외, 변연절제 포함, 표재성, 5~10cm)",
+      "group": "창상봉합술",
+      "family": "SC029",
+      "sourceIds": [
+        "hira-wound-2026"
+      ]
+    },
+    {
+      "baseCode": "SC031",
+      "name": "창상봉합술(안면·경부 외, 변연절제 포함, 근육, 2.5cm 미만)",
+      "group": "창상봉합술",
+      "family": "SC031",
+      "sourceIds": [
+        "hira-wound-2026"
+      ]
+    },
+    {
+      "baseCode": "SC032",
+      "name": "창상봉합술(안면·경부 외, 변연절제 포함, 근육, 2.5~5cm)",
+      "group": "창상봉합술",
+      "family": "SC032",
+      "sourceIds": [
+        "hira-wound-2026"
+      ]
+    },
+    {
+      "baseCode": "SC039",
+      "name": "창상봉합술(안면·경부 외, 변연절제 포함, 근육, 5~10cm)",
+      "group": "창상봉합술",
+      "family": "SC039",
+      "sourceIds": [
+        "hira-wound-2026"
+      ]
+    },
+    {
+      "baseCode": "ADC03",
+      "name": "복강경 시술 부가코드",
+      "group": "부가코드",
+      "family": "laparoscopy-addon",
+      "sourceIds": [
+        "hira-kdrg-2026"
+      ],
+      "note": "기본 행위 수가코드에 별도로 붙는 부가코드"
+    },
+    {
+      "baseCode": "M6551",
+      "name": "경피적 관상동맥확장술 및 절제술",
+      "group": "심혈관 중재술",
+      "family": "coronary-angioplasty",
+      "sourceIds": [
+        "hira-oecd-surgery-2025"
+      ],
+      "note": "심평원 2025 OECD 보건통계 해설서에 제시된 수가코드. 세부 시술 유형·산정 조건은 진료 당시 수가마스터 확인",
+      "searchTerms": [
+        "관상동맥확장술",
+        "관상동맥중재술",
+        "경피적 관상동맥중재술",
+        "PCI"
+      ]
+    },
+    {
+      "baseCode": "M6552",
+      "name": "경피적 관상동맥확장술 및 절제술",
+      "group": "심혈관 중재술",
+      "family": "coronary-angioplasty",
+      "sourceIds": [
+        "hira-oecd-surgery-2025"
+      ],
+      "note": "심평원 2025 OECD 보건통계 해설서에 제시된 수가코드. 세부 시술 유형·산정 조건은 진료 당시 수가마스터 확인",
+      "searchTerms": [
+        "관상동맥확장술",
+        "관상동맥중재술",
+        "경피적 관상동맥중재술",
+        "PCI"
+      ]
+    },
+    {
+      "baseCode": "M6553",
+      "name": "경피적 관상동맥확장술 및 절제술",
+      "group": "심혈관 중재술",
+      "family": "coronary-angioplasty",
+      "sourceIds": [
+        "hira-oecd-surgery-2025"
+      ],
+      "note": "심평원 2025 OECD 보건통계 해설서에 제시된 수가코드. 세부 시술 유형·산정 조건은 진료 당시 수가마스터 확인",
+      "searchTerms": [
+        "관상동맥확장술",
+        "관상동맥중재술",
+        "경피적 관상동맥중재술",
+        "PCI"
+      ]
+    },
+    {
+      "baseCode": "M6554",
+      "name": "경피적 관상동맥확장술 및 절제술",
+      "group": "심혈관 중재술",
+      "family": "coronary-angioplasty",
+      "sourceIds": [
+        "hira-oecd-surgery-2025"
+      ],
+      "note": "심평원 2025 OECD 보건통계 해설서에 제시된 수가코드. 세부 시술 유형·산정 조건은 진료 당시 수가마스터 확인",
+      "searchTerms": [
+        "관상동맥확장술",
+        "관상동맥중재술",
+        "경피적 관상동맥중재술",
+        "PCI"
+      ]
+    },
+    {
+      "baseCode": "M6571",
+      "name": "경피적 관상동맥확장술 및 절제술",
+      "group": "심혈관 중재술",
+      "family": "coronary-angioplasty",
+      "sourceIds": [
+        "hira-oecd-surgery-2025"
+      ],
+      "note": "심평원 2025 OECD 보건통계 해설서에 제시된 수가코드. 세부 시술 유형·산정 조건은 진료 당시 수가마스터 확인",
+      "searchTerms": [
+        "관상동맥확장술",
+        "관상동맥중재술",
+        "경피적 관상동맥중재술",
+        "PCI"
+      ]
+    },
+    {
+      "baseCode": "M6572",
+      "name": "경피적 관상동맥확장술 및 절제술",
+      "group": "심혈관 중재술",
+      "family": "coronary-angioplasty",
+      "sourceIds": [
+        "hira-oecd-surgery-2025"
+      ],
+      "note": "심평원 2025 OECD 보건통계 해설서에 제시된 수가코드. 세부 시술 유형·산정 조건은 진료 당시 수가마스터 확인",
+      "searchTerms": [
+        "관상동맥확장술",
+        "관상동맥중재술",
+        "경피적 관상동맥중재술",
+        "PCI"
+      ]
+    },
+    {
+      "baseCode": "O1641",
+      "name": "관상동맥우회로조성술",
+      "group": "심장 수술",
+      "family": "coronary-bypass",
+      "sourceIds": [
+        "hira-oecd-surgery-2025"
+      ],
+      "note": "심평원 2025 OECD 보건통계 해설서에 제시된 관상동맥우회술 코드군. 세부 행위명·산정 조건은 진료 당시 수가마스터 확인",
+      "searchTerms": [
+        "관상동맥우회술",
+        "관상동맥우회로조성술",
+        "관상동맥우회로수술",
+        "CABG"
+      ]
+    },
+    {
+      "baseCode": "O1647",
+      "name": "관상동맥우회로조성술",
+      "group": "심장 수술",
+      "family": "coronary-bypass",
+      "sourceIds": [
+        "hira-oecd-surgery-2025"
+      ],
+      "note": "심평원 2025 OECD 보건통계 해설서에 제시된 관상동맥우회술 코드군. 세부 행위명·산정 조건은 진료 당시 수가마스터 확인",
+      "searchTerms": [
+        "관상동맥우회술",
+        "관상동맥우회로조성술",
+        "관상동맥우회로수술",
+        "CABG"
+      ]
+    },
+    {
+      "baseCode": "OA641",
+      "name": "관상동맥우회로조성술",
+      "group": "심장 수술",
+      "family": "coronary-bypass",
+      "sourceIds": [
+        "hira-oecd-surgery-2025"
+      ],
+      "note": "심평원 2025 OECD 보건통계 해설서에 제시된 관상동맥우회술 코드군. 세부 행위명·산정 조건은 진료 당시 수가마스터 확인",
+      "searchTerms": [
+        "관상동맥우회술",
+        "관상동맥우회로조성술",
+        "관상동맥우회로수술",
+        "CABG"
+      ]
+    },
+    {
+      "baseCode": "OA642",
+      "name": "관상동맥우회로조성술",
+      "group": "심장 수술",
+      "family": "coronary-bypass",
+      "sourceIds": [
+        "hira-oecd-surgery-2025"
+      ],
+      "note": "심평원 2025 OECD 보건통계 해설서에 제시된 관상동맥우회술 코드군. 세부 행위명·산정 조건은 진료 당시 수가마스터 확인",
+      "searchTerms": [
+        "관상동맥우회술",
+        "관상동맥우회로조성술",
+        "관상동맥우회로수술",
+        "CABG"
+      ]
+    },
+    {
+      "baseCode": "OA647",
+      "name": "관상동맥우회로조성술",
+      "group": "심장 수술",
+      "family": "coronary-bypass",
+      "sourceIds": [
+        "hira-oecd-surgery-2025"
+      ],
+      "note": "심평원 2025 OECD 보건통계 해설서에 제시된 관상동맥우회술 코드군. 세부 행위명·산정 조건은 진료 당시 수가마스터 확인",
+      "searchTerms": [
+        "관상동맥우회술",
+        "관상동맥우회로조성술",
+        "관상동맥우회로수술",
+        "CABG"
+      ]
+    },
+    {
+      "baseCode": "O1640",
+      "name": "관상동맥우회로조성술",
+      "group": "심장 수술",
+      "family": "coronary-bypass",
+      "sourceIds": [
+        "hira-oecd-surgery-2025"
+      ],
+      "note": "심평원 2025 OECD 보건통계 해설서에 제시된 관상동맥우회술 코드군. 세부 행위명·산정 조건은 진료 당시 수가마스터 확인",
+      "searchTerms": [
+        "관상동맥우회술",
+        "관상동맥우회로조성술",
+        "관상동맥우회로수술",
+        "CABG"
+      ]
+    },
+    {
+      "baseCode": "O1648",
+      "name": "관상동맥우회로조성술",
+      "group": "심장 수술",
+      "family": "coronary-bypass",
+      "sourceIds": [
+        "hira-oecd-surgery-2025"
+      ],
+      "note": "심평원 2025 OECD 보건통계 해설서에 제시된 관상동맥우회술 코드군. 세부 행위명·산정 조건은 진료 당시 수가마스터 확인",
+      "searchTerms": [
+        "관상동맥우회술",
+        "관상동맥우회로조성술",
+        "관상동맥우회로수술",
+        "CABG"
+      ]
+    },
+    {
+      "baseCode": "O1649",
+      "name": "관상동맥우회로조성술",
+      "group": "심장 수술",
+      "family": "coronary-bypass",
+      "sourceIds": [
+        "hira-oecd-surgery-2025"
+      ],
+      "note": "심평원 2025 OECD 보건통계 해설서에 제시된 관상동맥우회술 코드군. 세부 행위명·산정 조건은 진료 당시 수가마스터 확인",
+      "searchTerms": [
+        "관상동맥우회술",
+        "관상동맥우회로조성술",
+        "관상동맥우회로수술",
+        "CABG"
+      ]
+    },
+    {
+      "baseCode": "OA640",
+      "name": "관상동맥우회로조성술",
+      "group": "심장 수술",
+      "family": "coronary-bypass",
+      "sourceIds": [
+        "hira-oecd-surgery-2025"
+      ],
+      "note": "심평원 2025 OECD 보건통계 해설서에 제시된 관상동맥우회술 코드군. 세부 행위명·산정 조건은 진료 당시 수가마스터 확인",
+      "searchTerms": [
+        "관상동맥우회술",
+        "관상동맥우회로조성술",
+        "관상동맥우회로수술",
+        "CABG"
+      ]
+    },
+    {
+      "baseCode": "OA648",
+      "name": "관상동맥우회로조성술",
+      "group": "심장 수술",
+      "family": "coronary-bypass",
+      "sourceIds": [
+        "hira-oecd-surgery-2025"
+      ],
+      "note": "심평원 2025 OECD 보건통계 해설서에 제시된 관상동맥우회술 코드군. 세부 행위명·산정 조건은 진료 당시 수가마스터 확인",
+      "searchTerms": [
+        "관상동맥우회술",
+        "관상동맥우회로조성술",
+        "관상동맥우회로수술",
+        "CABG"
+      ]
+    },
+    {
+      "baseCode": "OA649",
+      "name": "관상동맥우회로조성술",
+      "group": "심장 수술",
+      "family": "coronary-bypass",
+      "sourceIds": [
+        "hira-oecd-surgery-2025"
+      ],
+      "note": "심평원 2025 OECD 보건통계 해설서에 제시된 관상동맥우회술 코드군. 세부 행위명·산정 조건은 진료 당시 수가마스터 확인",
+      "searchTerms": [
+        "관상동맥우회술",
+        "관상동맥우회로조성술",
+        "관상동맥우회로수술",
+        "CABG"
+      ]
+    },
+    {
+      "baseCode": "R4514",
+      "name": "제왕절개만출술 및 관련 수술",
+      "group": "산부인과 수술",
+      "family": "cesarean-section",
+      "sourceIds": [
+        "hira-oecd-surgery-2025"
+      ],
+      "note": "심평원 2025 OECD 보건통계 해설서에 제시된 제왕절개 관련 코드군. 제왕절개만출술과 제왕절개술 및 자궁적출술 등 세부 구분은 진료 당시 수가마스터·수술기록 확인",
+      "searchTerms": [
+        "제왕절개술",
+        "제왕절개만출술",
+        "제왕절개"
+      ]
+    },
+    {
+      "baseCode": "R4516",
+      "name": "제왕절개만출술 및 관련 수술",
+      "group": "산부인과 수술",
+      "family": "cesarean-section",
+      "sourceIds": [
+        "hira-oecd-surgery-2025"
+      ],
+      "note": "심평원 2025 OECD 보건통계 해설서에 제시된 제왕절개 관련 코드군. 제왕절개만출술과 제왕절개술 및 자궁적출술 등 세부 구분은 진료 당시 수가마스터·수술기록 확인",
+      "searchTerms": [
+        "제왕절개술",
+        "제왕절개만출술",
+        "제왕절개"
+      ]
+    },
+    {
+      "baseCode": "R4517",
+      "name": "제왕절개만출술 및 관련 수술",
+      "group": "산부인과 수술",
+      "family": "cesarean-section",
+      "sourceIds": [
+        "hira-oecd-surgery-2025"
+      ],
+      "note": "심평원 2025 OECD 보건통계 해설서에 제시된 제왕절개 관련 코드군. 제왕절개만출술과 제왕절개술 및 자궁적출술 등 세부 구분은 진료 당시 수가마스터·수술기록 확인",
+      "searchTerms": [
+        "제왕절개술",
+        "제왕절개만출술",
+        "제왕절개"
+      ]
+    },
+    {
+      "baseCode": "R4518",
+      "name": "제왕절개만출술 및 관련 수술",
+      "group": "산부인과 수술",
+      "family": "cesarean-section",
+      "sourceIds": [
+        "hira-oecd-surgery-2025"
+      ],
+      "note": "심평원 2025 OECD 보건통계 해설서에 제시된 제왕절개 관련 코드군. 제왕절개만출술과 제왕절개술 및 자궁적출술 등 세부 구분은 진료 당시 수가마스터·수술기록 확인",
+      "searchTerms": [
+        "제왕절개술",
+        "제왕절개만출술",
+        "제왕절개"
+      ]
+    },
+    {
+      "baseCode": "R4519",
+      "name": "제왕절개만출술 및 관련 수술",
+      "group": "산부인과 수술",
+      "family": "cesarean-section",
+      "sourceIds": [
+        "hira-oecd-surgery-2025"
+      ],
+      "note": "심평원 2025 OECD 보건통계 해설서에 제시된 제왕절개 관련 코드군. 제왕절개만출술과 제왕절개술 및 자궁적출술 등 세부 구분은 진료 당시 수가마스터·수술기록 확인",
+      "searchTerms": [
+        "제왕절개술",
+        "제왕절개만출술",
+        "제왕절개"
+      ]
+    },
+    {
+      "baseCode": "R4520",
+      "name": "제왕절개만출술 및 관련 수술",
+      "group": "산부인과 수술",
+      "family": "cesarean-section",
+      "sourceIds": [
+        "hira-oecd-surgery-2025"
+      ],
+      "note": "심평원 2025 OECD 보건통계 해설서에 제시된 제왕절개 관련 코드군. 제왕절개만출술과 제왕절개술 및 자궁적출술 등 세부 구분은 진료 당시 수가마스터·수술기록 확인",
+      "searchTerms": [
+        "제왕절개술",
+        "제왕절개만출술",
+        "제왕절개"
+      ]
+    },
+    {
+      "baseCode": "R4507",
+      "name": "제왕절개만출술 및 관련 수술",
+      "group": "산부인과 수술",
+      "family": "cesarean-section",
+      "sourceIds": [
+        "hira-oecd-surgery-2025"
+      ],
+      "note": "심평원 2025 OECD 보건통계 해설서에 제시된 제왕절개 관련 코드군. 제왕절개만출술과 제왕절개술 및 자궁적출술 등 세부 구분은 진료 당시 수가마스터·수술기록 확인",
+      "searchTerms": [
+        "제왕절개술",
+        "제왕절개만출술",
+        "제왕절개"
+      ]
+    },
+    {
+      "baseCode": "R4508",
+      "name": "제왕절개만출술 및 관련 수술",
+      "group": "산부인과 수술",
+      "family": "cesarean-section",
+      "sourceIds": [
+        "hira-oecd-surgery-2025"
+      ],
+      "note": "심평원 2025 OECD 보건통계 해설서에 제시된 제왕절개 관련 코드군. 제왕절개만출술과 제왕절개술 및 자궁적출술 등 세부 구분은 진료 당시 수가마스터·수술기록 확인",
+      "searchTerms": [
+        "제왕절개술",
+        "제왕절개만출술",
+        "제왕절개"
+      ]
+    },
+    {
+      "baseCode": "R4509",
+      "name": "제왕절개만출술 및 관련 수술",
+      "group": "산부인과 수술",
+      "family": "cesarean-section",
+      "sourceIds": [
+        "hira-oecd-surgery-2025"
+      ],
+      "note": "심평원 2025 OECD 보건통계 해설서에 제시된 제왕절개 관련 코드군. 제왕절개만출술과 제왕절개술 및 자궁적출술 등 세부 구분은 진료 당시 수가마스터·수술기록 확인",
+      "searchTerms": [
+        "제왕절개술",
+        "제왕절개만출술",
+        "제왕절개"
+      ]
+    },
+    {
+      "baseCode": "R4510",
+      "name": "제왕절개만출술 및 관련 수술",
+      "group": "산부인과 수술",
+      "family": "cesarean-section",
+      "sourceIds": [
+        "hira-oecd-surgery-2025"
+      ],
+      "note": "심평원 2025 OECD 보건통계 해설서에 제시된 제왕절개 관련 코드군. 제왕절개만출술과 제왕절개술 및 자궁적출술 등 세부 구분은 진료 당시 수가마스터·수술기록 확인",
+      "searchTerms": [
+        "제왕절개술",
+        "제왕절개만출술",
+        "제왕절개"
+      ]
+    },
+    {
+      "baseCode": "R5001",
+      "name": "제왕절개만출술 및 관련 수술",
+      "group": "산부인과 수술",
+      "family": "cesarean-section",
+      "sourceIds": [
+        "hira-oecd-surgery-2025"
+      ],
+      "note": "심평원 2025 OECD 보건통계 해설서에 제시된 제왕절개 관련 코드군. 제왕절개만출술과 제왕절개술 및 자궁적출술 등 세부 구분은 진료 당시 수가마스터·수술기록 확인",
+      "searchTerms": [
+        "제왕절개술",
+        "제왕절개만출술",
+        "제왕절개"
+      ]
+    },
+    {
+      "baseCode": "R5002",
+      "name": "제왕절개만출술 및 관련 수술",
+      "group": "산부인과 수술",
+      "family": "cesarean-section",
+      "sourceIds": [
+        "hira-oecd-surgery-2025"
+      ],
+      "note": "심평원 2025 OECD 보건통계 해설서에 제시된 제왕절개 관련 코드군. 제왕절개만출술과 제왕절개술 및 자궁적출술 등 세부 구분은 진료 당시 수가마스터·수술기록 확인",
+      "searchTerms": [
+        "제왕절개술",
+        "제왕절개만출술",
+        "제왕절개"
+      ]
+    },
+    {
+      "baseCode": "N0711",
+      "name": "인공고관절치환술",
+      "group": "정형외과 수술",
+      "family": "hip-arthroplasty",
+      "sourceIds": [
+        "hira-oecd-surgery-2025"
+      ],
+      "note": "심평원 2025 OECD 보건통계 해설서에 제시된 고관절치환술 코드군. 접근법·재치환 등 세부 행위명은 진료 당시 수가마스터 확인",
+      "searchTerms": [
+        "고관절치환술",
+        "인공고관절치환술",
+        "고관절 인공관절치환술"
+      ]
+    },
+    {
+      "baseCode": "N1711",
+      "name": "인공고관절치환술",
+      "group": "정형외과 수술",
+      "family": "hip-arthroplasty",
+      "sourceIds": [
+        "hira-oecd-surgery-2025"
+      ],
+      "note": "심평원 2025 OECD 보건통계 해설서에 제시된 고관절치환술 코드군. 접근법·재치환 등 세부 행위명은 진료 당시 수가마스터 확인",
+      "searchTerms": [
+        "고관절치환술",
+        "인공고관절치환술",
+        "고관절 인공관절치환술"
+      ]
+    },
+    {
+      "baseCode": "N0715",
+      "name": "인공고관절치환술",
+      "group": "정형외과 수술",
+      "family": "hip-arthroplasty",
+      "sourceIds": [
+        "hira-oecd-surgery-2025"
+      ],
+      "note": "심평원 2025 OECD 보건통계 해설서에 제시된 고관절치환술 코드군. 접근법·재치환 등 세부 행위명은 진료 당시 수가마스터 확인",
+      "searchTerms": [
+        "고관절치환술",
+        "인공고관절치환술",
+        "고관절 인공관절치환술"
+      ]
+    },
+    {
+      "baseCode": "N1715",
+      "name": "인공고관절치환술",
+      "group": "정형외과 수술",
+      "family": "hip-arthroplasty",
+      "sourceIds": [
+        "hira-oecd-surgery-2025"
+      ],
+      "note": "심평원 2025 OECD 보건통계 해설서에 제시된 고관절치환술 코드군. 접근법·재치환 등 세부 행위명은 진료 당시 수가마스터 확인",
+      "searchTerms": [
+        "고관절치환술",
+        "인공고관절치환술",
+        "고관절 인공관절치환술"
+      ]
+    },
+    {
+      "baseCode": "N2070",
+      "name": "인공고관절치환술",
+      "group": "정형외과 수술",
+      "family": "hip-arthroplasty",
+      "sourceIds": [
+        "hira-oecd-surgery-2025"
+      ],
+      "note": "심평원 2025 OECD 보건통계 해설서에 제시된 고관절치환술 코드군. 접근법·재치환 등 세부 행위명은 진료 당시 수가마스터 확인",
+      "searchTerms": [
+        "고관절치환술",
+        "인공고관절치환술",
+        "고관절 인공관절치환술"
+      ]
+    },
+    {
+      "baseCode": "N2710",
+      "name": "인공고관절치환술",
+      "group": "정형외과 수술",
+      "family": "hip-arthroplasty",
+      "sourceIds": [
+        "hira-oecd-surgery-2025"
+      ],
+      "note": "심평원 2025 OECD 보건통계 해설서에 제시된 고관절치환술 코드군. 접근법·재치환 등 세부 행위명은 진료 당시 수가마스터 확인",
+      "searchTerms": [
+        "고관절치환술",
+        "인공고관절치환술",
+        "고관절 인공관절치환술"
+      ]
+    },
+    {
+      "baseCode": "N3710",
+      "name": "인공고관절치환술",
+      "group": "정형외과 수술",
+      "family": "hip-arthroplasty",
+      "sourceIds": [
+        "hira-oecd-surgery-2025"
+      ],
+      "note": "심평원 2025 OECD 보건통계 해설서에 제시된 고관절치환술 코드군. 접근법·재치환 등 세부 행위명은 진료 당시 수가마스터 확인",
+      "searchTerms": [
+        "고관절치환술",
+        "인공고관절치환술",
+        "고관절 인공관절치환술"
+      ]
+    },
+    {
+      "baseCode": "N4710",
+      "name": "인공고관절치환술",
+      "group": "정형외과 수술",
+      "family": "hip-arthroplasty",
+      "sourceIds": [
+        "hira-oecd-surgery-2025"
+      ],
+      "note": "심평원 2025 OECD 보건통계 해설서에 제시된 고관절치환술 코드군. 접근법·재치환 등 세부 행위명은 진료 당시 수가마스터 확인",
+      "searchTerms": [
+        "고관절치환술",
+        "인공고관절치환술",
+        "고관절 인공관절치환술"
+      ]
+    },
+    {
+      "baseCode": "OZ112",
+      "name": "만성 비염 냉동치료(18세 이상 성인)",
+      "group": "이비인후과 처치·수술",
+      "family": "chronic-rhinitis-cryo",
+      "sourceIds": [
+        "hira-oecd-surgery-2025"
+      ],
+      "note": "심평원 2026.11.1. 시행 수가파일 안내에 기재된 비급여 신설 행위. 비급여 수가코드이며 약관상 수술 해당 여부는 별도 판단",
+      "searchTerms": [
+        "만성비염 냉동치료",
+        "비염 냉동치료",
+        "코 냉동치료"
+      ]
+    }
+  ]
+}
