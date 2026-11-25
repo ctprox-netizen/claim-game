@@ -382,7 +382,7 @@ nav.tabs{background:#263d31!important}
 
 <!-- BUILD-INFO: 2026-11-25-01 -->
 <footer class="build-info" aria-label="사이트 빌드 정보">
- <div><strong>빌드 버전</strong> v2026.11.25-03</div>
+ <div><strong>빌드 버전</strong> v2026.11.25-04</div>
  <div><strong>최종 수정일</strong> 2026.11.25</div>
 </footer>
 <script>
@@ -826,9 +826,9 @@ function vShelf(){if(PETS[SEC])return vPet();if(!canEdit()){RM=false;SEL.clear()
     $('#rmClr').onclick=()=>{SEL.clear();upd()};$('#rmGo').onclick=()=>{if(SEL.size)rmSheet()};upd()}
   bindCommon();fitShelf()}
 let RK='etc';
-const RKS_ISO=[['etc','📝','기타'],['feed','🍂','먹이'],['mist','💧','분무'],['baby','🐣','새끼 발견'],['count','🔢','마릿수']];
-const RKS_WORM=[['etc','📝','기타'],['wfeed','🥕','먹이'],['bed','🧹','바닥재 교체'],['count','🔢','마릿수'],['pupa','🌀','번데기']];
-const RKS_PET=[['etc','📝','기타']];
+const RKS_ISO=[['etc','📝','메모'],['feed','🍂','먹이'],['mist','💧','분무'],['baby','🐣','새끼 발견'],['count','🔢','마릿수']];
+const RKS_WORM=[['etc','📝','메모'],['wfeed','🥕','먹이'],['bed','🧹','바닥재 교체'],['count','🔢','마릿수'],['pupa','🌀','번데기']];
+const RKS_PET=[['etc','📝','메모']];
 let RKS=RKS_ISO;
 function rmSheet(){if(!needEdit())return;const ids=secIds().filter(id=>SEL.has(id));RKS=SEC==='worm'?RKS_WORM:PETS[SEC]?RKS_PET:RKS_ISO;RK='etc';
   const nowL=(()=>{const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,16)})();
@@ -842,7 +842,7 @@ function rmSheet(){if(!needEdit())return;const ids=secIds().filter(id=>SEL.has(i
       box.querySelectorAll('.qrow [data-q]').forEach(b=>b.onclick=()=>{b.parentNode.querySelectorAll('[data-q]').forEach(x=>x.setAttribute('aria-pressed',x===b))});
       box.querySelectorAll('[data-st]').forEach(b=>b.onclick=()=>{const i=b.parentNode.querySelector('input');i.value=Math.max(0,Math.round(((+i.value||0)+ +b.dataset.st*(RK==='wt'?.5:1))*10)/10)})};
     sh.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{RK=b.dataset.k;sh.querySelectorAll('[data-k]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.k===RK));nums()});nums();
-    sh.querySelector('#rok').onclick=()=>{const note=sh.querySelector('#rnote').value.trim();if(RK==='etc'&&!note){toast('기타는 메모를 적어 주세요');sh.querySelector('#rnote').focus();return}const av=sh.querySelector('#rat').value,at=av?new Date(av).toISOString():null;
+    sh.querySelector('#rok').onclick=()=>{const note=sh.querySelector('#rnote').value.trim();if(RK==='etc'&&!note){toast('메모를 입력해 주세요');sh.querySelector('#rnote').focus();return}const av=sh.querySelector('#rat').value,at=av?new Date(av).toISOString():null;
       const L=[];for(const id of ids){let val=null;if(RK==='baby'||RK==='count'||RK==='wt'||RK==='pupa'){const i=sh.querySelector(`[data-n="${id}"]`);if(i.value.trim()==='')continue;val=RK==='wt'?{g:Math.max(0,Math.round((+i.value||0)*10)/10)}:{n:Math.max(0,+i.value||0)};if(RK==='count'){const qb=sh.querySelector(`.qrow[data-qid="${id}"] [aria-pressed="true"]`),q=qb?qb.dataset.q:'eq';if(q!=='eq')val.q=q}}L.push(addLog(id,RK,val,note,at,true))}
       if(!L.length){toast(RK==='wt'?'체중을 하나 이상 적어 주세요':'마릿수를 하나 이상 적어 주세요');return}
       sync();closeSheet();const nm=RKS.find(x=>x[0]===RK);RM=false;SEL.clear();
@@ -1030,7 +1030,7 @@ $('#homeBtn').onclick=()=>{if(history.state&&history.state.sec)history.back();el
 function refreshDetail(first){const id=CUR;if(!id)return;const sp=spOf(id),E=envOf(id),c=countOf(id),last=k=>lastOf(id,k),ev=last('env'),P=photos().filter(p=>p.tub===id),d=$('#detail');
   let envChk='';if(ev&&ev.val){const v=ev.val,o=[];if(E.t&&v.t!=null&&v.t!==''){o.push(+v.t<E.t[0]?'<span class="warn">⚠ 온도 낮음</span>':+v.t>E.t[1]?'<span class="warn">⚠ 온도 높음</span>':'<span class="ok">✓ 온도 적정</span>')}if(E.h&&v.h!=null&&v.h!==''){o.push(+v.h<E.h[0]?'<span class="warn">⚠ 습도 낮음</span>':+v.h>E.h[1]?'<span class="warn">⚠ 습도 높음</span>':'<span class="ok">✓ 습도 적정</span>')}envChk=o.join(' · ')}
   const keepCv=!first&&d.querySelector('#vcv');
-  const body=`<div class="hero"><div class="hcov"><img src="${cover(id)}" alt="${esc(tubNm(id))} 사진">${canEdit()&&GAL_OK?`<button class="hcb" id="covBtn">📷 대표 사진${covOf(id)?' 바꾸기':' 올리기'}</button>`:''}</div>${hasViewer(id)?`<div class="viewer"><div class="vt"><button data-vm="memo" aria-pressed="${VM==='memo'}">📒 메모</button><button data-vm="album" aria-pressed="${VM==='album'}">🖼 앨범</button>${isIso(id)?`<button data-vm="tub" aria-pressed="${VM==='tub'}">🔬 사육통 안</button><button data-vm="3d" aria-pressed="${VM==='3d'}">🧬 3D 모델</button>`:''}</div>${VM==='memo'?`<div class="vmemo memo" id="memoBox">${memoView(id)}</div>`:VM==='album'?`<div class="valb">${albumGrid(id)}</div>`:'<canvas id="vcv"></canvas><div class="vm" id="vmsg"></div>'}<div class="vh">${VM==='memo'?(D.memo[id]&&D.memo[id].upd?`${esc(D.memo[id].who||'')} · ${dayLab(D.memo[id].upd)} ${hm(D.memo[id].upd)} 수정`:(isPetId(id)&&!PETS[XSP[id].pet].stages?'이 아이에 대해 자유롭게 적어 두는 곳이에요':'이 통에 대해 자유롭게 적어 두는 곳이에요')):VM==='album'?`사진 ${galOf(id).length} / 9${canEdit()?' · 칸을 눌러 올리기·바꾸기':''}`:VM==='tub'?'콩벌레를 톡 누르면 반응해요 · 낙엽·이끼를 누르면 들춰 봐요':'빙글빙글 도는 3D 도트 모델이에요'}</div></div>`:''}</div>
+  const body=`<div class="hero"><div class="hcov"><img src="${cover(id)}" alt="${esc(tubNm(id))} 사진">${canEdit()&&GAL_OK?`<button class="hcb" id="covBtn">📷 대표 사진${covOf(id)?' 바꾸기':' 올리기'}</button>`:''}</div>${hasViewer(id)?`<div class="viewer"><div class="vt"><button data-vm="memo" aria-pressed="${VM==='memo'}">📖 소개</button><button data-vm="album" aria-pressed="${VM==='album'}">🖼 앨범</button>${isIso(id)?`<button data-vm="tub" aria-pressed="${VM==='tub'}">🔬 사육통 안</button><button data-vm="3d" aria-pressed="${VM==='3d'}">🧬 3D 모델</button>`:''}</div>${VM==='memo'?`<div class="vmemo memo" id="memoBox">${memoView(id)}</div>`:VM==='album'?`<div class="valb">${albumGrid(id)}</div>`:'<canvas id="vcv"></canvas><div class="vm" id="vmsg"></div>'}<div class="vh">${VM==='memo'?(D.memo[id]&&D.memo[id].upd?`${esc(D.memo[id].who||'')} · ${dayLab(D.memo[id].upd)} ${hm(D.memo[id].upd)} 수정`:(isPetId(id)&&!PETS[XSP[id].pet].stages?'이 아이에 대해 자유롭게 적어 두는 곳이에요':'이 통에 대해 자유롭게 적어 두는 곳이에요')):VM==='album'?`사진 ${galOf(id).length} / 9${canEdit()?' · 칸을 눌러 올리기·바꾸기':''}`:VM==='tub'?'콩벌레를 톡 누르면 반응해요 · 낙엽·이끼를 누르면 들춰 봐요':'빙글빙글 도는 3D 도트 모델이에요'}</div></div>`:''}</div>
    ${hasProf(id)?(()=>{const pf=profOf(id);return`<div class="card"><dl class="info"><dt>이름</dt><dd><b>${esc(tubNm(id))}</b></dd>${PROF_F.map(([k])=>`<dt>${profLab(id,k)}</dt><dd>${pf[k]?(k==='birth'?`${fmtD(pf[k])} <small class="mut">(${ageTxt(pf[k])})</small>`:k==='adopt'?fmtD(pf[k]):esc(pf[k])):'<span class="mut">—</span>'}</dd>`).join('')}</dl>${canEdit()&&MEMO_OK?'<div class="row" style="justify-content:flex-end;margin-top:6px"><button class="btn sm" id="pfBtn">✏️ 정보 고치기</button></div>':''}</div>`})()
    :XSP[id]&&XSP[id].pet?`<div class="card"><dl class="info"><dt>이름</dt><dd><b>${esc(tubNm(id))}</b>${canEdit()&&MEMO_OK?' <button class="btn sm" id="rnBtn">✏️ 이름 바꾸기</button>':''}</dd><dt>종류</dt><dd>${PETS[XSP[id].pet].full}${XSP[id].stage?' '+XSP[id].stage:''}</dd></dl></div>`:`<div class="card"><dl class="info"><dt>학명</dt><dd><i>${esc(sp.ln)}</i></dd><dt>분류</dt><dd>${esc(famOf(id))}</dd><dt>권장</dt><dd>${esc(sp.env)}</dd>${(()=>{const c=isIso(id)?ICARE[parseInt(id)]:null;return c?['원산지','수분관리','수명','번식','단백질'].map((t,i)=>`<dt>${t}</dt><dd>${esc(c[i])}</dd>`).join(''):''})()}</dl></div>`}
    <div class="card"><dl class="info">${XSP[id]&&XSP[id].pet?'':(()=>{const b=buyOf(id);return`<dt>매입처/매입일</dt><dd>${b.from||b.date?`${b.from?esc(b.from):'<span class="mut">매입처 없음</span>'}${b.date?` · ${fmtD(b.date)}`:''}`:'<span class="mut">—</span>'}${canEdit()&&MEMO_OK?' <button class="btn sm" id="buyBtn">✏️</button>':''}</dd>`})()}${XSP[id]&&XSP[id].pet?'':`<dt>마릿수</dt><dd>${c.n!=null?`${c.n}마리${QS[c.q]||''}${c.b?` + 🐣 ${c.b}마리`:''} <small class="mut">(${ago(c.at)} 셈)</small>`:c.b?`🐣 새끼 ${c.b}마리 발견`:'<span class="mut">아직 안 셌어요</span>'}</dd>`}
