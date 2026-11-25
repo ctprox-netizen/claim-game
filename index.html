@@ -736,6 +736,12 @@ body.app .xfw{margin-top:6px}
 body.app .go{margin-top:7px;min-height:44px;font-size:16px;border-radius:9px}
 body.app .stw{padding:8px 0 2px}
 }
+
+/* Final mobile document viewer override: keep modal and pages within the viewport. */
+@media(max-width:700px){
+ body.app .dpop{position:fixed!important;top:50%!important;bottom:auto!important;left:8px!important;right:8px!important;transform:translateY(-50%)!important;max-height:82dvh!important}
+ body.app .dpop .dsl{max-height:64dvh!important}
+}
 </style>
 </head>
 <body>
