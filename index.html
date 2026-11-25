@@ -49,6 +49,12 @@
 
 .msl b{white-space:nowrap;flex:none}
 .files.more{-webkit-mask-image:linear-gradient(90deg,#000 78%,transparent);mask-image:linear-gradient(90deg,#000 78%,transparent)}
+
+/* Fix mobile document viewer: keep it inside the viewport after the folder was moved to the top. */
+@media(max-width:700px){
+ body.app .dpop{top:50%!important;bottom:auto!important;left:8px!important;right:8px!important;transform:translateY(-50%)!important;max-height:82dvh}
+ body.app .dpop .dsl{max-height:64dvh!important}
+}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700;800;900&family=Nanum+Myeongjo:wght@800&display=swap" rel="stylesheet">
 <style>
