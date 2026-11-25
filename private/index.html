@@ -736,6 +736,19 @@ body.app .xfw{margin-top:6px}
 body.app .go{margin-top:7px;min-height:44px;font-size:16px;border-radius:9px}
 body.app .stw{padding:8px 0 2px}
 }
+
+/* Mobile header: prevent the receipt and policy labels from colliding */
+@media(max-width:700px){
+  body.app .cbar{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:6px 10px;padding:0 12px;margin:8px auto 6px}
+  body.app .cbar .cid{min-width:0;white-space:normal;overflow-wrap:anywhere;line-height:1.35;font-size:12.5px!important}
+  body.app .cbar .clk2{min-width:max-content;margin:0;font-size:12px!important;line-height:1.35;text-align:right}
+  body.app .policy .phead{display:grid!important;grid-template-columns:minmax(0,1fr);align-items:start;justify-items:start;gap:6px;overflow:visible!important;white-space:normal!important;padding-bottom:8px}
+  body.app .policy .phead h2{display:block!important;min-width:0;max-width:100%;margin:0;font-size:16px;line-height:1.35;white-space:normal}
+  body.app .policy .phead .cdate{display:inline-flex;width:max-content;max-width:100%;margin:0;padding:3px 8px;gap:6px;white-space:normal;line-height:1.35}
+  body.app .policy .phead .meta{display:flex;flex-wrap:wrap!important;align-items:center;min-width:0;max-width:100%;gap:4px 12px;margin:0;overflow:visible!important;white-space:normal!important;line-height:1.5;font-size:12px}
+  body.app .policy .phead .meta span{min-width:0;max-width:100%;white-space:normal!important;overflow:visible!important;overflow-wrap:anywhere;text-overflow:clip}
+  body.app .policy .phead .hint{display:none!important}
+}
 </style>
 </head>
 <body>
