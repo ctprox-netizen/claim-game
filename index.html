@@ -782,6 +782,21 @@ body.app .stw{padding:8px 0 2px}
  body.app .edii{overflow-wrap:anywhere}
  body.app .policy .pbody,body.app .policy .pfoot{min-width:0;max-width:100%}
 }
+/* Compact claim header and soft visual grouping for coverage rows. */
+@media(max-width:700px){
+ body.app .policy .phead{display:flex!important;flex-wrap:nowrap!important;align-items:center!important;gap:5px!important;white-space:nowrap!important;overflow:hidden!important}
+ body.app .policy .phead h2{display:block!important;flex:0 0 auto!important;min-width:0!important;margin:0!important;font-size:13px!important;line-height:1.2!important;white-space:nowrap!important}
+ body.app .policy .phead .cdate{display:inline-flex!important;flex:0 0 auto!important;margin:0!important;padding:2px 5px!important;gap:3px!important}
+ body.app .policy .phead .cdate span{display:inline!important;font-size:10px!important}
+ body.app .policy .phead .cdate b{font-size:12px!important}
+ body.app .policy .phead .meta{display:block!important;flex:1 1 auto!important;min-width:0!important;margin:0!important;overflow:hidden!important;white-space:nowrap!important;font-size:11px!important}
+ body.app .policy .phead .meta span:first-child{display:inline!important;max-width:100%!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+ body.app .policy .phead .meta span:first-child .lb{display:inline!important}
+ body.app .policy .phead .meta span+span{display:none!important}
+ body.app .policy .phead .hint{display:none!important}
+ body.app .slide.list .cgh{display:none!important}
+ body.app .slide.list .cov{margin-top:3px!important;margin-bottom:4px!important;padding:6px 8px!important;border-width:1px!important;border-radius:7px!important;box-shadow:none!important}
+}
 </style>
 </head>
 <body>
@@ -1514,7 +1529,7 @@ function policyHTML(c,res){
   const tag=k=>LV[st.lv].tag?`<span class="tg${c.enr.has(k)?'':' no'}">${c.enr.has(k)?'가입':'미가입'}</span>`:'';
   const rsel=i=>st.notice&&needR(c,i)?`<label class="rsn"><span>부지급·감액 사유</span><select class="sel" data-r="${i}" ${res?'disabled':''}><option value="">사유 선택</option>${Object.entries(RS).map(([k,t])=>`<option value="${k}" ${c.rs[i]===k?'selected':''}>${t}</option>`).join('')}</select></label>`:'';
   const rres=i=>st.notice&&c.ans[i].r?` · 사유: <b>${RS[c.ans[i].r]}</b>`:'';
-  const silRow=(i)=>{const a=c.ans[i],ok=okP(c,i);return`<div class="cov wide"><div><div class="nm">실손의료비${tag('sil')}${mag('sil')}${res?'':`<button class="info calcb" data-calc="${i}" aria-label="계산기 열기">${CALCI}</button>`}</div><div class="am">영수증 기준 지급액 입력</div></div>
+  const silRow=(i)=>{const a=c.ans[i],ok=okP(c,i);return`<div class="cov wide" data-cg="${c.gi[i]}" style="background:${['#f3f7fb','#f5f7f1','#fbf5ef','#f5f2fa'][Math.abs(c.gi[i])%4]};border-color:${['#d9e5ef','#dfe8d5','#eee0d2','#e5dced'][Math.abs(c.gi[i])%4]}"><div><div class="nm">실손의료비${tag('sil')}${mag('sil')}${res?'':`<button class="info calcb" data-calc="${i}" aria-label="계산기 열기">${CALCI}</button>`}</div><div class="am">영수증 기준 지급액 입력</div></div>
     <div class="silin"><button class="silv calcb" data-calc="${i}" aria-label="실손의료비 지급액 입력 (현재 ${f(c.pick[i]||0)}원)" ${res?'disabled':''}>${c.pick[i]?f(c.pick[i]):'<span class="ph">눌러서 입력</span>'}</button><span>원</span>${res?'':`<button data-z="${i}">0원</button>`}</div>
     ${res&&(c.flag||c.inv||c.nd||c.xfr||isBig(c))?`<div class="res"><span class="mk">— ${c.inv?'현장조사 의뢰로 심사 생략':c.flag?'조사 의뢰로 심사 생략':c.xfr?'표준부서 이관으로 심사 생략':isBig(c)?'표준부서 이관 대상 · 간편심사 대상 아님':'현장조사 대상 건 · 지급 심사 대상 아님'}</span></div>`:res?`<div class="res"><span class="mk ${ok?'ok':'bad'}">${ok?'✓ 정답':'✗ 오답'}</span><span>정답: <b>${a.amt?f(a.amt)+'원 지급':'부지급'}</b> · ${a.w}</span></div>`:''}</div>`};
   return `<aside class="paper policy" aria-label="보험금 심사표">
@@ -1524,10 +1539,10 @@ function policyHTML(c,res){
   <div class="meta"><span><i class="lb">피보험자 </i><b>${c.who}</b></span><span><i class="lb">증권번호 </i><b>${c.no}</b></span></div>
   <p class="hint">청구 항목별로 <b>가입한 담보</b>만 보여요. 가입 조건과 금액은 폴더의 <b>보험증권</b>에서 확인하세요.</p></div>
   <div class="slides" id="slides">
-  ${(()=>{const RW=c.covs.map((k,i)=>{const gh=k!=='pay'&&c.covs.filter(x=>x!=='pay').length>3&&(i===0||c.gi[i]!==c.gi[i-1])?`<div class="cgh">${c.groups[c.gi[i]][0]}</div>`:'',lk=k==='pay'&&!payShown(c,res);if(lk&&res)return '';if(k==='sil')return gh+silRow(i);const C=COV[k],L=C.carG?CGL:C.grade?GRL:C.opts||['부지급','','지급'];
+  ${(()=>{const RW=c.covs.map((k,i)=>{const gh='',lk=k==='pay'&&!payShown(c,res);if(lk&&res)return '';if(k==='sil')return gh+silRow(i);const C=COV[k],L=C.carG?CGL:C.grade?GRL:C.opts||['부지급','','지급'];
     const dn=dGet(c,i),ctl=isDay(k)?`<button class="sel selb dayb" data-dp="${i}" aria-haspopup="dialog" aria-label="${C.n} 보상 ${dUnit(k)}수: ${dn?dn+dUnit(k):'부지급'}" ${res?'disabled':''}><span>${dn?`<b>${dn}${dUnit(k)}</b> · ${won(dn*C.amt)}`:'부지급 (0'+dUnit(k)+')'}</span><i aria-hidden="true">▾</i></button>`:C.grade||C.carG?`<button class="sel selb" data-gp="${i}" aria-haspopup="listbox" aria-label="${C.n} 결정: ${L[c.pick[i]]}" ${res?'disabled':''}><span>${L[c.pick[i]]}</span><i aria-hidden="true">▾</i></button>`
       :`<div class="seg" role="group" aria-label="${C.n} 결정">${L.map((t,v)=>t?`<button data-i="${i}" data-v="${v}" aria-pressed="${c.pick[i]===v}" ${res?'disabled':''}>${t}</button>`:'').join('')}</div>`;
-    return gh+`<div class="cov${k==='pay'?' wide':''}${lk?' locked':''}" ${lk?'aria-disabled="true"':''}><div><div class="nm">${C.n}${tag(k)}${lk?mag(k).replace('<button ','<button disabled tabindex="-1" '):mag(k)}</div></div>${lk?ctl.replace(/<button /g,'<button disabled tabindex="-1" '):ctl}
+    return gh+`<div class="cov${k==='pay'?' wide':''}${lk?' locked':''}" data-cg="${c.gi[i]}" style="background:${['#f3f7fb','#f5f7f1','#fbf5ef','#f5f2fa'][Math.abs(c.gi[i])%4]};border-color:${['#d9e5ef','#dfe8d5','#eee0d2','#e5dced'][Math.abs(c.gi[i])%4]}" ${lk?'aria-disabled="true"':''}><div><div class="nm">${C.n}${tag(k)}${lk?mag(k).replace('<button ','<button disabled tabindex="-1" '):mag(k)}</div></div>${lk?ctl.replace(/<button /g,'<button disabled tabindex="-1" '):ctl}
     ${res&&(c.flag||c.inv||c.nd||c.xfr||isBig(c))?`<div class="res"><span class="mk">— ${c.inv?'현장조사 의뢰로 심사 생략':c.flag?'조사 의뢰로 심사 생략':c.xfr?'표준부서 이관으로 심사 생략':isBig(c)?'표준부서 이관 대상 · 간편심사 대상 아님':'현장조사 대상 건 · 지급 심사 대상 아님'}</span></div>`:res?(()=>{const a=c.ans[i],ok=okP(c,i),lab=isDay(k)?(a.d?aDays(c,i)+dUnit(k):'부지급'):C.grade||C.carG||C.opts?L[a.d]:['부지급','','지급'][a.d];return`<div class="res"><span class="mk ${ok?'ok':'bad'}">${ok?'✓ 정답':'✗ 오답'}</span><span>정답: <b>${lab}${a.amt&&!C.grade&&!C.carG&&!C.opts?' '+won(a.amt):''}</b> · ${a.w}</span></div>`})():''}
   </div>`});const em=c.groups.filter((g,j)=>!c.covs.some((k,i)=>c.gi[i]===j)).map(g=>g[0]);
     return`<section class="slide list"><div class="gh">담보별 판단 <small>${c.covs.filter(k=>k!=='pay').length}개 · 각 담보를 확인해 주세요</small></div><details class="caseedi" id="caseEdiPanel" ${caseEdiOpen?'open':''}><summary>🧰 심사 도구 <small>수술·처치 EDI 코드 검색</small></summary><div class="caseedibody"><input id="caseEdiq" class="dexq" type="search" value="${ediEsc(caseEdiQuery)}" placeholder="수가코드·수술명 검색 (예: Q3013, 치핵절제술)" autocomplete="off" aria-label="심사 중 EDI 코드 검색"><p class="dexn" id="caseEdin" aria-live="polite">EDI 코드 목록을 불러오는 중…</p><div class="edil" id="caseEdil"></div><p class="dexsrc">심평원 공개자료 기반 선별 데이터 · 전체 수가마스터 아님 · EDI 코드만으로 약관상 수술 해당 여부를 확정하지 않습니다.</p></div></details>${RW.join('')}${em.length?`<p class="nog">가입 담보가 없는 청구 항목: <b>${em.join(', ')}</b>${res&&st.notice?' (미가입)':''}</p>`:''}${st.notice&&!(res&&(c.nd||c.flag||c.inv||c.xfr||isBig(c)))&&(res?(c.fr||sumPick(c)===0):sumPick(c)===0)?`<div class="frin">${noticeHTML(c,res)}</div>`:''}<div class="dvw"><button class="dvb" id="dvb">📂 서류 보기 <small>좌우로 넘기기 · 톡 누르면 닫기</small></button></div></section>`})()}
