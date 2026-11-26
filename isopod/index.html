@@ -382,9 +382,9 @@ nav.tabs{background:#263d31!important}
 </nav>
 <div id="detail" class="detail" hidden></div>
 
-<!-- BUILD-INFO: 2026-11-26-02 -->
+<!-- BUILD-INFO: 2026-11-26-03 -->
 <footer class="build-info" aria-label="사이트 빌드 정보">
- <div><strong>빌드 버전</strong> v2026.11.26-02</div>
+ <div><strong>빌드 버전</strong> v2026.11.26-03</div>
  <div><strong>최종 수정일</strong> 2026.11.26</div>
 </footer>
 <script>
@@ -626,7 +626,8 @@ const profLab=(id,k)=>PROF_F.find(f=>f[0]===k)[1];
 function ageTxt(d){if(!d)return'';const b=new Date(d),n=new Date();let m=(n.getFullYear()-b.getFullYear())*12+n.getMonth()-b.getMonth();if(n.getDate()<b.getDate())m--;if(isNaN(m)||m<0)return'';if(m<1){const dd=Math.floor((n-b)/864e5);return`${dd}일`}return m<24?`${m}개월`:`${Math.floor(m/12)}살 ${m%12?m%12+'개월':''}`.trim()}
 const fmtD=d=>{if(!d)return'';const x=new Date(d+'T00:00');return isNaN(x)?esc(d):`${x.getFullYear()}.${x.getMonth()+1}.${x.getDate()}`};
 const buyOf=id=>{try{const m=D.memo&&D.memo['b:'+id];return m&&m.body?JSON.parse(m.body):{}}catch(e){return{}}};
-const nmOv=id=>{const m=D.memo&&D.memo['n:'+id];return m&&m.body?m.body.trim():''};
+const nmKey=id=>(String(id).length+2<=8?'n:'+id:'r'+String(id).slice(1));
+const nmOv=id=>{const m=D.memo&&(D.memo['n:'+id]||D.memo[nmKey(id)]);return m&&m.body?m.body.trim():''};
 const tubNm=id=>nmOv(id)||(id==='12'?'데어리카우 성체':id==='12b'?'데어리카우 새끼':spOf(id).n);
 const famOf=id=>{if(XSP[id])return XSP[id].fam;const sp=parseInt(id),g=IGRP.find(x=>x[2].includes(sp));return g?`${g[0]} · ${g[1]}`:''};
 const envOf=id=>{const e=spOf(id).env,m=e.match(/(\d+)–(\d+)℃/),h=e.match(/(\d+)(?:–(\d+))?%/);return{t:m?[+m[1],+m[2]]:null,h:h?[+h[1],h[2]?+h[2]:100]:null,txt:e}};
@@ -727,6 +728,22 @@ function openAnimalManager(){
    sh.querySelector('#managerAdd').onclick=()=>showAddAnimalForm(SEC==='iso'?'iso':SEC,true);
  });
 }
+function renameTubName(id){
+ if(!needEdit())return;
+ const current=tubNm(id),currentOverride=nmOv(id);
+ sheet(`<h3 style="margin:0 0 12px">✏️ 사육통 이름 변경</h3><label>새 이름</label><input id="renameTubInput" class="input" maxlength="40" value="${esc(current)}" placeholder="사육통 이름"><p class="mut" style="font-size:12px;margin:8px 0">이름만 변경되며 사진과 기록, 선반 위치는 그대로 유지돼요.</p><div class="sbb"><button class="btn" data-x>취소</button><button class="btn pri" id="renameTubSave">저장</button></div>`,sh=>{
+  const input=sh.querySelector('#renameTubInput');input.focus();input.select();
+  sh.querySelector('#renameTubSave').onclick=async()=>{
+   if(!needEdit())return;const nm=input.value.trim();if(!nm){toast('이름을 입력해 주세요');return}
+   const b=sh.querySelector('#renameTubSave');b.disabled=true;b.textContent='저장 중…';
+   try{
+    const baseName=spOf(id)?.n||current,key=nmKey(id),value=nm===baseName?'':' '+nm;
+    if(nm!==current){await rpc('iso_memo_set',{t:key,b:nm===baseName?'':nm});D.memo[key]={body:nm===baseName?'':nm,who:D.ed,upd:new Date().toISOString()};}
+    save();closeSheet();toast('사육통 이름을 변경했어요');refreshDetail();
+   }catch(e){b.disabled=false;b.textContent='저장';toast('⚠ 이름을 저장하지 못했어요. 연결 상태를 확인해 주세요')}
+  };
+ });
+}
 function editManagedAnimal(id){
  if(!needEdit())return;
  const name=tubNm(id),currentName=nmOv(id);
@@ -740,9 +757,9 @@ function editManagedAnimal(id){
     if(!nm){toast('상자 이름을 입력해 주세요');return}
     const b=sh.querySelector('#managedSave');b.disabled=true;b.textContent='저장 중…';
     try{
-     const baseName=spOf(id)?.n||name,rename=nm!==(currentName||name);
-     if(rename)await rpc('iso_memo_set',{t:'n:'+id,b:nm===baseName?'':nm});
-     if(rename)D.memo['n:'+id]={body:nm===baseName?'':nm,who:D.ed,upd:new Date().toISOString()};
+     const baseName=spOf(id)?.n||name,rename=nm!==(currentName||name),key=nmKey(id);
+     if(rename)await rpc('iso_memo_set',{t:key,b:nm===baseName?'':nm});
+     if(rename)D.memo[key]={body:nm===baseName?'':nm,who:D.ed,upd:new Date().toISOString()};
      save();toast('상자 정보를 저장했어요');openAnimalManager();
     }catch(e){b.disabled=false;b.textContent='저장';toast('⚠ 저장하지 못했어요. 연결 상태를 확인해 주세요')}
    };
@@ -1256,8 +1273,9 @@ function refreshDetail(first){const id=CUR;if(!id)return;const sp=spOf(id),E=env
    ${P.length?`<h2 class="sec">예전 사진 <small>${P.length}장</small></h2><div class="album">${P.map(p=>`<button data-ph="${p.cid}"><img src="${p.thumb}" alt="사진 ${dayLab(p.at)}"></button>`).join('')}</div>`:''}
    ${growthTimeline(id)}
    <h2 class="sec">📜 ${hasProf(id)?'이 아이':'이 통'} 전체 기록</h2><div class="card">${(()=>{const it=mixFeed(x=>x.tub===id);return it.length?feedHTML(it.slice(0,80),true,true):'<p class="empty">아직 기록이 없어요.</p>'})()}</div>`;
-  d.innerHTML=`<div class="dh"><button class="btn sm" id="dback">← 뒤로</button><h2>${esc(tubNm(id))}</h2><span class="chip">${XSP[id]&&XSP[id].pet?(XSP[id].stage||PETS[XSP[id].pet].n):locName(id)}</span></div><div class="dbody">${body}</div>`;
+  d.innerHTML=`<div class="dh"><button class="btn sm" id="dback">← 뒤로</button><h2>${esc(tubNm(id))}</h2>${canEdit()?`<button class="btn sm" id="renameTubBtn" style="flex:none">✏️ 변경</button>`:''}<span class="chip">${XSP[id]&&XSP[id].pet?(XSP[id].stage||PETS[XSP[id].pet].n):locName(id)}</span></div><div class="dbody">${body}</div>`;
   $('#dback').onclick=()=>history.back();
+  if($('#renameTubBtn'))$('#renameTubBtn').onclick=()=>renameTubName(id);
   d.querySelectorAll('[data-vm]').forEach(b=>b.onclick=()=>{VM=b.dataset.vm;refreshDetail(true)});
   d.querySelectorAll('[data-ph]').forEach(b=>b.onclick=()=>viewPhoto(b.dataset.ph));
   d.querySelectorAll('[data-gs]').forEach(b=>b.onclick=()=>galTap(id,+b.dataset.gs));
