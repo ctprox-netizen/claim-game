@@ -77,7 +77,7 @@ h2.sec small{font-size:13px;color:var(--mut);font-weight:600}
 .detail{position:fixed;inset:0;z-index:40;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch}
 .detail .dh{position:sticky;top:0;z-index:2;background:var(--bg);display:flex;align-items:center;gap:8px;padding:10px 12px;max-width:760px;margin:0 auto}
 .detail .dh h2{margin:0;font-size:19px;flex:1}
-.detail .dbody{max-width:760px;margin:0 auto;padding:0 12px 40px}
+.detail .dbody{max-width:760px;margin:0 auto;padding:0 12px 40px}.growth{padding:10px 12px}.growth-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:7px}.growth-list{list-style:none;margin:0;padding:0 0 0 5px}.growth-list li{display:grid;grid-template-columns:22px 1fr;gap:7px;position:relative;padding:6px 0 8px;border-left:2px solid var(--line);margin-left:7px}.growth-list li:last-child{border-left-color:transparent}.growth-list .gic{width:20px;height:20px;border:1.5px solid var(--ink);border-radius:50%;background:var(--paper);display:flex;align-items:center;justify-content:center;font-size:11px;margin-left:-11px;z-index:1}.growth-list .gtxt{min-width:0}.growth-list .gtxt b{font-size:13.5px}.growth-list .gtxt small{display:block;color:var(--mut);font-size:12px;overflow-wrap:anywhere}.growth-empty{font-size:13px;color:var(--mut);padding:4px 0}
 .hero{display:grid;grid-template-columns:1fr;gap:10px}
 @media(min-width:700px){.hero{grid-template-columns:1fr 1fr}}
 .hero img{width:100%;border-radius:12px;border:2px solid var(--ink);display:block;aspect-ratio:4/3;object-fit:cover}
@@ -160,7 +160,7 @@ details summary{cursor:pointer;font-weight:800}
 .rm .tb2.on .ck{display:flex;position:absolute;right:4px;bottom:4px;width:28px;height:28px;border-radius:50%;background:#fff;border:2.5px solid var(--ink);font-style:normal;font-weight:900;align-items:center;justify-content:center;font-size:17px}
 .rmbar{position:fixed;left:0;right:0;bottom:64px;z-index:25;background:var(--paper);border-top:2px solid var(--ink);display:flex;align-items:center;gap:8px;padding:8px 12px;justify-content:center}
 .rmbar span{font-weight:800;margin-right:auto;max-width:520px}.rmbar .btn[disabled]{opacity:.4}
-.kpick{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+.kpick{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}.kpick button{min-width:0}.rhint{font-size:12.5px;color:var(--mut);margin:7px 2px 4px;min-height:18px}
 .kpick button{border:2px solid var(--ink);background:#fff;border-radius:12px;padding:9px 1px;font-weight:800;font-size:12.5px;word-break:keep-all;display:flex;flex-direction:column;align-items:center;gap:2px}
 .kpick button b{font-size:24px;line-height:1.1}.kpick button[aria-pressed=true]{background:var(--ink);color:#fff}
 .nrow{display:flex;align-items:center;gap:8px;padding:5px 0;border-top:1px solid var(--line)}.nrow:first-child{border-top:0}
@@ -833,15 +833,16 @@ let RK='etc';
 const RKS_ISO=[['etc','📝','메모'],['feed','🍂','먹이'],['mist','💧','분무'],['baby','🐣','새끼 발견'],['count','🔢','마릿수']];
 const RKS_WORM=[['etc','📝','메모'],['wfeed','🥕','먹이'],['bed','🧹','바닥재 교체'],['count','🔢','마릿수'],['pupa','🌀','번데기']];
 const RKS_PET=[['etc','📝','메모']];
+const RK_HINT={etc:'남겨 둘 내용을 간단히 적어 주세요.',feed:'무엇을 먹였는지 적어 두면 먹이 이력을 찾기 쉬워요.',mist:'분무한 위치나 물 주기 상태를 메모할 수 있어요.',baby:'새로 발견한 새끼 수를 입력해 주세요.',count:'현재 확인한 성체 마릿수를 입력해 주세요.',wfeed:'먹이 종류나 급여량을 적어 두세요.',bed:'교체한 바닥재나 청소 범위를 적어 두세요.',pupa:'발견하거나 분리한 번데기 수를 입력해 주세요.'};
 let RKS=RKS_ISO;
 function rmSheet(){if(!needEdit())return;const ids=secIds().filter(id=>SEL.has(id));RKS=SEC==='worm'?RKS_WORM:PETS[SEC]?RKS_PET:RKS_ISO;RK='etc';
   const nowL=(()=>{const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,16)})();
   sheet(`<h3>✏️ ${ids.length===1?esc(tubNm(ids[0]))+' 기록':ids.length+unit()+' 한 번에 기록'}</h3>${ids.length>1?`<p class="mut" style="margin:-4px 0 8px;font-size:13px">${ids.map(id=>esc(tubNm(id))).join(', ')}</p>`:''}
-   <div class="kpick">${RKS.map(([k,e,n])=>`<button data-k="${k}" aria-pressed="${k===RK}"><b>${e}</b>${n}</button>`).join('')}</div>
+   <div class="kpick">${RKS.map(([k,e,n])=>`<button type="button" data-k="${k}" aria-pressed="${k===RK}"><b>${e}</b>${n}</button>`).join('')}</div><p class="rhint" id="rhint"></p>
    <div id="rnums"></div><label id="rnl">메모 (선택)</label><textarea id="rnote" placeholder="고른 통 모두에 같은 메모가 남아요"></textarea>
    <label>언제</label><input id="rat" type="datetime-local" value="${nowL}">
    <div class="sbb"><button class="btn" data-x>취소</button><button class="btn pri" id="rok">기록하기</button></div>`,sh=>{
-    const nums=()=>{sh.querySelector('#rnl').textContent=RK==='etc'?'메모 (꼭 적어 주세요)':'메모 (선택)';sh.querySelector('#rnote').placeholder=RK==='etc'?'예: 흙 절반 교체, 이끼 추가, 탈피 봄':'고른 통 모두에 같은 메모가 남아요';const box=sh.querySelector('#rnums');if(RK!=='baby'&&RK!=='count'&&RK!=='wt'&&RK!=='pupa'){box.innerHTML='';return}
+    const nums=()=>{sh.querySelector('#rhint').textContent=RK_HINT[RK]||'필요한 내용을 입력하고 저장해 주세요.';sh.querySelector('#rnl').textContent=RK==='etc'?'메모 (꼭 적어 주세요)':'메모 (선택)';sh.querySelector('#rnote').placeholder=RK==='etc'?'예: 흙 절반 교체, 이끼 추가, 탈피 봄':'고른 통 모두에 같은 메모가 남아요';const box=sh.querySelector('#rnums');if(RK!=='baby'&&RK!=='count'&&RK!=='wt'&&RK!=='pupa'){box.innerHTML='';return}
       box.innerHTML=`<label>${RK==='baby'?'새로 본 새끼 수':RK==='pupa'?'번데기 수 (발견·분리)':RK==='wt'?'체중 (g)':'지금 마릿수 (다 자란 개체)'}</label>${RK==='count'||RK==='wt'?'<p class="mut" style="margin:-2px 0 6px;font-size:12.5px">빈칸으로 둔 통은 기록하지 않아요.</p>':''}<div class="card" style="margin:0;padding:4px 10px">${ids.map(id=>{const c=countOf(id),v=RK==='wt'?'':RK==='count'?(c.n!=null?c.n+c.b:''):1;return`<div class="nrow"><span>${esc(tubNm(id))}</span><div class="step"><button data-st="-1">−</button><input data-n="${id}" type="number" inputmode="${RK==='wt'?'decimal':'numeric'}" step="${RK==='wt'?'0.1':'1'}" min="0" value="${v}" placeholder="?"><button data-st="1">+</button></div></div>${RK==='count'?`<div class="qrow" data-qid="${id}">${[['eq','정확히'],['ap','정도'],['ge','이상'],['le','이하']].map(([k,t])=>`<button type="button" data-q="${k}" aria-pressed="${(c.q||'eq')===k}">${t}</button>`).join('')}</div>`:''}`}).join('')}</div>`;
       box.querySelectorAll('.qrow [data-q]').forEach(b=>b.onclick=()=>{b.parentNode.querySelectorAll('[data-q]').forEach(x=>x.setAttribute('aria-pressed',x===b))});
       box.querySelectorAll('[data-st]').forEach(b=>b.onclick=()=>{const i=b.parentNode.querySelector('input');i.value=Math.max(0,Math.round(((+i.value||0)+ +b.dataset.st*(RK==='wt'?.5:1))*10)/10)})};
