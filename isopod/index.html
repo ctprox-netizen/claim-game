@@ -796,7 +796,7 @@ function showAddAnimalForm(defaultGroup,inManager=false){
   const id='x'+uid().replace(/[^a-z0-9]/gi,'').toLowerCase().slice(0,7);
   const group=k==='newgroup'?'g'+uid().replace(/[^a-z0-9]/gi,'').toLowerCase().slice(0,7):k;const m=k==='iso'?{id,kind:'iso',name:nm,speciesIndex:+$('#addSpecies').value,location:loc}:{id,kind:'pet',name:nm,group,stage,location:loc,...(k==='newgroup'?{groupName:$('#addGroupName').value.trim(),groupEmoji:$('#addGroupEmoji').value.trim()||'🐾',groupUnit:$('#addGroupUnit').value}:{})};if(k==='newgroup'&&!m.groupName){toast('새 동물 종류 이름을 입력해 주세요');return}
   const btn=$('#addSave');btn.disabled=true;btn.textContent='추가 중…';
-  try{await rpc('iso_memo_set',{t:'new:'+id,b:JSON.stringify(m)});D.memo['new:'+id]={body:JSON.stringify(m),who:D.ed,upd:new Date().toISOString()};hydrateDynamicAnimals();save();toast(`✓ ${nm}을(를) 추가했어요`);if(inManager)openAnimalManager();else{wrap.remove();render()}}
+  try{await rpc('iso_memo_set',{t:'new:'+id,b:JSON.stringify(m)});D.memo['new:'+id]={body:JSON.stringify(m),who:D.ed,upd:new Date().toISOString()};hydrateDynamicAnimals();save();toast(`✓ ${nm}을(를) 추가했어요`);if(inManager){SEC=k==='iso'?'iso':group;D.tab=SEC!=='iso'&&PETS[SEC]?.stages&&stage==='larva'?'larva':'shelf';render();openAnimalManager()}else{wrap.remove();render()}}
   catch(e){btn.disabled=false;btn.textContent='추가하기';toast('⚠ 추가하지 못했어요. 로그인과 연결 상태를 확인해 주세요')}
  };
 }
