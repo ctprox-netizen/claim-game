@@ -1536,7 +1536,7 @@ function policyHTML(c,res){
   ${res?`<div class="stamp">심사완료</div>`:''}
   <div class="phead"><h2>보험금 심사표${c.boss?' <span class="bossb">👑 보스</span>':''}</h2>
   <div class="cdate"><span><i class="lb2">보험 </i>계약일</span><b>${fd(c.con)}</b></div>
-  <div class="meta"><span><i class="lb">피보험자 </i><b>${c.who}</b></span><span><i class="lb">증권번호 </i><b>${c.no}</b></span></div>
+  <div class="meta"><span><i class="lb">이름 </i><b>${c.who}</b></span><span><i class="lb">증권번호 </i><b>${c.no}</b></span></div>
   <p class="hint">청구 항목별로 <b>가입한 담보</b>만 보여요. 가입 조건과 금액은 폴더의 <b>보험증권</b>에서 확인하세요.</p></div>
   <div class="slides" id="slides">
   ${(()=>{const RW=c.covs.map((k,i)=>{const gh='',lk=k==='pay'&&!payShown(c,res);if(lk&&res)return '';if(k==='sil')return gh+silRow(i);const C=COV[k],L=C.carG?CGL:C.grade?GRL:C.opts||['부지급','','지급'];
