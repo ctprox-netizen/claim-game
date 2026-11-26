@@ -704,11 +704,12 @@ async function syncAnimals(){try{const r=await rpc('iso_animal_removed_list',{})
 function hydrateDynamicAnimals(){Object.entries(D.memo||{}).forEach(([k,v])=>{if(!k.startsWith('new:')||!v||!v.body)return;try{const m=JSON.parse(v.body),id=m.id;if(!id||id!==k.slice(4)||D.removed.includes(id))return;if(m.kind==='iso'){if(!XSP[id]){const sp=ISPC[m.speciesIndex]||ISPC[0];XSP[id]=Object.assign({},sp,{kind:'iso',n:m.name});IMG[id]=IMG[String(m.speciesIndex)]||IMG['0']}if(!ALL.includes(id)){ALL.push(id);const sh=SHELF.find(x=>x.id===m.location)||SHELF[0];if(!sh.tubs.includes(id))sh.tubs.push(id)}}else if(m.kind==='pet'){if(!PETS[m.group]&&m.groupName){PETS[m.group]={n:m.groupName,full:m.groupName,e:m.groupEmoji||'🐾',unit:m.groupUnit||'마리',img:PETS.ham.img,ids:[]};if(typeof HUB!=='undefined'&&!HUB.some(x=>x.id===m.group))HUB.push({id:m.group,e:m.groupEmoji||'🐾',n:m.groupName})}if(!PETS[m.group])return;if(!XSP[id])XSP[id]={n:m.name,ln:'',env:'',roll:0,fam:m.group,hab:'',pet:m.group,stage:m.stage||undefined};const P=PETS[m.group];if(!P.ids.includes(id))P.ids.push(id);if(P.stages&&P.stages[m.stage]&&!P.stages[m.stage].ids.includes(id))P.stages[m.stage].ids.push(id);IMG[id]=P.img}if(m.location)D.memo['loc:'+id]={body:m.location,who:v.who,upd:v.upd}}catch(e){}})}
 function managerAnimalIds(){
  if(SEC==='iso')return activeALL().filter(isIso);
- const P=PETS[SEC];return P?(P.ids||[]).filter(id=>!(D.removed||[]).includes(id)):allAnimalIds();
+ const P=PETS[SEC];return P?(P.ids||[]).filter(id=>!(D.removed||[]).includes(id)):[];
 }
 function managerTitle(){return SEC==='iso'?'등각류 사육통 관리':(PETS[SEC]?.full||'동물')+' 관리'}
 function openAnimalManager(){
  if(!needEdit())return;
+ if(SEC!=='iso'&&!PETS[SEC]){closeSheet();SEC='home';D.tab='today';render();return}
  const ids=managerAnimalIds(),title=managerTitle();
  const rows=ids.map(id=>{
   const rawStage=XSP[id]?.stage,stage=rawStage==='shelf'?'성충':rawStage==='larva'?'유충':rawStage,loc=locName(id),sub=[stage,loc==='미지정'?'위치 미지정':loc].filter(Boolean).join(' · ');
