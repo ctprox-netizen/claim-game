@@ -752,6 +752,22 @@ body.app .stw{padding:8px 0 2px}
  body.app .policy .phead .meta span{max-width:100%!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;overflow-wrap:anywhere!important}
 }
 
+
+/* Restore native vertical touch scrolling and fling momentum on compact screens. */
+@media(max-width:700px){
+ body.app .slides{
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch!important;
+  touch-action:pan-y!important;
+  scroll-behavior:auto!important;
+ }
+ body.app .slides>.slide{
+  touch-action:pan-y!important;
+  overscroll-behavior-y:auto!important;
+ }
+}
+
 /* Call panel and compact-screen usability pass. */
 .cmb{min-width:0;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y}
 .ns .ntxt{-webkit-line-clamp:3;line-clamp:3}
