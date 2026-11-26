@@ -384,7 +384,7 @@ nav.tabs{background:#263d31!important}
 
 <!-- BUILD-INFO: 2026-11-27-03 -->
 <footer class="build-info" aria-label="사이트 빌드 정보">
- <div><strong>빌드 버전</strong> v2026.11.27-05</div>
+ <div><strong>빌드 버전</strong> v2026.11.27-06</div>
  <div><strong>최종 수정일</strong> 2026.11.27</div>
 </footer>
 <script>
@@ -843,19 +843,19 @@ function showAddAnimalForm(defaultGroup,inManager=false){
   <div id="addLocationBox" ${iso?'':'hidden'}><label class="mut" style="display:block;margin:8px 0 4px">사육장 위치</label><select id="addLocation" class="input" style="width:100%;padding:10px"><option value="">위치 미지정</option>${SHELF.map(x=>`<option value="${x.id}" ${x.id==='s1'?'selected':''}>${x.n} · ${x.d}</option>`).join('')}</select></div>
   <div style="display:flex;gap:8px;margin-top:14px"><button class="btn pri" id="addSave" style="flex:1">추가하기</button><button class="btn" id="addCancel">취소</button></div>
   <p class="mut" style="font-size:12px;margin:8px 0 0">추가한 항목은 너와 아빠의 기기에 함께 표시돼.</p>`;
- if(inManager){const sb=document.querySelector('.sheet .sb');if(!sb)return;sb.innerHTML='';sb.appendChild(wrap)}else{$('#app').prepend(wrap);wrap.scrollIntoView({behavior:'smooth',block:'start'})}
- const kind=$('#addKind'),spBox=$('#addSpeciesBox'),stageBox=$('#addStageBox'),groupBox=$('#addGroupBox'),locationBox=$('#addLocationBox'),name=$('#addName');
- const refresh=()=>{const k=kind.value;spBox.hidden=k!=='iso';stageBox.hidden=!(PETS[k]&&PETS[k].stages);groupBox.hidden=k!=='newgroup';if(locationBox)locationBox.hidden=k!=='iso';if(!name.value.trim())name.placeholder=k==='iso'?(ISPC[+$('#addSpecies').value]?.n||'새 사육통 이름'):k==='newgroup'?'첫 번째 개체 이름':(PETS[k]?.full||PETS[k]?.n||'동물')+' 이름'};
- kind.onchange=refresh;$('#addSpecies').onchange=()=>{if(!name.value.trim())name.placeholder=ISPC[+$('#addSpecies').value]?.n||'새 사육통 이름'};refresh();
- $('#addCancel').onclick=()=>{if(inManager)openAnimalManager();else wrap.remove()};
- $('#addSave').onclick=async()=>{
-  if(!needEdit())return;const k=kind.value,loc=k==='iso'?($('#addLocation')?.value||''):'',stage=$('#addStage')?.value||'';
-  const nm=name.value.trim()||(k==='iso'?ISPC[+$('#addSpecies').value]?.n||'새 사육통':PETS[k]?.full||PETS[k]?.n||'새 동물');
+ const mount=sh=>{
+ const kind=sh.querySelector('#addKind'),spBox=sh.querySelector('#addSpeciesBox'),stageBox=sh.querySelector('#addStageBox'),groupBox=sh.querySelector('#addGroupBox'),locationBox=sh.querySelector('#addLocationBox'),name=sh.querySelector('#addName');
+ const refresh=()=>{const k=kind.value;spBox.hidden=k!=='iso';stageBox.hidden=!(PETS[k]&&PETS[k].stages);groupBox.hidden=k!=='newgroup';if(locationBox)locationBox.hidden=k!=='iso';if(!name.value.trim())name.placeholder=k==='iso'?(ISPC[+sh.querySelector('#addSpecies').value]?.n||'새 사육통 이름'):k==='newgroup'?'첫 번째 개체 이름':(PETS[k]?.full||PETS[k]?.n||'동물')+' 이름'};
+ kind.onchange=refresh;sh.querySelector('#addSpecies').onchange=()=>{if(!name.value.trim())name.placeholder=ISPC[+sh.querySelector('#addSpecies').value]?.n||'새 사육통 이름'};refresh();
+ sh.querySelector('#addCancel').onclick=()=>{if(inManager)openAnimalManager();else wrap.remove()};
+ sh.querySelector('#addSave').onclick=async()=>{
+  if(!needEdit())return;const k=kind.value,loc=k==='iso'?(sh.querySelector('#addLocation')?.value||''):'',stage=sh.querySelector('#addStage')?.value||'';
+  const nm=name.value.trim()||(k==='iso'?ISPC[+sh.querySelector('#addSpecies').value]?.n||'새 사육통':PETS[k]?.full||PETS[k]?.n||'새 동물');
   if(nm.length>40){toast('이름은 40자 이내로 입력해 주세요');return}
   const id='x'+uid().replace(/[^a-z0-9]/gi,'').toLowerCase().slice(0,7);
-  const group=k==='newgroup'?'g'+uid().replace(/[^a-z0-9]/gi,'').toLowerCase().slice(0,7):k;const m=k==='iso'?{id,kind:'iso',name:nm,speciesIndex:+$('#addSpecies').value,location:loc}:{id,kind:'pet',name:nm,group,stage,...(k==='newgroup'?{groupName:$('#addGroupName').value.trim(),groupEmoji:$('#addGroupEmoji').value.trim()||'🐾',groupUnit:$('#addGroupUnit').value}:{})};if(k==='newgroup'&&!m.groupName){toast('새 동물 종류 이름을 입력해 주세요');return}
-  const btn=$('#addSave');btn.disabled=true;btn.textContent='추가 중…';
-  try{await rpc('iso_memo_set',{t:id,b:JSON.stringify(m)});D.memo[id]={body:JSON.stringify(m),who:D.ed,upd:new Date().toISOString()};hydrateDynamicAnimals();save();toast(`✓ ${nm}을(를) 추가했어요`);if(inManager){SEC=k==='iso'?'iso':group;D.tab=SEC!=='iso'&&PETS[SEC]?.stages&&stage==='larva'?'larva':'shelf';render();openAnimalManager()}else{wrap.remove();render()}}
+  const group=k==='newgroup'?'g'+uid().replace(/[^a-z0-9]/gi,'').toLowerCase().slice(0,7):k;const m=k==='iso'?{id,kind:'iso',name:nm,speciesIndex:+sh.querySelector('#addSpecies').value,location:loc}:{id,kind:'pet',name:nm,group,stage,...(k==='newgroup'?{groupName:sh.querySelector('#addGroupName').value.trim(),groupEmoji:sh.querySelector('#addGroupEmoji').value.trim()||'🐾',groupUnit:sh.querySelector('#addGroupUnit').value}:{})};if(k==='newgroup'&&!m.groupName){toast('새 동물 종류 이름을 입력해 주세요');return}
+  const btn=sh.querySelector('#addSave');btn.disabled=true;btn.textContent='추가 중…';
+  try{await rpc('iso_memo_set',{t:id,b:JSON.stringify(m)});D.memo[id]={body:JSON.stringify(m),who:D.ed,upd:new Date().toISOString()};hydrateDynamicAnimals();save();toast(`✓ ${nm}을(를) 추가했어요`);if(inManager){SEC=k==='iso'?'iso':group;D.tab=SEC!=='iso'&&PETS[SEC]?.stages&&stage==='larva'?'larva':'shelf';render();openAnimalManager()}else{closeSheet();render()}}
   catch(e){btn.disabled=false;btn.textContent='추가하기';toast('⚠ 추가하지 못했어요. 로그인과 연결 상태를 확인해 주세요')}
  };
 }
