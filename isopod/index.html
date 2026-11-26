@@ -771,13 +771,13 @@ async function deleteManagedAnimal(id){
 function showAddAnimalForm(defaultGroup,inManager=false){
  if(!needEdit())return;
  if(defaultGroup==='iso'){
-  sheet('<h3 style="margin:0 0 12px">＋ 새 사육통 추가</h3><label class="mut" style="display:block;margin:8px 0 4px">사육통 이름</label><input id="addTubName" class="input" maxlength="40" placeholder="예: 새 사육통" style="width:100%;padding:12px"><p class="mut" style="font-size:12px;margin:8px 0 0">추가하면 선반 첫 번째 칸에 등록돼요.</p><div class="sbb"><button class="btn" data-x>취소</button><button class="btn pri" id="addTubSave">추가하기</button></div>',sh=>{
-   const input=sh.querySelector('#addTubName');input.focus();
+  sheet(`<h3 style="margin:0 0 12px">＋ 새 사육통 추가</h3><label class="mut" style="display:block;margin:8px 0 4px">사육통 이름</label><input id="addTubName" class="input" maxlength="40" placeholder="예: 새 사육통" style="width:100%;padding:12px"><label class="mut" style="display:block;margin:12px 0 4px">추가할 칸</label><select id="addTubLocation" class="input" style="width:100%;padding:12px">${SHELF.map(x=>"<option value="+x.id+">"+esc(x.n)+" · "+esc(x.d)+"</option>").join('')}</select><p class="mut" style="font-size:12px;margin:8px 0 0">선택한 칸에 새 사육통이 추가돼요.</p><div class="sbb"><button class="btn" data-x>취소</button><button class="btn pri" id="addTubSave">추가하기</button></div>`,sh=>{
+   const input=sh.querySelector('#addTubName'),location=sh.querySelector('#addTubLocation');input.focus();
    sh.querySelector('#addTubSave').onclick=async()=>{
     if(!needEdit())return;const nm=input.value.trim();if(!nm){toast('사육통 이름을 입력해 주세요');input.focus();return}
     const btn=sh.querySelector('#addTubSave');btn.disabled=true;btn.textContent='추가 중…';
     const id='x'+uid().replace(/[^a-z0-9]/gi,'').toLowerCase().slice(0,7);
-    const m={id,kind:'iso',name:nm,generic:true,speciesIndex:0,location:SHELF[0]?.id||'s1'};
+    const m={id,kind:'iso',name:nm,generic:true,speciesIndex:0,location:location.value||SHELF[0]?.id||'s1'};
     try{await rpc('iso_memo_set',{t:id,b:JSON.stringify(m)});D.memo[id]={body:JSON.stringify(m),who:D.ed,upd:new Date().toISOString()};hydrateDynamicAnimals();save();toast('✓ '+nm+' 사육통을 추가했어요');closeSheet();render()}
     catch(e){btn.disabled=false;btn.textContent='추가하기';toast('⚠ 추가하지 못했어요: '+String(e.message||e).slice(0,70))}
    };
