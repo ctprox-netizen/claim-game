@@ -613,7 +613,7 @@ const secOf=id=>petOf(id)||'iso';
 const secIds=()=>PETS[SEC]?activePetIds(PETS[SEC]):activeALL();
 Object.entries(PETS).forEach(([k,P])=>P.ids.forEach((id,i)=>{XSP[id]={n:`${P.n} ${i+1}`,ln:'',env:'',roll:0,fam:'',hab:'',pet:k};IMG[id]=P.img}));
 Object.values(PETS.worm.stages).forEach(st=>st.ids.forEach((id,i)=>{XSP[id].n=`${st.n} 통 ${i+1}`;XSP[id].stage=st.n}));IMG.wa1='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzNDQgMjU2Ij48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9ImciIGN4PSI1MCUiIGN5PSI0NSUiIHI9IjcwJSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZTZkY2NkIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjOGY3YTYzIi8+PC9yYWRpYWxHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjM0NCIgaGVpZ2h0PSIyNTYiIGZpbGw9InVybCgjZykiLz48dGV4dCB4PSIxNzIiIHk9IjE2MCIgZm9udC1zaXplPSIxMjAiIHRleHQtYW5jaG9yPSJtaWRkbGUiPvCfqrI8L3RleHQ+PC9zdmc+';
-const baseShelfOf=id=>SHELF.find(s=>s.tubs.includes(id));const locOf=id=>{const m=D.memo&&D.memo['loc:'+id];return m?m.body:(baseShelfOf(id)?.id||'')};const shelfOf=id=>SHELF.find(s=>s.id===locOf(id))||baseShelfOf(id)||SHELF[0];const locName=id=>SHELF.find(x=>x.id===locOf(id))?.n||'미지정';const allAnimalIds=()=>[...activeALL(),...Object.values(PETS).flatMap(p=>p.ids)].filter(id=>!(D.removed||[]).includes(id));
+const baseShelfOf=id=>SHELF.find(s=>s.tubs.includes(id));const shelfLayout=()=>{try{const m=D.memo&&D.memo['shelf-layout'];return m&&m.body?JSON.parse(m.body):{locations:{},order:{}}}catch(e){return{locations:{},order:{}}}};const locOf=id=>{const z=shelfLayout();if(Object.prototype.hasOwnProperty.call(z.locations||{},id))return z.locations[id];const m=D.memo&&D.memo['loc:'+id];return m?m.body:(baseShelfOf(id)?.id||'')};const shelfOf=id=>SHELF.find(s=>s.id===locOf(id))||baseShelfOf(id)||SHELF[0];const locName=id=>SHELF.find(x=>x.id===locOf(id))?.n||'미지정';const allAnimalIds=()=>[...activeALL(),...Object.values(PETS).flatMap(p=>p.ids)].filter(id=>!(D.removed||[]).includes(id));
 const spOf=id=>XSP[id]||ISPC[parseInt(id)];
 const isIso=id=>!XSP[id]||XSP[id].kind==='iso';
 const galOf=id=>{const g=D.gal&&D.gal[id]||{};return Object.keys(g).map(Number).filter(n=>n>=1&&n<=9).sort((a,b)=>a-b).map(n=>Object.assign({slot:n},g[n])).filter(x=>x.thumb)};
@@ -888,28 +888,33 @@ const tileH=id=>`<button class="tb2 ${RM&&SEL.has(id)?'on':''}" ${RM?`data-pick=
 const grpAttr=ids=>RM?`data-grp="${ids.join(',')}" role="button"`:'';
 const DMS=[['photo','사진만'],['name','이름만'],['both','사진+이름'],['cnt','사진+개체수']];
 let MV=false,MVP=null;
-let SWAP_FROM=null,SWAP_PRESS_TIMER=null;
-const shelfOrderMap=()=>{try{return JSON.parse(D.memo?.['shelf-order']?.body||'{}')}catch(e){return{}}};
+let SWAP_FROM=null,SWAP_PRESS_TIMER=null,SWAP_BUSY=false;
+const shelfOrderMap=()=>shelfLayout().order||{};
 const orderedShelfIds=(loc,ids)=>{const saved=shelfOrderMap()[loc],a=Array.isArray(saved)?saved.filter(id=>ids.includes(id)):[];ids.forEach(id=>{if(!a.includes(id))a.push(id)});return a};
 async function swapShelfTubs(a,b){
- if(!needEdit()||!a||!b||a===b)return;
- const la=locOf(a),lb=locOf(b),btns=document.querySelectorAll('#shv .tb2');
- btns.forEach(x=>x.disabled=true);
- const order=shelfOrderMap(),aa=orderedShelfIds(la,allAnimalIds().filter(id=>locOf(id)===la)),bb=la===lb?aa:orderedShelfIds(lb,allAnimalIds().filter(id=>locOf(id)===lb));
- const ia=aa.indexOf(a),ib=bb.indexOf(b);
- if(ia<0||ib<0){btns.forEach(x=>x.disabled=false);toast('⚠ 사육통 위치를 확인하지 못했어요');return}
- if(la===lb){[aa[ia],aa[ib]]=[aa[ib],aa[ia]];order[la]=aa}
- else{aa[ia]=b;bb[ib]=a;order[la]=aa;order[lb]=bb}
+ if(!needEdit()||!a||!b||a===b||SWAP_BUSY)return;
+ SWAP_BUSY=true;const btns=document.querySelectorAll('#shv .tb2');btns.forEach(x=>x.disabled=true);
  try{
-  await rpc('iso_memo_set',{t:'loc:'+a,b:lb});
-  try{await rpc('iso_memo_set',{t:'loc:'+b,b:la})}
-  catch(e){await rpc('iso_memo_set',{t:'loc:'+a,b:la}).catch(()=>{});throw e}
-  const now=new Date().toISOString();
-  D.memo['loc:'+a]={body:lb,who:D.ed,upd:now};D.memo['loc:'+b]={body:la,who:D.ed,upd:now};
-  await rpc('iso_memo_set',{t:'shelf-order',b:JSON.stringify(order)});
-  D.memo['shelf-order']={body:JSON.stringify(order),who:D.ed,upd:now};
-  SWAP_FROM=null;save();await syncMemo();toast('두 사육통의 자리를 서로 바꿨어요');vShelf();
- }catch(e){btns.forEach(x=>x.disabled=false);toast('⚠ 위치를 바꾸지 못했어요. 연결 상태를 확인해 주세요')}
+  const ids=allAnimalIds(),layout=shelfLayout();
+  layout.locations=Object.assign({},layout.locations||{});
+  ids.forEach(id=>{if(!Object.prototype.hasOwnProperty.call(layout.locations,id))layout.locations[id]=locOf(id)});
+  layout.order=Object.assign({},layout.order||{});
+  const la=layout.locations[a],lb=layout.locations[b];
+  const aa=orderedShelfIds(la,ids.filter(id=>(layout.locations[id]||'')===la));
+  const bb=la===lb?aa:orderedShelfIds(lb,ids.filter(id=>(layout.locations[id]||'')===lb));
+  const ia=aa.indexOf(a),ib=bb.indexOf(b);
+  if(ia<0||ib<0)throw new Error('선택한 사육통의 현재 자리를 찾지 못했어요');
+  if(la===lb){[aa[ia],aa[ib]]=[aa[ib],aa[ia]];layout.order[la]=aa}
+  else{aa[ia]=b;bb[ib]=a;layout.order[la]=aa;layout.order[lb]=bb;layout.locations[a]=lb;layout.locations[b]=la}
+  const body=JSON.stringify(layout);
+  if(body.length>19000)throw new Error('선반 배치 정보가 너무 큽니다');
+  const upd=await rpc('iso_memo_set',{t:'shelf-layout',b:body});
+  D.memo['shelf-layout']={body,who:D.ed,upd:upd||new Date().toISOString()};
+  SWAP_FROM=null;save();toast('사육통 두 개의 자리를 바꿨어요');vShelf();
+ }catch(e){
+  console.error('shelf swap failed',e);
+  SWAP_FROM=null;toast('위치 저장 실패: '+String(e.message||e).slice(0,90));vShelf();
+ }finally{SWAP_BUSY=false}
 }
 function bindShelfSwap(){
  const root=$('#shv');if(!root||!canEdit()||D.sv==='tax'||D.sv==='cu')return;
