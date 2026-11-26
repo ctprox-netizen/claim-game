@@ -613,7 +613,7 @@ const secOf=id=>petOf(id)||'iso';
 const secIds=()=>PETS[SEC]?activePetIds(PETS[SEC]):activeALL();
 Object.entries(PETS).forEach(([k,P])=>P.ids.forEach((id,i)=>{XSP[id]={n:`${P.n} ${i+1}`,ln:'',env:'',roll:0,fam:'',hab:'',pet:k};IMG[id]=P.img}));
 Object.values(PETS.worm.stages).forEach(st=>st.ids.forEach((id,i)=>{XSP[id].n=`${st.n} 통 ${i+1}`;XSP[id].stage=st.n}));IMG.wa1='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzNDQgMjU2Ij48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9ImciIGN4PSI1MCUiIGN5PSI0NSUiIHI9IjcwJSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZTZkY2NkIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjOGY3YTYzIi8+PC9yYWRpYWxHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjM0NCIgaGVpZ2h0PSIyNTYiIGZpbGw9InVybCgjZykiLz48dGV4dCB4PSIxNzIiIHk9IjE2MCIgZm9udC1zaXplPSIxMjAiIHRleHQtYW5jaG9yPSJtaWRkbGUiPvCfqrI8L3RleHQ+PC9zdmc+';
-const baseShelfOf=id=>SHELF.find(s=>s.tubs.includes(id));const shelfLayout=()=>{try{const m=D.memo&&D.memo['shelf-layout'];return m&&m.body?JSON.parse(m.body):{locations:{},order:{}}}catch(e){return{locations:{},order:{}}}};const locOf=id=>{const z=shelfLayout();if(Object.prototype.hasOwnProperty.call(z.locations||{},id))return z.locations[id];const m=D.memo&&D.memo['loc:'+id];return m?m.body:(baseShelfOf(id)?.id||'')};const shelfOf=id=>SHELF.find(s=>s.id===locOf(id))||baseShelfOf(id)||SHELF[0];const locName=id=>SHELF.find(x=>x.id===locOf(id))?.n||'미지정';const allAnimalIds=()=>[...activeALL(),...Object.values(PETS).flatMap(p=>p.ids)].filter(id=>!(D.removed||[]).includes(id));
+const baseShelfOf=id=>SHELF.find(s=>s.tubs.includes(id));const shelfLayout=()=>{try{const m=D.memo&&D.memo['shflay'];return m&&m.body?JSON.parse(m.body):{locations:{},order:{}}}catch(e){return{locations:{},order:{}}}};const locOf=id=>{const z=shelfLayout();if(Object.prototype.hasOwnProperty.call(z.locations||{},id))return z.locations[id];const m=D.memo&&D.memo['loc:'+id];return m?m.body:(baseShelfOf(id)?.id||'')};const shelfOf=id=>SHELF.find(s=>s.id===locOf(id))||baseShelfOf(id)||SHELF[0];const locName=id=>SHELF.find(x=>x.id===locOf(id))?.n||'미지정';const allAnimalIds=()=>[...activeALL(),...Object.values(PETS).flatMap(p=>p.ids)].filter(id=>!(D.removed||[]).includes(id));
 const spOf=id=>XSP[id]||ISPC[parseInt(id)];
 const isIso=id=>!XSP[id]||XSP[id].kind==='iso';
 const galOf=id=>{const g=D.gal&&D.gal[id]||{};return Object.keys(g).map(Number).filter(n=>n>=1&&n<=9).sort((a,b)=>a-b).map(n=>Object.assign({slot:n},g[n])).filter(x=>x.thumb)};
@@ -908,8 +908,8 @@ async function swapShelfTubs(a,b){
   else{aa[ia]=b;bb[ib]=a;layout.order[la]=aa;layout.order[lb]=bb;layout.locations[a]=lb;layout.locations[b]=la}
   const body=JSON.stringify(layout);
   if(body.length>19000)throw new Error('선반 배치 정보가 너무 큽니다');
-  const upd=await rpc('iso_memo_set',{t:'shelf-layout',b:body});
-  D.memo['shelf-layout']={body,who:D.ed,upd:upd||new Date().toISOString()};
+  const upd=await rpc('iso_memo_set',{t:'shflay',b:body});
+  D.memo['shflay']={body,who:D.ed,upd:upd||new Date().toISOString()};
   SWAP_FROM=null;save();toast('사육통 두 개의 자리를 바꿨어요');vShelf();
  }catch(e){
   console.error('shelf swap failed',e);
