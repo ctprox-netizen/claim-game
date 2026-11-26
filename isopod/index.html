@@ -384,7 +384,7 @@ nav.tabs{background:#263d31!important}
 
 <!-- BUILD-INFO: 2026-11-27-03 -->
 <footer class="build-info" aria-label="사이트 빌드 정보">
- <div><strong>빌드 버전</strong> v2026.11.27-07</div>
+ <div><strong>빌드 버전</strong> v2026.11.27-08</div>
  <div><strong>최종 수정일</strong> 2026.11.27</div>
 </footer>
 <script>
@@ -948,8 +948,8 @@ function watchMore(key,re){const m=$('#more_'+key);if(!m)return;const go=()=>{io
   const io=window.IntersectionObserver?new IntersectionObserver(es=>{if(es.some(x=>x.isIntersecting))go()},{rootMargin:'500px'}):null;io&&io.observe(m)}
 const diaryItem=e=>{const x=e.x,key=thOf(x);return`<div class="wi" data-cmt-row="${key}" role="button" tabindex="0" aria-expanded="${OPEN_CMTS.has(key)}"><div class="wt wdi">📔</div><div class="wx"><div class="w1"><b data-godia="1">일지</b><span class="who ${x.who===D.who?'me':''}">${esc(x.who)}</span><span class="wtime">${hm(x.at)}</span>${recordCommentCount(x,key)}</div><div class="w3"><div class="wclamp">${esc(x.note)}</div></div>${recordComments(x,key)}</div></div>`};
 const galItem=e=>{const x=e.x,key=galThread(x);return`<div class="wi" data-cmt-row="${key}" role="button" tabindex="0" aria-expanded="${OPEN_CMTS.has(key)}"><img class="wt" src="${cover(x.tub)}" data-open="${x.tub}" alt="${esc(tubNm(x.tub))}"><div class="wx"><div class="w1"><b data-open="${x.tub}">${esc(tubNm(x.tub))}</b>${x.who?`<span class="who ${x.who===D.who?'me':''}">${esc(x.who)}</span>`:''}<span class="wtime">${hm(x.upd)}</span>${recordCommentCount(x,key)}</div><div class="w2">${x.slot===0?'📷 대표 사진을 바꿨어요':`🖼 앨범에 사진을 올렸어요 <small class="mut">(${x.slot}번 칸)</small>`}</div>${recordComments(x,key)}</div><img class="thumb" src="${x.thumb}" alt="사진" data-gv="${x.tub}|${x.slot}"></div>`};
-const galFeed=()=>secIds().filter(id=>!isArchived(id)).flatMap(id=>Object.entries(D.gal[id]||{}).filter(([n,g])=>g&&g.thumb&&g.upd).map(([n,g])=>({t:'g',x:{tub:id,slot:+n,who:g.who,thumb:g.thumb,upd:g.upd},at:g.upd})));
-function vToday(){const items=mixFeed(x=>secOf(x.tub)===SEC&&!isArchived(x.tub)).concat(diaries(SEC).map(l=>({t:'d',x:l,at:l.at})),galFeed()).sort((u,v)=>new Date(v.at)-new Date(u.at));
+const galFeed=()=>secIds().concat(Object.keys(archiveMap()).filter(id=>secOf(id)===SEC&&!secIds().includes(id))).flatMap(id=>Object.entries(D.gal[id]||{}).filter(([n,g])=>g&&g.thumb&&g.upd).map(([n,g])=>({t:'g',x:{tub:id,slot:+n,who:g.who,thumb:g.thumb,upd:g.upd},at:g.upd})));
+function vToday(){const items=mixFeed(x=>secOf(x.tub)===SEC).concat(diaries(SEC).map(l=>({t:'d',x:l,at:l.at})),galFeed()).sort((u,v)=>new Date(v.at)-new Date(u.at));
   $('#app').innerHTML=`<h2 class="sec">최근 기록 <small>가족 모두 · ${items.length}개</small></h2>${items.length?dayFeed(items,'today',e=>e.t==='d'?diaryItem(e):e.t==='g'?galItem(e):wideItem(e)):`<div class="card empty">아직 기록이 없어요. ${PETS[SEC]?(PETS[SEC].stages?'성충·유충':PETS[SEC].n):'선반'} 탭에서 ✏️ 기록 모드로 첫 기록을 남겨 보세요.</div>`}`;
   watchMore('today',vToday);document.querySelectorAll('[data-gv]').forEach(b=>b.onclick=()=>{const [t,n]=b.dataset.gv.split('|');galView(t,+n)});document.querySelectorAll('[data-godia]').forEach(b=>b.onclick=()=>{LOGM='diary';document.querySelector('#tabs [data-tab="log"]').click()});bindCommon()}
 function mixFeed(filter){const a=logs().map(l=>({t:'l',x:l,at:l.at})),b=photos().map(p=>({t:'p',x:p,at:p.at}));return a.concat(b).filter(e=>!filter||filter(e.x)).sort((u,v)=>new Date(v.at)-new Date(u.at))}
