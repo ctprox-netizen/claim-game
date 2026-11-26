@@ -729,13 +729,12 @@ function openAnimalManager(){
 }
 function editManagedAnimal(id){
  if(!needEdit())return;
- const name=tubNm(id),currentName=nmOv(id),currentLoc=locOf(id);
+ const name=tubNm(id),currentName=nmOv(id);
  sheet(`<h3 style="margin:0 0 12px">📦 ${esc(name)}</h3>
   <label>상자 이름</label><input id="managedName" class="input" maxlength="40" value="${esc(currentName||name)}" placeholder="${esc(name)}">
-  <label style="display:block;margin-top:14px">사육장 위치 선택</label><p class="mut" style="font-size:12px;margin:4px 0 8px">선반 그림에서 놓을 층을 바로 선택하세요.</p><div id="managedLocs" style="display:flex;flex-direction:column;gap:7px;margin-top:7px"><div style="border:2px solid var(--ink);border-radius:13px;padding:8px;background:var(--bg)"><div style="text-align:center;font-size:11px;font-weight:900;color:var(--mut);padding:1px 0 7px">선반 위치</div>${SHELF.filter(x=>x.id!=='fl').map((x,i)=>`<button type="button" data-loc="${x.id}" aria-pressed="${currentLoc===x.id}" class="btn ${currentLoc===x.id?'pri':''}" style="width:100%;min-height:58px;margin:0 0 7px;padding:8px 12px;display:flex;align-items:center;gap:12px;text-align:left;border-width:2px"><b style="font-size:21px;min-width:48px;text-align:center">${i+1}층</b><span style="flex:1"><b style="display:block;font-size:15px">${esc(x.n)}</b><small style="display:block;font-size:11px;font-weight:500;opacity:.85">${esc(x.d)}</small></span><b style="font-size:18px">${currentLoc===x.id?'✓':'○'}</b></button>`).join('')}<div style="height:5px;background:var(--ink);border-radius:4px;margin:0 2px 2px"></div></div><button type="button" data-loc="fl" aria-pressed="${currentLoc==='fl'}" class="btn ${currentLoc==='fl'?'pri':''}" style="width:100%;min-height:54px;padding:8px 12px;display:flex;align-items:center;gap:12px;text-align:left;border-width:2px"><b style="font-size:21px;min-width:48px;text-align:center">바닥</b><span style="flex:1"><b style="display:block;font-size:15px">바닥에 놓기</b><small style="display:block;font-size:11px;font-weight:500">선반 아래 별도 위치</small></span><b style="font-size:18px">${currentLoc==='fl'?'✓':'○'}</b></button><button type="button" data-loc="" aria-pressed="${!currentLoc}" class="btn ${!currentLoc?'pri':''}" style="width:100%;min-height:46px;padding:8px 12px;text-align:center">위치 미지정</button></div>
+  <p class="mut" style="font-size:12px;margin:8px 0">위치 변경은 선반 탭에서 사육통을 길게 누른 뒤, 자리를 바꿀 다른 통을 누르면 돼요.</p>
   <p class="mut" style="font-size:12px;margin:8px 0">변경 내용은 너와 아빠의 기기에 함께 반영돼요.</p>
   <div class="sbb" style="flex-wrap:wrap"><button class="btn" data-x>취소</button><button class="btn" id="managedDelete" style="color:#b42318">🗑 완전 삭제</button><button class="btn pri" id="managedSave">저장</button></div>`,sh=>{
-   let loc=currentLoc;sh.querySelectorAll('[data-loc]').forEach(b=>b.onclick=()=>{loc=b.dataset.loc;sh.querySelectorAll('[data-loc]').forEach(x=>{const on=x.dataset.loc===loc;x.classList.toggle('pri',on);x.setAttribute('aria-pressed',String(on));const mark=x.querySelector('b:last-child');if(mark)mark.textContent=on?'✓':'○'})});
    sh.querySelector('#managedSave').onclick=async()=>{
     if(!needEdit())return;const nm=sh.querySelector('#managedName').value.trim();
     if(!nm){toast('상자 이름을 입력해 주세요');return}
@@ -743,9 +742,7 @@ function editManagedAnimal(id){
     try{
      const baseName=spOf(id)?.n||name,rename=nm!==(currentName||name);
      if(rename)await rpc('iso_memo_set',{t:'n:'+id,b:nm===baseName?'':nm});
-     if(loc!==currentLoc)await rpc('iso_memo_set',{t:'loc:'+id,b:loc});
      if(rename)D.memo['n:'+id]={body:nm===baseName?'':nm,who:D.ed,upd:new Date().toISOString()};
-     if(loc!==currentLoc)D.memo['loc:'+id]={body:loc,who:D.ed,upd:new Date().toISOString()};
      save();toast('상자 정보를 저장했어요');openAnimalManager();
     }catch(e){b.disabled=false;b.textContent='저장';toast('⚠ 저장하지 못했어요. 연결 상태를 확인해 주세요')}
    };
