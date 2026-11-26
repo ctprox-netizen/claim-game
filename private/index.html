@@ -1508,12 +1508,7 @@ function policyHTML(c,res){
   <div class="pfoot">
 <div class="snav"><button id="sp" aria-label="이전 항목">‹ 이전</button><span id="sn"></span><button id="snx" aria-label="다음 항목">다음 ›</button></div>
   <div class="total"><span>${res?'내 결정 / 정답 지급액':'결정 지급액 합계'}</span><b id="sumV">${f(sum)}원${res?` / ${f(ans)}원`:''}</b></div>
-  ${st.tut?'':res?(c.inv&&c.nd?`<p class="rqn frd">🔎 <b>현장조사 의뢰 적중!</b> ${c.ndW}</p>`:c.inv?'<p class="rqn bad">⚠ 계약 후 치료 이력인데 현장조사 의뢰 — 지급 지연 민원 (−15점)</p>':c.nd?`<p class="rqn bad">🔎 <b>고지의무 위반 의심 건을 놓쳤어요</b> (−20점) · ${c.ndW}</p>`:'')+(c.flag&&c.fraud?`<p class="rqn frd">🚩 <b>사기 적발!</b> ${c.fraudW||''}</p>`:c.flag?'<p class="rqn bad">⚠ 정상 청구를 조사 의뢰했어요 — 고객 민원 (−20점)</p>':c.fraud?`<p class="rqn bad">🚨 <b>보험사기를 놓쳤어요</b> (−30점) · ${c.fraudW||''}</p>`:'')+(c.xfr&&isBig(c)?`<p class="rqn frd">🏢 <b>표준부서 이관 적중!</b> ${bigTxt(c)} — 모든 담보 지급액 합계가 200만원을 넘으면 간편심사 대상이 아니에요.</p>`:c.xfr?'<p class="rqn bad">⚠ 간편심사로 처리할 건을 이관했어요 — 처리 지연 (−15점)</p>':isBig(c)?`<p class="rqn bad">🏢 <b>이관 대상을 직접 심사했어요</b> (−20점) · ${bigTxt(c)} — 합계 200만원 초과 건은 표준부서로 이관해요.</p>`:'')
-    :`<div class="xfw"><button class="flag xfb" id="xfer" aria-expanded="${!!st.xfo}" aria-pressed="${!!(c.flag||c.inv||c.xfr)}"><span>${c.flag?'🚩 사기 조사 의뢰함':c.inv?'🔎 현장조사 의뢰함':c.xfr?'🏢 표준부서 이관함':'📤 의뢰 · 이관'}</span><i aria-hidden="true">${st.xfo?'▴':'▾'}</i></button>${st.xfo?`<div class="xfp" role="menu">
-      <button class="xfo" id="flag" role="menuitemradio" aria-checked="${!!c.flag}"><b>🚩 사기 조사 의뢰</b><small>서류가 위조·변조된 것 같을 때 (이름·병원·날짜·진단명 불일치)</small></button>
-      ${st.lv>=2?`<button class="xfo" id="inv" role="menuitemradio" aria-checked="${!!c.inv}"><b>🔎 현장조사 의뢰</b><small>계약 전부터 치료받은 이력(고지의무 위반)이 의심될 때</small></button>`:''}
-      ${st.lv>=1&&!st.tut?`<button class="xfo" id="xfr" role="menuitemradio" aria-checked="${!!c.xfr}"><b>🏢 표준부서 이관</b><small>모든 담보 지급액 합계가 200만원을 넘는 건 — 간편심사 대상이 아니에요</small></button>`:''}
-      ${c.flag||c.inv||c.xfr?'<button class="xfo xfc" id="xfc">↩ 선택 취소 · 직접 심사하기</button>':''}</div>`:''}</div>`}
+  
 </div>
   </aside>`;
 }
@@ -1752,10 +1747,10 @@ const clock=s=>`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
 function stopT(){if(st.tid&&st.last){const now=Date.now();st.gm=Math.min(540,st.gm+GM*(now-st.last)/1000);st.last=now}clearInterval(st.tid);st.tid=null;st.last=null}
 const DAY_SEC=900,VOL=[{n:'적음',k:6},{n:'보통',k:10},{n:'많음',k:16},{n:'매우 많음',k:22},{n:'폭주',k:30}],GM=540/DAY_SEC,hm=m=>{const t=540+Math.floor(m);return`${String(Math.floor(t/60)).padStart(2,'0')}:${String(t%60).padStart(2,'0')}`};
 function arrive(){st.regPick=null;
-  let c=seeded(()=>{let c=gen();if(st.scnRun&&st.scnRule&&Math.random()<.45)for(let t=0;t<120;t++){if(st.scnRule==='ktas3'?c.covs.includes('er')&&c.er===3:c.covs.includes('burn')&&c.burn==='표재성 2도'&&c.s.grp==='burn')break;c=gen()}if(!st.tut&&Math.random()<(st.sty&&st.sty.fr!=null?st.sty.fr:st.scnRun&&st.scnFr?st.scnFr:FRP[st.lv]))c.fraud=pick(c.s.cause==='d'?['name','edit','hos','dx']:['name','edit','hos']);if(!st.tut&&!c.fraud&&st.lv>=2)ndSetup(c);if(!st.tut&&!st.sty&&!c.fraud&&!c.nd&&st.lv>=1&&Math.random()<.07)bigSetup(c);return c});if(st.scnRun&&st.wBoss&&st.queue.length===1){st.wBoss=0;c=seeded(bossClaim)}st.regPick=null;
+  let c=seeded(()=>{let c=gen();if(st.scnRun&&st.scnRule&&Math.random()<.45)for(let t=0;t<120;t++){if(st.scnRule==='ktas3'?c.covs.includes('er')&&c.er===3:c.covs.includes('burn')&&c.burn==='표재성 2도'&&c.s.grp==='burn')break;c=gen()}return c});if(st.scnRun&&st.wBoss&&st.queue.length===1){st.wBoss=0;c=seeded(bossClaim)}st.regPick=null;
   const it={id:c.regno,c,at:st.gm,done:false};st.queue.push(it);
   if(st.scr==='game'){toast(`📥 새 접수 ${it.id} · ${c.who}`)}return it}
-function bossClaim(){const lv=st.lv;st.lv=3;let b=null;for(let i=0;i<14;i++){const c=gen(),n=c.covs.filter(k=>k!=='pay').length;if(!b||n>b.n)b={c,n}}const c=b.c;if(Math.random()<.45)c.fraud=pick(c.s.cause==='d'?['name','edit','hos','dx']:['name','edit','hos']);else ndSetup(c);st.lv=lv;c.boss=1;return c}
+function bossClaim(){const lv=st.lv;st.lv=3;let b=null;for(let i=0;i<14;i++){const c=gen(),n=c.covs.filter(k=>k!=='pay').length;if(!b||n>b.n)b={c,n}}const c=b.c;st.lv=lv;c.boss=1;return c}
 const TQ=[];function toast(t){TQ.push(t);if(TQ.length===1)toastNext()}
 function toastNext(){const e=document.getElementById('toast');if(!TQ.length){e.hidden=true;return}e.textContent=TQ[0];e.hidden=false;clearTimeout(st.tt);st.tt=setTimeout(()=>{TQ.shift();toastNext()},TQ.length>1?1800:2600)}
 function missingDocs(c){const m=[];if(c.days&&!c.docs.hosp)m.push('입원 확인서');if(c.surg&&!c.docs.surg)m.push('수술 확인서');if(st.sil&&!c.docs.rcpt)m.push('진료비 영수증');if(c.car&&!c.docs.carDoc)m.push('부상급수 확인서');return m}
@@ -1993,15 +1988,12 @@ function submit(){
   const mul=LV[st.lv].mul;
   let items=c.ans.length-(pSkip?1:0);
   if(st.notice&&c.fr){items+=1;if(sumPick(c)===0&&c.frP===c.fr)right++}
-  if(c.flag||c.inv||c.xfr){right=(c.flag&&c.fraud)||(c.inv&&c.nd)||(c.xfr&&isBig(c))?1:0;items=1}else if(c.nd||isBig(c)){right=0;items=1}else if(c.fraud)items+=1;
-  if(st.notice&&!c.flag&&!c.inv&&!c.xfr&&!isBig(c)&&!(st.sty&&st.sty.les)){const cmp=st.scnRun&&st.scnEvK==='cmp'&&!st.cmpIt,ca=st.callAll;if(cmp)st.callAll=true;c.call=makeCall(c);st.callAll=ca;if(c.call){c.call.state='pending';c.call.at=Math.min(532,st.gm+(st.callAll||cmp?R(8,40):R(20,120)));if(cmp){st.cmpIt=c;c.cmpN=1}}}
+  if(c.fraud)items+=1;
+  if(st.notice&&!(st.sty&&st.sty.les){const cmp=st.scnRun&&st.scnEvK==='cmp'&&!st.cmpIt,ca=st.callAll;if(cmp)st.callAll=true;c.call=makeCall(c);st.callAll=ca;if(c.call){c.call.state='pending';c.call.at=Math.min(532,st.gm+(st.callAll||cmp?R(8,40):R(20,120)));if(cmp){st.cmpIt=c;c.cmpN=1}}}
   st.ok+=right;st.totalCov+=items;st.score+=Math.round(right*10*mul);
   const s0=st.score;st.score+=0;
   if(right===items){st.score+=Math.round(20*mul);st.okClaims++}
   const it=st.queue[st.cur];
-  if(c.flag)st.score+=c.fraud?Math.round(30*mul):-20;else if(c.fraud)st.score-=30;
-  if(c.inv)st.score+=c.nd?Math.round(25*mul):-15;else if(c.nd&&!c.flag)st.score-=20;
-  if(c.xfr)st.score+=isBig(c)?Math.round(25*mul):-15;else if(isBig(c)&&!c.flag&&!c.inv)st.score-=20;
   const fxl=afterSubmit(it,c,right,items,mul);
   it.done=true;it.right=right;it.items=items;it.pts=Math.round(right*10*mul)+(st.score-s0);
   st.done=true;c.resetSx=1;render(true);stampFX(right===items,it.pts,fxl);hud();
@@ -2148,7 +2140,7 @@ function tutStart(){const c=tutPrep();st.tut=true;st.callAll=true;st.notice=true
    {sel:'#cctg',t:`어떤 건 문의인지 <b>[📋 이 건 심사 결과 보기]</b>를 눌러 확인하며 응대해요.`,done:()=>!!st.ccOpen,skip:()=>!c.call},
    {pos:'top',sel:'#copts',t:`고객 말이 끝나면 답변이 나와요. <b>사유·근거·다음 절차</b>를 정확하고 정중하게 안내하는 답을 고르세요.`,done:()=>!st.inCall||!!document.getElementById('cend'),skip:()=>!c.call},
    {sel:'#cend',t:`통화 결과가 나와요. <b>[통화 종료]</b>를 눌러요.`,done:()=>!st.inCall,skip:()=>!c.call},
-   {sel:null,t:`🎉 <b>튜토리얼 끝!</b> 실제 게임에서는<ul><li>시간이 계속 흘러요 (하루 = 실제 15분)</li><li>필요한 서류가 <b>미제출</b>이면 그 담보는 부지급</li><li>지급액이 0원이면 <b>부지급 사유</b> 선택</li><li>실손 포함이면 영수증으로 <b>실손 금액</b> 계산 (🧮 계산기)</li><li>서류끼리 이름·병원이 다르거나 날짜를 고친 흔적이 있으면 <b>🚩 사기 조사 의뢰</b></li><li>연속 정답 <b>🔥콤보</b>, 빠른 처리 <b>⚡보너스</b>, 매일 <b>🎯미션</b>으로 승진하세요!</li></ul>처음엔 <b>매우 쉬움 · 실손 제외</b>로 시작해 보세요. 서류가 어려우면 ⚙️ 설정에서 <b>간편 서류</b>로 바꿀 수 있어요.`,btn:'처음 화면으로',fin:true}];
+   {sel:null,t:`🎉 <b>튜토리얼 끝!</b> 실제 게임에서는<ul><li>시간이 계속 흘러요 (하루 = 실제 15분)</li><li>필요한 서류가 <b>미제출</b>이면 그 담보는 부지급</li><li>지급액이 0원이면 <b>부지급 사유</b> 선택</li><li>실손 포함이면 영수증으로 <b>실손 금액</b> 계산 (🧮 계산기)</li><li>연속 정답 <b>🔥콤보</b>, 빠른 처리 <b>⚡보너스</b>, 매일 <b>🎯미션</b>으로 승진하세요!</li></ul>처음엔 <b>매우 쉬움 · 실손 제외</b>로 시작해 보세요. 서류가 어려우면 ⚙️ 설정에서 <b>간편 서류</b>로 바꿀 수 있어요.`,btn:'처음 화면으로',fin:true}];
   tsI=0;st.lv=0;inbox();window.scrollTo({top:0});startT();coach.hidden=false;tutRender();clearInterval(tsTimer);tsTimer=setInterval(tutPoll,250)}
 function tutEnd(go){clearInterval(tsTimer);tsTimer=null;coach.hidden=true;tspot.hidden=true;if(tsHl)tsHl.classList.remove('chl');tsHl=null;st.tut=false;st.callAll=false;st.ccOpen=false;
   if(go){st.lv=0;st.pick=false;st.newbie=!!CR.nb;st.vol=0}else if(st._keep)Object.assign(st,st._keep);start()}
