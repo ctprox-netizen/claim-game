@@ -768,6 +768,32 @@ async function deleteManagedAnimal(id){
  }catch(e){if(b){b.disabled=false;b.textContent='🗑 완전 삭제'}toast('⚠ 삭제하지 못했어요. 로그인·연결 상태를 확인해 주세요')}
 }
 
+async function deleteSelectedShelfTubs(){
+ if(!needEdit()||!SEL.size)return;
+ const ids=[...SEL].filter(id=>allAnimalIds().includes(id));
+ if(!ids.length){toast('선택한 사육통이 없어요');return}
+ const names=ids.map(tubNm);
+ if(!confirm(`선택한 사육통 ${ids.length}개를 완전히 삭제할까요?\\n\\n${names.join(', ')}\\n\\n기록·사진·앨범·소개도 함께 삭제됩니다.`))return;
+ const go=$('#rmGo');if(go){go.disabled=true;go.textContent='삭제 중…'}
+ let done=0;
+ try{
+  for(const id of ids){
+   await rpc('iso_animal_delete',{t:id});
+   const gone=new Set(Object.values(D.logs).filter(x=>x.tub===id).map(x=>x.cid));
+   Object.keys(D.photos).filter(k=>D.photos[k].tub===id).forEach(k=>IDB.del(k).catch(()=>{}));
+   Object.values(D.gal[id]||{}).forEach(g=>{if(g&&g.upd)IDB.del(`g:${id}:${g.slot}:${g.upd}`).catch(()=>{})});
+   D.logs=Object.fromEntries(Object.entries(D.logs).filter(([k,x])=>x.tub!==id&&!gone.has((x.tub||'').slice(2))));
+   D.photos=Object.fromEntries(Object.entries(D.photos).filter(([k,x])=>x.tub!==id));
+   D.pend=D.pend.filter(k=>D.logs[k]);D.pendP=D.pendP.filter(k=>D.photos[k]);D.gal[id]={};
+   Object.keys(D.memo).filter(k=>k===id||k==='n:'+id||k==='b:'+id||k==='p:'+id||k==='loc:'+id||k==='new:'+id||k==='a'+id.slice(1)).forEach(k=>delete D.memo[k]);
+   D.removed=[...new Set([...(D.removed||[]),id])];done++;
+  }
+  cleanupDynamicGroups();D.gsince=null;D.msince=null;save();await flushIDB();await syncGal();await syncMemo();
+  DEL_MODE=false;SEL.clear();toast(`사육통 ${done}개와 관련 데이터를 삭제했어요`);vShelf();
+ }catch(e){
+  save();DEL_MODE=false;SEL.clear();toast(`삭제 ${done}개 완료, 나머지는 실패했어요: ${String(e.message||e).slice(0,65)}`);vShelf();
+ }
+}
 function showAddAnimalForm(defaultGroup,inManager=false){
  if(!needEdit())return;
  if(defaultGroup==='iso'){
@@ -893,13 +919,13 @@ function vToday(){const items=mixFeed(x=>secOf(x.tub)===SEC).concat(diaries(SEC)
 function mixFeed(filter){const a=logs().map(l=>({t:'l',x:l,at:l.at})),b=photos().map(p=>({t:'p',x:p,at:p.at}));return a.concat(b).filter(e=>!filter||filter(e.x)).sort((u,v)=>new Date(v.at)-new Date(u.at))}
 function feedHTML(items,showDel,noTub){return `<ul class="feed">${items.map(e=>{const x=e.x,k=e.t==='p'?KIND.photo:KIND[x.kind]||['•',x.kind],v=e.t==='p'?'':valTxt(x);
   return `<li><span class="ic">${k[0]}</span><div class="fx"><div>${noTub?'':`<b data-open="${x.tub}" style="cursor:pointer">${esc(tubNm(x.tub))}</b> · `}${k[1]}${v? ` <b>${esc(v)}</b>`:''}<span class="who ${x.who===D.who?'me':''}">${esc(x.who)}</span></div>${x.note?`<small>${esc(x.note)}</small>`:''}<small>${dayLab(x.at)} ${hm(x.at)}${x.sv?'':' · ⏳ 공유 대기'}</small></div>${e.t==='p'?`<img class="thumb" src="${x.thumb}" alt="사진" data-ph="${x.cid}">`:''}${showDel&&canEdit()&&x.who===D.who?`<button class="del" data-del="${x.cid}" aria-label="내 기록 삭제">✕</button>`:''}</li>`}).join('')}</ul>`}
-let RM=false;const SEL=new Set();
+let RM=false,DEL_MODE=false;const SEL=new Set();
 /* 계통별 묶음 (IGRP 순서) + 톡토기 */
 function taxGroups(){const a=activeALL(),g=IGRP.map(([f,gn,sp])=>({k:gn,t:`<i>${gn}</i>`,d:f,ids:sp.flatMap(n=>a.filter(id=>!XSP[id]&&parseInt(id)===n))})).filter(x=>x.ids.length);
   Object.keys(XSP).forEach(id=>{if(a.includes(id))g.push({k:id,t:esc(XSP[id].n),d:XSP[id].fam,ids:[id]})});return g}
 const cntTxt=id=>{if(XSP[id]&&XSP[id].pet)return'';const c=countOf(id);if(c.n==null)return c.b?`🐣 ${c.b}`:'? 마리';const q={ge:'+',le:'↓',ap:'±'}[c.q]||'';return`${c.n}${q}마리${c.b?` <small>+🐣${c.b}</small>`:''}`};
-const tileH=id=>`<button class="tb2 ${RM&&SEL.has(id)?'on':''}" ${RM?`data-pick="${id}" aria-pressed="${SEL.has(id)}"`:`data-open="${id}"`}><img src="${cover(id)}" alt="" loading="lazy"><span>${esc(tubNm(id))}</span><em class="cnt">${cntTxt(id)}</em>${locOf(id)?`<small class="mut">📍 ${esc(locName(id))}</small>`:''}<i class="ck">✓</i></button>`;
-const grpAttr=ids=>RM?`data-grp="${ids.join(',')}" role="button"`:'';
+const tileH=id=>`<button class="tb2 ${(RM||DEL_MODE)&&SEL.has(id)?'on':''}" ${(RM||DEL_MODE)?`data-pick="${id}" aria-pressed="${SEL.has(id)}"`:`data-open="${id}"`}><img src="${cover(id)}" alt="" loading="lazy"><span>${esc(tubNm(id))}</span><em class="cnt">${cntTxt(id)}</em>${locOf(id)?`<small class="mut">📍 ${esc(locName(id))}</small>`:''}<i class="ck">✓</i></button>`;
+const grpAttr=ids=>(RM||DEL_MODE)?`data-grp="${ids.join(',')}" role="button"`:'';
 const DMS=[['photo','사진만'],['name','이름만'],['both','사진+이름'],['cnt','사진+개체수']];
 let MV=false,MVP=null;
 let SWAP_FROM=null,SWAP_PRESS_TIMER=null,SWAP_BUSY=false;
@@ -960,7 +986,7 @@ function bindShelfSwap(){
 const cuOrder=()=>{const a=activeALL(),o=(D.co||[]).filter(id=>a.includes(id));a.forEach(id=>{if(!o.includes(id))o.push(id)});return o};
 function vPet(){const P=PETS[SEC],st=P.stages?P.stages[D.tab==='larva'?'larva':'shelf']:null,ids=(st?st.ids:P.ids).filter(id=>!(D.removed||[]).includes(id)),U=unit();if(!canEdit()){RM=false;SEL.clear()}MV=false;
   $('#app').innerHTML=`<div class="shh"><b style="font-size:17px">${st?st.e:P.e} ${P.full}${st?' '+st.n:''} <small class="mut">${ids.length}${U}</small></b>${RM?`<button class="btn sm" data-grp="${ids.join(',')}" style="margin-left:auto">전체 고르기</button>`:''}</div>
-   ${RM?`<p class="rmh">기록할 ${U==='통'?'통을':'아이를'} 눌러 고르세요</p>`:''}<div class="petg ${RM?'rm':''} n${ids.length}">${ids.map(tileH).join('')}</div>${canEdit()?`<div style="margin:22px 0 18px"><button class="btn pri" id="animalManageBtn" style="width:100%;padding:14px;font-size:16px">🧰 ${esc(P.full)} 관리</button></div>`:''}`;
+   ${RM?`<p class="rmh">기록할 ${U==='통'?'통을':'아이를'} 눌러 고르세요</p>`:''}<div class="petg ${RM||DEL_MODE?'rm':''} n${ids.length}">${ids.map(tileH).join('')}</div>${canEdit()?`<div style="margin:22px 0 18px"><button class="btn pri" id="animalManageBtn" style="width:100%;padding:14px;font-size:16px">🧰 ${esc(P.full)} 관리</button></div>`:''}`;
   $('#float').innerHTML=RM?`<div class="rmbar" id="rmbar"><button class="rmx" id="rmBtn" aria-label="기록 모드 끄기">✕</button><span id="rmN"></span><button class="btn sm" id="rmClr">선택 해제</button><button class="btn pri" id="rmGo">기록하기</button></div>`:`<button class="fab edonly" id="rmBtn">✏️ 기록 모드</button>`;
   {const f=$('.fab');if(f)f.style.bottom=(($('#tabs').offsetHeight||64)+14)+'px'}
   if($('#animalManageBtn'))$('#animalManageBtn').onclick=openAnimalManager;
@@ -969,7 +995,7 @@ function vPet(){const P=PETS[SEC],st=P.stages?P.stages[D.tab==='larva'?'larva':'
     const upd=()=>{document.querySelectorAll('[data-pick]').forEach(b=>{const on=SEL.has(b.dataset.pick);b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)});$('#rmN').innerHTML=SEL.size?`<b>${SEL.size}</b>${U} 골랐어요`:'<span class="mut">고른 것 없음</span>';$('#rmGo').disabled=!SEL.size;$('#rmClr').disabled=!SEL.size};
     document.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>{const id=b.dataset.pick;SEL.has(id)?SEL.delete(id):SEL.add(id);upd()});
     document.querySelectorAll('[data-grp]').forEach(b=>b.onclick=()=>{const t=b.dataset.grp.split(','),all=t.every(id=>SEL.has(id));t.forEach(id=>all?SEL.delete(id):SEL.add(id));upd()});
-    $('#rmClr').onclick=()=>{SEL.clear();upd()};$('#rmGo').onclick=()=>{if(SEL.size)rmSheet()};upd()}
+    $('#rmClr').onclick=()=>{SEL.clear();upd()};$('#rmGo').onclick=()=>{if(!SEL.size)return;if(DEL_MODE)deleteSelectedShelfTubs();else rmSheet()};upd()}
   bindCommon()}
 function vShelf(){if(PETS[SEC])return vPet();if(!canEdit()){RM=false;SEL.clear()}const sv=['tax','cu'].includes(D.sv)?D.sv:'shelf';if(sv!=='cu')MV=false;if(MV)RM=false;
   const locIds=allAnimalIds(),cols=SHELF.filter(x=>x.id!=='fl').map(x=>({...x,tubs:orderedShelfIds(x.id,locIds.filter(id=>locOf(id)===x.id))})).filter(x=>x.tubs.length),fl0=SHELF.find(x=>x.id==='fl'),fl=fl0?({...fl0,tubs:orderedShelfIds(fl0.id,locIds.filter(id=>locOf(id)===fl0.id))}):null;
@@ -982,11 +1008,11 @@ function vShelf(){if(PETS[SEC])return vPet();if(!canEdit()){RM=false;SEL.clear()
   const dm=DMS.some(x=>x[0]===D.dm)?D.dm:'both';
   $('#app').innerHTML=`<div class="ctl"><span>배열</span><div class="sg">${[['shelf','선반 배열'],['tax','계통별'],['cu','사용자 지정']].map(([k,n])=>`<button data-sv="${k}" aria-pressed="${sv===k}">${n}</button>`).join('')}</div>
      <span>보기</span><div class="sg sg4">${DMS.map(([k,n])=>`<button data-dm="${k}" aria-pressed="${dm===k}">${n}</button>`).join('')}</div></div>
-   ${RM?'<p class="rmh">통을 눌러 고르세요 · 칸·묶음 이름을 누르면 한꺼번에 골라져요</p>':''}
+   ${RM||DEL_MODE?'<p class="rmh">'+(DEL_MODE?'삭제할 사육통을 선반에서 직접 선택하세요':'통을 눌러 고르세요 · 칸·묶음 이름을 누르면 한꺼번에 골라져요')+'</p>':''}
    <div class="shv ${sv} dm-${DMS.some(x=>x[0]===D.dm)?D.dm:'both'} ${RM?'rm':''}" id="shv">${body}</div>${canEdit()?`<div style="margin:22px 0 18px;display:grid;gap:9px"><button class="btn pri" id="addTubBtn" style="width:100%;padding:14px;font-size:16px">＋ 새 사육통 추가</button><button class="btn" id="removeTubBtn" style="width:100%;padding:13px;font-size:15px;color:#b42318">－ 사육통 제거</button></div>`:''}
 `;
-  $('#float').innerHTML=`${RM?`<div class="rmbar" id="rmbar"><button class="rmx" id="rmBtn" aria-label="기록 모드 끄기">✕</button><span id="rmN"></span><button class="btn sm" id="rmClr">선택 해제</button><button class="btn pri" id="rmGo">기록하기</button></div>`:MV?'':`<button class="fab edonly" id="rmBtn">✏️ 기록 모드</button>`}`;
-  if($('#addTubBtn'))$('#addTubBtn').onclick=()=>showAddAnimalForm('iso');if($('#removeTubBtn'))$('#removeTubBtn').onclick=openAnimalManager;
+  $('#float').innerHTML=`${RM||DEL_MODE?`<div class="rmbar" id="rmbar"><button class="rmx" id="rmBtn" aria-label="선택 모드 끄기">✕</button><span id="rmN"></span><button class="btn sm" id="rmClr">선택 해제</button><button class="btn pri" id="rmGo">${DEL_MODE?'선택한 통 삭제':'기록하기'}</button></div>`:MV?'':`<button class="fab edonly" id="rmBtn">✏️ 기록 모드</button>`}`;
+  if($('#addTubBtn'))$('#addTubBtn').onclick=()=>showAddAnimalForm('iso');if($('#removeTubBtn'))$('#removeTubBtn').onclick=()=>{if(!needEdit())return;DEL_MODE=true;RM=false;SEL.clear();MV=false;MVP=null;vShelf()};
   document.querySelectorAll('[data-sv]').forEach(b=>b.onclick=()=>{D.sv=b.dataset.sv;MV=false;MVP=null;save();vShelf()});
   if($('#cuMv'))$('#cuMv').onclick=()=>{MV=!MV;MVP=null;if(MV){RM=false;SEL.clear()}vShelf()};
   if($('#cuReset'))$('#cuReset').onclick=()=>{if(confirm('처음 순서(선반 배열 순서)로 되돌릴까요?')){D.co=null;MVP=null;save();vShelf()}};
@@ -994,9 +1020,9 @@ function vShelf(){if(PETS[SEC])return vPet();if(!canEdit()){RM=false;SEL.clear()
     const o=cuOrder(),from=o.indexOf(MVP);o.splice(from,1);o.splice(o.indexOf(id)+(from<=o.indexOf(id)?1:0),0,MVP);D.co=o;MVP=null;save();vShelf()});
   document.querySelectorAll('[data-dm]').forEach(b=>b.onclick=()=>{D.dm=b.dataset.dm;save();vShelf()});
   {const f=$('.fab');if(f)f.style.bottom=(($('#tabs').offsetHeight||64)+14)+'px'}
-  if($('#rmBtn'))$('#rmBtn').onclick=()=>{if(!needEdit())return;RM=!RM;SEL.clear();if(RM){MV=false;MVP=null}vShelf()};
-  if(RM){const bar=$('#rmbar');bar.style.bottom=($('#tabs').offsetHeight||64)+'px';
-    const upd=()=>{document.querySelectorAll('[data-pick]').forEach(b=>{const on=SEL.has(b.dataset.pick);b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)});$('#rmN').innerHTML=SEL.size?`<b>${SEL.size}</b>통 골랐어요`:'<span class="mut">고른 통 없음</span>';$('#rmGo').disabled=!SEL.size;$('#rmClr').disabled=!SEL.size};
+  if($('#rmBtn'))$('#rmBtn').onclick=()=>{if(!needEdit())return;if(DEL_MODE){DEL_MODE=false;SEL.clear()}else{RM=!RM;SEL.clear()}if(RM){MV=false;MVP=null}vShelf()};
+  if(RM||DEL_MODE){const bar=$('#rmbar');bar.style.bottom=($('#tabs').offsetHeight||64)+'px';
+    const upd=()=>{document.querySelectorAll('[data-pick]').forEach(b=>{const on=SEL.has(b.dataset.pick);b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)});$('#rmN').innerHTML=SEL.size?`<b>${SEL.size}</b>통 ${DEL_MODE?'삭제 선택':'골랐어요'}`:'<span class="mut">고른 통 없음</span>';$('#rmGo').disabled=!SEL.size;$('#rmClr').disabled=!SEL.size};
     document.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>{const id=b.dataset.pick;SEL.has(id)?SEL.delete(id):SEL.add(id);upd()});
     document.querySelectorAll('[data-grp]').forEach(b=>b.onclick=()=>{const t=b.dataset.grp.split(','),all=t.every(id=>SEL.has(id));t.forEach(id=>all?SEL.delete(id):SEL.add(id));upd()});
     $('#rmClr').onclick=()=>{SEL.clear();upd()};$('#rmGo').onclick=()=>{if(SEL.size)rmSheet()};upd()}
