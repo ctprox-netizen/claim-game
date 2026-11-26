@@ -548,7 +548,7 @@ table.sil th{background:#f3efe7}
 body.app .dslide{position:relative;background:#fffdf7;border-radius:8px}.dsh{position:sticky;top:0;z-index:2;background:#1d1a17;color:#fff;font-weight:800;font-size:13.5px;padding:7px 10px;border-radius:8px 8px 0 0}.dsh small{font-weight:500;font-size:11px;opacity:.85;margin-left:4px}
 .dsec{padding:6px 2px 10px;border-bottom:3px double #1d1a17}.dst{font-weight:800;font-size:13px;color:#1d4ed8;margin:4px 4px 6px}.dsec .doc{margin:0}.dmiss{margin:10px 6px;font-size:13px;color:#e08a00}.dend{text-align:center;font-size:12px;color:#6b625a;margin:12px 0 16px}
 body.app .policy.ondocs .total,body.app .policy.ondocs .flag,body.app .policy.ondocs .rqn,body.app .policy.ondocs .gorow,body.app .policy.ondocs .phead,body.app .policy.ondocs .stamp{display:none}
-.ccw{position:relative;min-width:0}.ccw .ccase{position:static;left:auto;right:auto;bottom:auto;margin:6px 0;max-height:min(28dvh,220px);overflow-y:auto;overscroll-behavior:contain;z-index:auto;box-shadow:0 3px 12px -5px #0005}
+.ccw{position:relative;min-width:0}.ccw .ccase{position:static;left:auto;right:auto;bottom:auto;margin:6px 0;max-height:min(38dvh,300px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;z-index:auto;box-shadow:0 3px 12px -5px #0005}
 .pfoot .gorow .go,.pfoot .gorow .back2{margin-top:0}.pfoot .gorow{margin:2px 0 6px}
 .stw{display:flex;justify-content:center;padding:18px 0 12px}.stw .go{width:auto;min-width:72%;margin:0 auto;padding:0 22px;background:#1d4ed8;border-color:#1d4ed8;color:#fff}
 body.app.ingame>header,body.app.ingame>.bar{display:none}
@@ -1954,7 +1954,7 @@ function callCase(it){const c=it.c,LB=(C,v)=>(C.carG?CGL:C.grade?GRL:C.opts||['�
     return`<li><div class="ccn">${k==='sil'?'실손의료비':C.n} <span class="mk ${ok?'ok':'bad'}">${ok?'✓':'✗'}</span></div><div>내 결정 <b>${mine}</b>${ok?'':` · 정답 <b>${right}</b>`}</div><div class="ccw">${a.w}</div></li>`}).join('');
   const T=sumPick(c);
   return`<div class="ccase" id="ccase" ${st.ccOpen?'':'hidden'}><div class="cch">접수 ${it.id} · 피보험자 <b>${c.who}</b>${c.ben!==c.who?` · 수익자 <b>${c.ben}</b>`:''} · 계약일 ${fd(c.con)}</div><ul>${rows}</ul><div class="cct">결정 지급액 합계 <b>${won(T)}</b>${c.ns>=0&&c.nsO?` · 보낸 안내: ${c.nsO[c.ns]}`:''}</div></div>`}
-function ccFit(){const p=document.getElementById('ccase');if(p&&!p.hidden){p.style.maxHeight='min(28dvh, 220px)';p.style.overflowY='auto'}}
+function ccFit(){const p=document.getElementById('ccase');if(p&&!p.hidden){p.style.maxHeight='min(38dvh, 300px)';p.style.overflowY='auto';p.style.overscrollBehavior='contain';p.style.webkitOverflowScrolling='touch'}}
 function callRender(){const it=st.inCall,c=it.c,k=c.call,cur=k.turns[k.t];
   const L=k.hist.length-1,bub=k.hist.map((x,i)=>`<p class="cb c">${x.q}</p><p class="cb me${x.ok?'':' bad'}">${x.ans}</p>${x.ok?'':`<p class="cb c"${i===L?' id="crx"':''}>${i===L&&!k.typedEnd?'':x.rx}</p>`}`).join('')+(k.end===1?`<p class="cb c" id="crx">${k.typedEnd?'네, 자세히 설명해 주셔서 감사합니다.':''}</p>`:'');
   const prog=`${k.end?k.hist.length:k.t+1} / ${k.turns.length}턴`;
