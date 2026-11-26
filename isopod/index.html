@@ -891,7 +891,7 @@ const tileH=id=>`<button class="tb2 ${RM&&SEL.has(id)?'on':''}" ${RM?`data-pick=
 const grpAttr=ids=>RM?`data-grp="${ids.join(',')}" role="button"`:'';
 const DMS=[['photo','사진만'],['name','이름만'],['both','사진+이름'],['cnt','사진+개체수']];
 let MV=false,MVP=null;
-let SWAP_FROM=null,SWAP_IGNORE_CLICK_UNTIL=0,SWAP_PRESS_TIMER=null;
+let SWAP_FROM=null,SWAP_PRESS_TIMER=null;
 async function swapShelfTubs(a,b){
  if(!needEdit()||!a||!b||a===b)return;
  const la=locOf(a),lb=locOf(b),btns=document.querySelectorAll('#shv .tb2');
@@ -913,7 +913,7 @@ function bindShelfSwap(){
    if(e.pointerType==='mouse'&&e.button!==0)return;
    clearTimeout(SWAP_PRESS_TIMER);
    SWAP_PRESS_TIMER=setTimeout(()=>{
-    SWAP_FROM=id;SWAP_IGNORE_CLICK_UNTIL=Date.now()+850;
+    SWAP_FROM=id;
     toast('이동할 통을 골랐어요. 자리를 바꿀 다른 통을 눌러 주세요');
     vShelf();
    },520);
@@ -921,7 +921,6 @@ function bindShelfSwap(){
   ['pointerup','pointercancel','pointerleave'].forEach(ev=>tile.addEventListener(ev,()=>clearTimeout(SWAP_PRESS_TIMER)));
   tile.onclick=e=>{
    e.preventDefault();e.stopPropagation();
-   if(Date.now()<SWAP_IGNORE_CLICK_UNTIL)return;
    if(SWAP_FROM){
     if(SWAP_FROM===id){SWAP_FROM=null;toast('위치 변경을 취소했어요');vShelf();return}
     swapShelfTubs(SWAP_FROM,id);return;
