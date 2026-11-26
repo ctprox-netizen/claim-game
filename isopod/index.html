@@ -963,7 +963,7 @@ function vPet(){const P=PETS[SEC],st=P.stages?P.stages[D.tab==='larva'?'larva':'
    ${RM?`<p class="rmh">기록할 ${U==='통'?'통을':'아이를'} 눌러 고르세요</p>`:''}<div class="petg ${RM?'rm':''} n${ids.length}">${ids.map(tileH).join('')}</div>${canEdit()?`<div style="margin:22px 0 18px"><button class="btn pri" id="animalManageBtn" style="width:100%;padding:14px;font-size:16px">🧰 ${esc(P.full)} 관리</button></div>`:''}`;
   $('#float').innerHTML=RM?`<div class="rmbar" id="rmbar"><button class="rmx" id="rmBtn" aria-label="기록 모드 끄기">✕</button><span id="rmN"></span><button class="btn sm" id="rmClr">선택 해제</button><button class="btn pri" id="rmGo">기록하기</button></div>`:`<button class="fab edonly" id="rmBtn">✏️ 기록 모드</button>`;
   {const f=$('.fab');if(f)f.style.bottom=(($('#tabs').offsetHeight||64)+14)+'px'}
-  if($('#addTubBtn'))$('#addTubBtn').onclick=()=>showAddAnimalForm('iso');
+  if($('#animalManageBtn'))$('#animalManageBtn').onclick=openAnimalManager;
   $('#rmBtn').onclick=()=>{if(!needEdit())return;RM=!RM;SEL.clear();vPet()};
   if(RM){$('#rmbar').style.bottom=($('#tabs').offsetHeight||64)+'px';
     const upd=()=>{document.querySelectorAll('[data-pick]').forEach(b=>{const on=SEL.has(b.dataset.pick);b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)});$('#rmN').innerHTML=SEL.size?`<b>${SEL.size}</b>${U} 골랐어요`:'<span class="mut">고른 것 없음</span>';$('#rmGo').disabled=!SEL.size;$('#rmClr').disabled=!SEL.size};
@@ -986,7 +986,7 @@ function vShelf(){if(PETS[SEC])return vPet();if(!canEdit()){RM=false;SEL.clear()
    <div class="shv ${sv} dm-${DMS.some(x=>x[0]===D.dm)?D.dm:'both'} ${RM?'rm':''}" id="shv">${body}</div>${canEdit()?`<div style="margin:22px 0 18px"><button class="btn pri" id="addTubBtn" style="width:100%;padding:14px;font-size:16px">＋ 새 사육통 추가</button></div>`:''}
 `;
   $('#float').innerHTML=`${RM?`<div class="rmbar" id="rmbar"><button class="rmx" id="rmBtn" aria-label="기록 모드 끄기">✕</button><span id="rmN"></span><button class="btn sm" id="rmClr">선택 해제</button><button class="btn pri" id="rmGo">기록하기</button></div>`:MV?'':`<button class="fab edonly" id="rmBtn">✏️ 기록 모드</button>`}`;
-  if($('#animalManageBtn'))$('#animalManageBtn').onclick=openAnimalManager;
+  if($('#addTubBtn'))$('#addTubBtn').onclick=()=>showAddAnimalForm('iso');
   document.querySelectorAll('[data-sv]').forEach(b=>b.onclick=()=>{D.sv=b.dataset.sv;MV=false;MVP=null;save();vShelf()});
   if($('#cuMv'))$('#cuMv').onclick=()=>{MV=!MV;MVP=null;if(MV){RM=false;SEL.clear()}vShelf()};
   if($('#cuReset'))$('#cuReset').onclick=()=>{if(confirm('처음 순서(선반 배열 순서)로 되돌릴까요?')){D.co=null;MVP=null;save();vShelf()}};
