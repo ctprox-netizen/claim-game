@@ -711,7 +711,7 @@ function openAnimalManager(){
  if(!needEdit())return;
  const ids=managerAnimalIds(),title=managerTitle();
  const rows=ids.map(id=>{
-  const stage=XSP[id]?.stage,loc=locName(id),sub=[stage,loc==='미지정'?'위치 미지정':loc].filter(Boolean).join(' · ');
+  const rawStage=XSP[id]?.stage,stage=rawStage==='shelf'?'성충':rawStage==='larva'?'유충':rawStage,loc=locName(id),sub=[stage,loc==='미지정'?'위치 미지정':loc].filter(Boolean).join(' · ');
   return `<button type="button" data-manage-id="${esc(id)}" style="width:100%;display:flex;align-items:center;gap:12px;text-align:left;padding:10px;border:1.5px solid var(--line);border-radius:12px;background:var(--paper);margin:7px 0">
    <img src="${cover(id)}" alt="" style="width:54px;height:54px;object-fit:cover;border-radius:10px;flex:none">
    <span style="min-width:0;flex:1"><b style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(tubNm(id))}</b><small class="mut">${esc(sub||'위치 미지정')}</small></span><span style="font-size:20px">›</span></button>`;
@@ -729,17 +729,19 @@ function editManagedAnimal(id){
  const name=tubNm(id),currentName=nmOv(id),currentLoc=locOf(id);
  sheet(`<h3 style="margin:0 0 12px">📦 ${esc(name)}</h3>
   <label>상자 이름</label><input id="managedName" class="input" maxlength="40" value="${esc(currentName||name)}" placeholder="${esc(name)}">
-  <label style="display:block;margin-top:12px">사육장 위치</label><select id="managedLoc" class="input" style="width:100%"><option value="">위치 미지정</option>${SHELF.map(x=>`<option value="${x.id}" ${currentLoc===x.id?'selected':''}>${esc(x.n)} · ${esc(x.d)}</option>`).join('')}</select>
+  <label style="display:block;margin-top:12px">사육장 위치</label><div id="managedLocs" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:7px"><button type="button" data-loc="" aria-pressed="${!currentLoc}" class="btn ${!currentLoc?'pri':''}" style="padding:11px">📍 위치 미지정</button>${SHELF.map(x=>`<button type="button" data-loc="${x.id}" aria-pressed="${currentLoc===x.id}" class="btn ${currentLoc===x.id?'pri':''}" style="padding:11px">📦 ${esc(x.n)}<small style="display:block;font-size:11px;font-weight:500">${esc(x.d)}</small></button>`).join('')}</div>
   <p class="mut" style="font-size:12px;margin:8px 0">변경 내용은 너와 아빠의 기기에 함께 반영돼요.</p>
   <div class="sbb" style="flex-wrap:wrap"><button class="btn" data-x>취소</button><button class="btn" id="managedDelete" style="color:#b42318">🗑 완전 삭제</button><button class="btn pri" id="managedSave">저장</button></div>`,sh=>{
+   let loc=currentLoc;sh.querySelectorAll('[data-loc]').forEach(b=>b.onclick=()=>{loc=b.dataset.loc;sh.querySelectorAll('[data-loc]').forEach(x=>{const on=x.dataset.loc===loc;x.classList.toggle('pri',on);x.classList.toggle('btn',true);x.setAttribute('aria-pressed',String(on))})});
    sh.querySelector('#managedSave').onclick=async()=>{
-    if(!needEdit())return;const nm=sh.querySelector('#managedName').value.trim(),loc=sh.querySelector('#managedLoc').value;
+    if(!needEdit())return;const nm=sh.querySelector('#managedName').value.trim();
     if(!nm){toast('상자 이름을 입력해 주세요');return}
     const b=sh.querySelector('#managedSave');b.disabled=true;b.textContent='저장 중…';
     try{
-     if(nm!==currentName&&nm!==name)await rpc('iso_memo_set',{t:'n:'+id,b:nm});
+     const baseName=spOf(id)?.n||name,rename=nm!==(currentName||name);
+     if(rename)await rpc('iso_memo_set',{t:'n:'+id,b:nm===baseName?'':nm});
      if(loc!==currentLoc)await rpc('iso_memo_set',{t:'loc:'+id,b:loc});
-     if(nm!==currentName&&nm!==name)D.memo['n:'+id]={body:nm,who:D.ed,upd:new Date().toISOString()};
+     if(rename)D.memo['n:'+id]={body:nm===baseName?'':nm,who:D.ed,upd:new Date().toISOString()};
      if(loc!==currentLoc)D.memo['loc:'+id]={body:loc,who:D.ed,upd:new Date().toISOString()};
      save();toast('상자 정보를 저장했어요');openAnimalManager();
     }catch(e){b.disabled=false;b.textContent='저장';toast('⚠ 저장하지 못했어요. 연결 상태를 확인해 주세요')}
