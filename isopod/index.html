@@ -382,9 +382,9 @@ nav.tabs{background:#263d31!important}
 </nav>
 <div id="detail" class="detail" hidden></div>
 
-<!-- BUILD-INFO: 2026-11-27-01 -->
+<!-- BUILD-INFO: 2026-11-27-02 -->
 <footer class="build-info" aria-label="사이트 빌드 정보">
- <div><strong>빌드 버전</strong> v2026.11.27-01</div>
+ <div><strong>빌드 버전</strong> v2026.11.27-02</div>
  <div><strong>최종 수정일</strong> 2026.11.27</div>
 </footer>
 <script>
@@ -806,7 +806,7 @@ async function deleteSelectedShelfTubs(){
    D.removed=[...new Set([...(D.removed||[]),id])];done++;
   }
   cleanupDynamicGroups();D.gsince=null;D.msince=null;save();await flushIDB();await syncGal();await syncMemo();
-  DEL_MODE=false;SEL.clear();toast(`사육통 ${done}개와 관련 데이터를 삭제했어요`);vShelf();
+  DEL_MODE=false;SEL.clear();toast(`항목 ${done}개와 관련 데이터를 삭제했어요`);vShelf();
  }catch(e){
   save();DEL_MODE=false;SEL.clear();toast(`삭제 ${done}개 완료, 나머지는 실패했어요: ${String(e.message||e).slice(0,65)}`);vShelf();
  }
