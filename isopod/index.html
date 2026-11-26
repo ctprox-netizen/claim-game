@@ -384,7 +384,7 @@ nav.tabs{background:#263d31!important}
 
 <!-- BUILD-INFO: 2026-11-27-03 -->
 <footer class="build-info" aria-label="사이트 빌드 정보">
- <div><strong>빌드 버전</strong> v2026.11.27-04</div>
+ <div><strong>빌드 버전</strong> v2026.11.27-05</div>
  <div><strong>최종 수정일</strong> 2026.11.27</div>
 </footer>
 <script>
@@ -793,7 +793,7 @@ async function deleteSelectedShelfTubs(){
  const ids=[...SEL].filter(id=>allAnimalIds().includes(id));
  if(!ids.length){toast('선택한 사육통이 없어요');return}
  const names=ids.map(tubNm),label=PETS[SEC]?.full||'사육통';
- if(!confirm(`선택한 항목 ${ids.length}개(${label})를 완전히 삭제할까요?\\n\\n${names.join(', ')}\\n\\n기록·사진·앨범·소개도 함께 삭제됩니다.`))return;
+ if(!confirm(`선택한 항목 ${ids.length}개(${label})를 완전히 삭제할까요?\n\n${names.join(', ')}\n\n기록·사진·앨범·소개도 함께 삭제됩니다.`))return;
  const go=$('#rmGo');if(go){go.disabled=true;go.textContent='삭제 중…'}
  let done=0;
  try{
