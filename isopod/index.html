@@ -156,9 +156,9 @@ details summary{cursor:pointer;font-weight:800}
 .tb2 .ck{display:none}
 #shv .tb2[data-open]{touch-action:pan-y;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}#shv .tb2[data-open] img{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-user-drag:none;pointer-events:none}#shv .tb2.swap-pick{outline:4px solid var(--blue);outline-offset:2px}
 .rm .shl{cursor:pointer;text-decoration:underline dotted}
-.rm .tb2.on{outline:4px solid var(--ink);outline-offset:-4px}
-.rm .tb2.on img{opacity:.4}
-.rm .tb2.on .ck{display:flex;position:absolute;right:4px;bottom:4px;width:28px;height:28px;border-radius:50%;background:#fff;border:2.5px solid var(--ink);font-style:normal;font-weight:900;align-items:center;justify-content:center;font-size:17px}
+.rm .tb2.on{outline:4px solid var(--blue);outline-offset:-4px;background:#e8f1ff;box-shadow:inset 0 0 0 2px var(--blue)}
+.rm .tb2.on img{opacity:.42}
+.rm .tb2.on .ck{display:flex;position:absolute;right:4px;bottom:4px;width:30px;height:30px;border-radius:50%;background:var(--blue);color:#fff;border:2.5px solid #fff;box-shadow:0 1px 5px #0006;font-style:normal;font-weight:900;align-items:center;justify-content:center;font-size:18px;z-index:2}
 .rmbar{position:fixed;left:0;right:0;bottom:64px;z-index:25;background:var(--paper);border-top:2px solid var(--ink);display:flex;align-items:center;gap:8px;padding:8px 12px;justify-content:center}
 .rmbar span{font-weight:800;margin-right:auto;max-width:520px}.rmbar .btn[disabled]{opacity:.4}
 .kpick{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}.kpick button{min-width:0}.rhint{font-size:12.5px;color:var(--mut);margin:7px 2px 4px;min-height:18px}
@@ -382,9 +382,9 @@ nav.tabs{background:#263d31!important}
 </nav>
 <div id="detail" class="detail" hidden></div>
 
-<!-- BUILD-INFO: 2026-11-26-01 -->
+<!-- BUILD-INFO: 2026-11-26-02 -->
 <footer class="build-info" aria-label="사이트 빌드 정보">
- <div><strong>빌드 버전</strong> v2026.11.26-01</div>
+ <div><strong>빌드 버전</strong> v2026.11.26-02</div>
  <div><strong>최종 수정일</strong> 2026.11.26</div>
 </footer>
 <script>
@@ -1009,7 +1009,7 @@ function vShelf(){if(PETS[SEC])return vPet();if(!canEdit()){RM=false;SEL.clear()
   $('#app').innerHTML=`<div class="ctl"><span>배열</span><div class="sg">${[['shelf','선반 배열'],['tax','계통별'],['cu','사용자 지정']].map(([k,n])=>`<button data-sv="${k}" aria-pressed="${sv===k}">${n}</button>`).join('')}</div>
      <span>보기</span><div class="sg sg4">${DMS.map(([k,n])=>`<button data-dm="${k}" aria-pressed="${dm===k}">${n}</button>`).join('')}</div></div>
    ${RM||DEL_MODE?'<p class="rmh">'+(DEL_MODE?'삭제할 사육통을 선반에서 직접 선택하세요':'통을 눌러 고르세요 · 칸·묶음 이름을 누르면 한꺼번에 골라져요')+'</p>':''}
-   <div class="shv ${sv} dm-${DMS.some(x=>x[0]===D.dm)?D.dm:'both'} ${RM?'rm':''}" id="shv">${body}</div>${canEdit()?`<div style="margin:22px 0 18px;display:grid;gap:9px"><button class="btn pri" id="addTubBtn" style="width:100%;padding:14px;font-size:16px">＋ 새 사육통 추가</button><button class="btn" id="removeTubBtn" style="width:100%;padding:13px;font-size:15px;color:#b42318">－ 사육통 제거</button></div>`:''}
+   <div class="shv ${sv} dm-${DMS.some(x=>x[0]===D.dm)?D.dm:'both'} ${RM||DEL_MODE?'rm':''}" id="shv">${body}</div>${canEdit()?`<div style="margin:22px 0 18px;display:grid;gap:9px"><button class="btn pri" id="addTubBtn" style="width:100%;padding:14px;font-size:16px">＋ 새 사육통 추가</button><button class="btn" id="removeTubBtn" style="width:100%;padding:13px;font-size:15px;color:#b42318">－ 사육통 제거</button></div>`:''}
 `;
   $('#float').innerHTML=`${RM||DEL_MODE?`<div class="rmbar" id="rmbar"><button class="rmx" id="rmBtn" aria-label="선택 모드 끄기">✕</button><span id="rmN"></span><button class="btn sm" id="rmClr">선택 해제</button><button class="btn pri" id="rmGo">${DEL_MODE?'선택한 통 삭제':'기록하기'}</button></div>`:MV?'':`<button class="fab edonly" id="rmBtn">✏️ 기록 모드</button>`}`;
   if($('#addTubBtn'))$('#addTubBtn').onclick=()=>showAddAnimalForm('iso');if($('#removeTubBtn'))$('#removeTubBtn').onclick=()=>{if(!needEdit())return;DEL_MODE=true;RM=false;SEL.clear();MV=false;MVP=null;vShelf()};
@@ -1025,7 +1025,7 @@ function vShelf(){if(PETS[SEC])return vPet();if(!canEdit()){RM=false;SEL.clear()
     const upd=()=>{document.querySelectorAll('[data-pick]').forEach(b=>{const on=SEL.has(b.dataset.pick);b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)});$('#rmN').innerHTML=SEL.size?`<b>${SEL.size}</b>통 ${DEL_MODE?'삭제 선택':'골랐어요'}`:'<span class="mut">고른 통 없음</span>';$('#rmGo').disabled=!SEL.size;$('#rmClr').disabled=!SEL.size};
     document.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>{const id=b.dataset.pick;SEL.has(id)?SEL.delete(id):SEL.add(id);upd()});
     document.querySelectorAll('[data-grp]').forEach(b=>b.onclick=()=>{const t=b.dataset.grp.split(','),all=t.every(id=>SEL.has(id));t.forEach(id=>all?SEL.delete(id):SEL.add(id));upd()});
-    $('#rmClr').onclick=()=>{SEL.clear();upd()};$('#rmGo').onclick=()=>{if(SEL.size)rmSheet()};upd()}
+    $('#rmClr').onclick=()=>{SEL.clear();upd()};$('#rmGo').onclick=()=>{if(!SEL.size)return;if(DEL_MODE)deleteSelectedShelfTubs();else rmSheet()};upd()}
   bindCommon();bindShelfSwap();fitShelf()}
 let RK='etc';
 const RKS_ISO=[['etc','📝','메모'],['feed','🍂','먹이'],['mist','💧','분무'],['baby','🐣','새끼 발견'],['count','🔢','마릿수']];
