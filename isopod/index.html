@@ -611,7 +611,7 @@ const secOf=id=>petOf(id)||'iso';
 const secIds=()=>PETS[SEC]?activePetIds(PETS[SEC]):activeALL();
 Object.entries(PETS).forEach(([k,P])=>P.ids.forEach((id,i)=>{XSP[id]={n:`${P.n} ${i+1}`,ln:'',env:'',roll:0,fam:'',hab:'',pet:k};IMG[id]=P.img}));
 Object.values(PETS.worm.stages).forEach(st=>st.ids.forEach((id,i)=>{XSP[id].n=`${st.n} 통 ${i+1}`;XSP[id].stage=st.n}));IMG.wa1='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzNDQgMjU2Ij48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9ImciIGN4PSI1MCUiIGN5PSI0NSUiIHI9IjcwJSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZTZkY2NkIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjOGY3YTYzIi8+PC9yYWRpYWxHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjM0NCIgaGVpZ2h0PSIyNTYiIGZpbGw9InVybCgjZykiLz48dGV4dCB4PSIxNzIiIHk9IjE2MCIgZm9udC1zaXplPSIxMjAiIHRleHQtYW5jaG9yPSJtaWRkbGUiPvCfqrI8L3RleHQ+PC9zdmc+';
-const shelfOf=id=>SHELF.find(s=>s.tubs.includes(id));
+const shelfOf=id=>SHELF.find(s=>s.tubs.includes(id));const locOf=id=>(D.memo&&D.memo['loc:'+id]&&D.memo['loc:'+id].body)||shelfOf(id)?.id||'';const locName=id=>SHELF.find(x=>x.id===locOf(id))?.n||'미지정';const allAnimalIds=()=>[...activeALL(),...Object.values(PETS).flatMap(p=>p.ids)].filter(id=>!(D.removed||[]).includes(id));
 const spOf=id=>XSP[id]||ISPC[parseInt(id)];
 const isIso=id=>!XSP[id];
 const galOf=id=>{const g=D.gal&&D.gal[id]||{};return Object.keys(g).map(Number).filter(n=>n>=1&&n<=9).sort((a,b)=>a-b).map(n=>Object.assign({slot:n},g[n])).filter(x=>x.thumb)};
@@ -784,7 +784,7 @@ let RM=false;const SEL=new Set();
 function taxGroups(){const a=activeALL(),g=IGRP.map(([f,gn,sp])=>({k:gn,t:`<i>${gn}</i>`,d:f,ids:sp.flatMap(n=>a.filter(id=>!XSP[id]&&parseInt(id)===n))})).filter(x=>x.ids.length);
   Object.keys(XSP).forEach(id=>{if(a.includes(id))g.push({k:id,t:esc(XSP[id].n),d:XSP[id].fam,ids:[id]})});return g}
 const cntTxt=id=>{if(XSP[id]&&XSP[id].pet)return'';const c=countOf(id);if(c.n==null)return c.b?`🐣 ${c.b}`:'? 마리';const q={ge:'+',le:'↓',ap:'±'}[c.q]||'';return`${c.n}${q}마리${c.b?` <small>+🐣${c.b}</small>`:''}`};
-const tileH=id=>`<button class="tb2 ${RM&&SEL.has(id)?'on':''}" ${RM?`data-pick="${id}" aria-pressed="${SEL.has(id)}"`:`data-open="${id}"`}><img src="${cover(id)}" alt="" loading="lazy"><span>${esc(tubNm(id))}</span><em class="cnt">${cntTxt(id)}</em><i class="ck">✓</i></button>`;
+const tileH=id=>`<button class="tb2 ${RM&&SEL.has(id)?'on':''}" ${RM?`data-pick="${id}" aria-pressed="${SEL.has(id)}"`:`data-open="${id}"`}><img src="${cover(id)}" alt="" loading="lazy"><span>${esc(tubNm(id))}</span><em class="cnt">${cntTxt(id)}</em>${locOf(id)?`<small class="mut">📍 ${esc(locName(id))}</small>`:''}<i class="ck">✓</i></button>`;
 const grpAttr=ids=>RM?`data-grp="${ids.join(',')}" role="button"`:'';
 const DMS=[['photo','사진만'],['name','이름만'],['both','사진+이름'],['cnt','사진+개체수']];
 let MV=false,MVP=null;
@@ -802,7 +802,7 @@ function vPet(){const P=PETS[SEC],st=P.stages?P.stages[D.tab==='larva'?'larva':'
     $('#rmClr').onclick=()=>{SEL.clear();upd()};$('#rmGo').onclick=()=>{if(SEL.size)rmSheet()};upd()}
   bindCommon()}
 function vShelf(){if(PETS[SEC])return vPet();if(!canEdit()){RM=false;SEL.clear()}const sv=['tax','cu'].includes(D.sv)?D.sv:'shelf';if(sv!=='cu')MV=false;if(MV)RM=false;
-  const cols=SHELF.filter(x=>x.id!=='fl').map(x=>({...x,tubs:x.tubs.filter(id=>!(D.removed||[]).includes(id))})).filter(x=>x.tubs.length),fl0=SHELF.find(x=>x.id==='fl'),fl=fl0?({...fl0,tubs:fl0.tubs.filter(id=>!(D.removed||[]).includes(id))}):null;
+  const locIds=allAnimalIds(),cols=SHELF.filter(x=>x.id!=='fl').map(x=>({...x,tubs:locIds.filter(id=>locOf(id)===x.id)})).filter(x=>x.tubs.length),fl0=SHELF.find(x=>x.id==='fl'),fl=fl0?({...fl0,tubs:locIds.filter(id=>locOf(id)===fl0.id)}):null;
   const body=sv==='shelf'
    ?`<div class="cols">${cols.map(c=>`<section class="col"><div class="shl" ${grpAttr(c.tubs)}><b>${c.n}</b><small>${c.d}</small></div><div class="stk2">${c.tubs.map(tileH).join('')}</div></section>`).join('')}</div>
      <section class="flr"><div class="shl" ${grpAttr(fl.tubs)}><b>${fl.n}</b><small>${fl.d}</small></div><div class="frow">${fl.tubs.map(tileH).join('')}</div></section>`
@@ -1058,7 +1058,7 @@ function refreshDetail(first){const id=CUR;if(!id)return;const sp=spOf(id),E=env
    ${hasViewer(id)?'':`<h2 class="sec">📖 소개 <small>${D.memo[id]&&D.memo[id].upd?`${esc(D.memo[id].who||'')} · ${dayLab(D.memo[id].upd)} ${hm(D.memo[id].upd)} 수정`:''}</small></h2><div class="card memo" id="memoBox">${memoView(id)}</div>`}
    ${P.length?`<h2 class="sec">예전 사진 <small>${P.length}장</small></h2><div class="album">${P.map(p=>`<button data-ph="${p.cid}"><img src="${p.thumb}" alt="사진 ${dayLab(p.at)}"></button>`).join('')}</div>`:''}
    ${growthTimeline(id)}
-   ${canEdit()?`<div class="card" style="display:flex;gap:8px;flex-wrap:wrap;margin:14px 0"><button class="btn sm" id="animalRename">✏️ 동물 이름 수정</button><button class="btn sm" id="animalDelete">🗑 동물 완전 삭제</button></div>`:''}
+   ${canEdit()?`<div class="card" style="margin:14px 0"><b>📍 사육장 위치</b><p class="mut" style="font-size:12px;margin:4px 0 8px">변경하면 선반 배열과 다른 가족 기기에도 반영돼요.</p><select id="animalLocation" class="input"><option value="">위치 미지정</option>${SHELF.map(x=>`<option value="${x.id}" ${locOf(id)===x.id?'selected':''}>${x.n} · ${x.d}</option>`).join('')}</select><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn sm" id="animalRename">✏️ 동물 이름 수정</button><button class="btn sm" id="animalDelete">🗑 동물 완전 삭제</button></div></div>`:''}
    <h2 class="sec">📜 ${hasProf(id)?'이 아이':'이 통'} 전체 기록</h2><div class="card">${(()=>{const it=mixFeed(x=>x.tub===id);return it.length?feedHTML(it.slice(0,80),true,true):'<p class="empty">아직 기록이 없어요.</p>'})()}</div>`;
   d.innerHTML=`<div class="dh"><button class="btn sm" id="dback">← 뒤로</button><h2>${esc(tubNm(id))}</h2><span class="chip">${XSP[id]&&XSP[id].pet?(XSP[id].stage||PETS[XSP[id].pet].n):shelfOf(id).n}</span></div><div class="dbody">${body}</div>`;
   $('#dback').onclick=()=>history.back();
@@ -1068,6 +1068,7 @@ function refreshDetail(first){const id=CUR;if(!id)return;const sp=spOf(id),E=env
   d.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{if(confirm('이 기록을 지울까요? 가족 화면에서도 지워져요.')){delItem(b.dataset.del);refreshDetail()}});
   {const h=d.querySelector('.hcov>img');if(covOf(id)&&h)galFull(id,0).then(x=>{if(x&&h.isConnected)h.src=x})}
   if($('#covBtn'))$('#covBtn').onclick=()=>covMenu(id);
+  if($('#animalLocation'))$('#animalLocation').onchange=async e=>{if(!needEdit()){e.target.value=locOf(id);return}const value=e.target.value;if(value&&!SHELF.some(x=>x.id===value)){toast('⚠ 올바르지 않은 선반 위치예요');return}const b=$('#animalLocation');b.disabled=true;try{await rpc('iso_memo_set',{t:'loc:'+id,b:value});D.memo['loc:'+id]={body:value,who:D.ed,upd:new Date().toISOString()};save();toast(value?`${tubNm(id)} 위치를 ${locName(id)}으로 변경했어요`:'선반 위치를 미지정으로 변경했어요');refreshDetail()}catch(err){toast('⚠ 위치를 변경하지 못했어요');b.disabled=false}};
   if($('#animalRename'))$('#animalRename').onclick=async()=>{if(!needEdit())return;const v=prompt('새 동물 이름을 입력해 주세요 (비우면 기본 이름으로 복원)',nmOv(id)||tubNm(id));if(v===null)return;const n=v.trim().slice(0,40);try{await rpc('iso_memo_set',{t:'n:'+id,b:n});await syncMemo();toast(n?`✏️ 이름을 \"${n}\"(으)로 바꿨어요`:'기본 이름으로 되돌렸어요');refreshDetail()}catch(e){toast('⚠ 이름을 바꾸지 못했어요')}};
   if($('#animalDelete'))$('#animalDelete').onclick=async()=>{if(!needEdit())return;const name=tubNm(id);if(!confirm(`정말 ${name}을(를) 완전히 삭제할까요?\n\n기록, 사진, 앨범, 소개, 매입·개체 정보가 모두 삭제됩니다.`))return;if(!confirm(`마지막 확인입니다. ${name}의 모든 데이터를 복구할 수 없게 삭제합니다.\n\n정말 삭제하시겠습니까?`))return;const b=$('#animalDelete');b.disabled=true;b.textContent='삭제 중…';try{await rpc('iso_animal_delete',{t:id});const gone=new Set(Object.values(D.logs).filter(x=>x.tub===id).map(x=>x.cid));Object.keys(D.photos).filter(k=>D.photos[k].tub===id).forEach(k=>IDB.del(k).catch(()=>{}));Object.values(D.gal[id]||{}).forEach(g=>{if(g&&g.upd)IDB.del(`g:${id}:${g.slot}:${g.upd}`).catch(()=>{})});D.logs=Object.fromEntries(Object.entries(D.logs).filter(([k,x])=>x.tub!==id&&!gone.has((x.tub||'').slice(2))));D.photos=Object.fromEntries(Object.entries(D.photos).filter(([k,x])=>x.tub!==id));D.pend=D.pend.filter(k=>D.logs[k]);D.pendP=D.pendP.filter(k=>D.photos[k]);D.gal[id]={};Object.keys(D.memo).filter(k=>k===id||k==='n:'+id||k==='b:'+id||k==='p:'+id).forEach(k=>delete D.memo[k]);D.removed=[...new Set([...(D.removed||[]),id])];D.gsince=null;D.msince=null;await flushIDB();await syncGal();await syncMemo();closeTub();toast(`${name}과 관련 데이터를 완전히 삭제했어요`)}catch(e){b.disabled=false;b.textContent='🗑 동물 완전 삭제';toast('⚠ 삭제하지 못했어요. 로그인·연결 상태를 확인해 주세요')}};
   if($('#pfBtn'))$('#pfBtn').onclick=()=>profSheet(id);
