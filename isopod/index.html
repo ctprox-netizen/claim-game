@@ -847,7 +847,7 @@ function showAddAnimalForm(defaultGroup,inManager=false){
  const kind=sh.querySelector('#addKind'),spBox=sh.querySelector('#addSpeciesBox'),stageBox=sh.querySelector('#addStageBox'),groupBox=sh.querySelector('#addGroupBox'),locationBox=sh.querySelector('#addLocationBox'),name=sh.querySelector('#addName');
  const refresh=()=>{const k=kind.value;spBox.hidden=k!=='iso';stageBox.hidden=!(PETS[k]&&PETS[k].stages);groupBox.hidden=k!=='newgroup';if(locationBox)locationBox.hidden=k!=='iso';if(!name.value.trim())name.placeholder=k==='iso'?(ISPC[+sh.querySelector('#addSpecies').value]?.n||'새 사육통 이름'):k==='newgroup'?'첫 번째 개체 이름':(PETS[k]?.full||PETS[k]?.n||'동물')+' 이름'};
  kind.onchange=refresh;sh.querySelector('#addSpecies').onchange=()=>{if(!name.value.trim())name.placeholder=ISPC[+sh.querySelector('#addSpecies').value]?.n||'새 사육통 이름'};refresh();
- sh.querySelector('#addCancel').onclick=()=>{if(inManager)openAnimalManager();else wrap.remove()};
+ sh.querySelector('#addCancel').onclick=()=>{if(inManager)openAnimalManager();else closeSheet()};
  sh.querySelector('#addSave').onclick=async()=>{
   if(!needEdit())return;const k=kind.value,loc=k==='iso'?(sh.querySelector('#addLocation')?.value||''):'',stage=sh.querySelector('#addStage')?.value||'';
   const nm=name.value.trim()||(k==='iso'?ISPC[+sh.querySelector('#addSpecies').value]?.n||'새 사육통':PETS[k]?.full||PETS[k]?.n||'새 동물');
@@ -858,6 +858,8 @@ function showAddAnimalForm(defaultGroup,inManager=false){
   try{await rpc('iso_memo_set',{t:id,b:JSON.stringify(m)});D.memo[id]={body:JSON.stringify(m),who:D.ed,upd:new Date().toISOString()};hydrateDynamicAnimals();save();toast(`✓ ${nm}을(를) 추가했어요`);if(inManager){SEC=k==='iso'?'iso':group;D.tab=SEC!=='iso'&&PETS[SEC]?.stages&&stage==='larva'?'larva':'shelf';render();openAnimalManager()}else{closeSheet();render()}}
   catch(e){btn.disabled=false;btn.textContent='추가하기';toast('⚠ 추가하지 못했어요. 로그인과 연결 상태를 확인해 주세요')}
  };
+ };
+ if(inManager){const sb=document.querySelector('.sheet .sb');if(!sb)return;sb.innerHTML='';sb.appendChild(wrap);mount(sb)}else{sheet(wrap.innerHTML,mount)}
 }
 async function syncMemo(){try{const r=await rpc('iso_memo_list',{since:D.msince||'1970-01-01T00:00:00Z'});MEMO_OK=true;if(!Array.isArray(r))return;
     r.forEach(x=>{D.memo[x.tub]={body:x.body,who:x.who,upd:x.upd};if(!D.msince||x.upd>D.msince)D.msince=x.upd});hydrateDynamicAnimals();if(r.length)save()}catch(e){if(e.nosql)MEMO_OK=false}}
