@@ -751,6 +751,21 @@ body.app .stw{padding:8px 0 2px}
  body.app .policy .phead .meta{display:flex!important;flex:1 1 100%!important;flex-wrap:wrap!important;gap:3px 10px!important;min-width:0!important;overflow:visible!important;white-space:normal!important}
  body.app .policy .phead .meta span{max-width:100%!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;overflow-wrap:anywhere!important}
 }
+
+/* Call panel and compact-screen usability pass. */
+.cmb{min-width:0;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y}
+.ns .ntxt{-webkit-line-clamp:3;line-clamp:3}
+.ns{min-width:0;overflow-wrap:anywhere}
+.caseedi,.caseedibody,.edii,.edidetail{min-width:0;overflow-wrap:anywhere}
+@media(max-width:700px){
+ body.app .callm{padding:8px 8px calc(8px + env(safe-area-inset-bottom))}
+ body.app .cm{width:100%;max-height:calc(100dvh - 16px - env(safe-area-inset-bottom));padding:10px;border-radius:14px}
+ body.app .cmb{min-height:0;max-height:100%;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+ body.app .caseedi .edil{max-height:36dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+ body.app .caseedi .dexq{width:100%;min-width:0}
+ body.app .edii{overflow-wrap:anywhere}
+ body.app .policy .pbody,body.app .policy .pfoot{min-width:0;max-width:100%}
+}
 </style>
 </head>
 <body>
@@ -1026,13 +1041,7 @@ function judgeMedicalExpense(k,c,s,N,no){
 return no('실손의료비 판정 규칙을 찾을 수 없습니다');}
 function judgeDiseaseSurgery(k,c,s,N,no){
   if(s.implant&&c.surg&&(k==='dGrade'))return no('임플란트 식립술은 1~5종 수술 분류표에 없음 — 해당 없음');
-  if(s.implant&&c.surg&&(k==='dSurg'||k==='dSurgS')){
-    if(s.cause==='d')return no('질병(치주질환 등)으로 인한 임플란트 — 면책');
-    if(k!=='iSurg')return no('상해 원인 수술 — 질병수술비 대상 아님');
-    if(s.implant===1)return no('치조골 이식 없는 임플란트 — 면책');
-    if(!c.docs.surg)return no('수술확인서 미제출 — 서류가 없으면 지급 불가');
-    return{d:2,amt:COV[k].amt,w:`치아파절(상해) · 치조골 이식 동반 임플란트 — 지급`};
-  }
+  if(s.implant&&c.surg&&(k==='dSurg'||k==='dSurgS'))return no(s.cause==='d'?'질병(치주질환 등)으로 인한 임플란트 — 면책':'상해 원인 수술 — 질병수술비 대상 아님');
   if(k==='dGrade'){
     if(!c.surg)return no('수술 시행 내역 없음');
     if(s.cause!=='d')return no(`${s.cause==='d'?'질병':'상해'} 원인 수술 — ${N} 대상 아님`);
@@ -1961,7 +1970,7 @@ function callRender(){const it=st.inCall,c=it.c,k=c.call,cur=k.turns[k.t];
   callM.innerHTML=`<div class="cm"><div class="cmh"><span>📞 통화 중 · <b>${c.ben}</b> 고객</span><small>🕘 <b id="cclk">${hm(st.gm)}</b> · ${k.P.n} · ${prog} · 접수 ${it.id}</small></div>
    <div class="ccw">${callCase(it)}<button class="cctg" id="cctg" aria-expanded="${!!st.ccOpen}">📋 이 건 심사 결과 ${st.ccOpen?'접기 ▼':'보기 ▲'}</button></div>
    <div class="cmb" id="cmb">${bub}${k.end?`<div class="res"><span class="mk ${k.end===1?'ok':'bad'}">${k.end===1?`✓ 응대 완료 +${k.got}`:`✗ 응대 실패 ${k.got?(k.got>0?'+':'')+k.got:''}`}</span><span>${k.end===1?'꼬리 질문까지 모두 정확하고 정중하게 응대했어요.':'그럴듯해 보여도 지킬 수 없는 약속, 틀린 규정, 고객 권리를 막는 말, 서류 조작을 권하는 말은 모두 민원으로 이어져요. 답변의 <b>세부 내용</b>을 끝까지 읽어 보세요.'}</span></div>`
-     :`<p class="cb c now" id="cnow"></p><div class="nss" id="copts" hidden>${cur.o.map((t,j)=>`<button class="ns" data-call="${j}"><span>○</span><span class="ntxt">${callChoiceText(t)}</span></button>`).join('')}</div>`}</div>
+     :`<p class="cb c now" id="cnow"></p><div class="nss" id="copts" hidden>${cur.o.map((t,j)=>`<button class="ns" data-call="${j}" title="${ediEsc(t)}" aria-label="${ediEsc(t)}"><span>○</span><span class="ntxt">${callChoiceText(t)}</span></button>`).join('')}</div>`}</div>
    ${k.end?'<button class="go" id="cend">통화 종료</button>':`<p class="hint" id="chint">${k.P.rush&&!st.tut?'⏱ 급한 고객! 답변이 나오면 <b>8초 안에</b> 골라야 해요.':k.P.old?'👵 어르신 고객이에요. 어려운 말보다 차근차근 정확하게 안내하는 답을 고르세요.':k.P.doubt&&!st.tut?'🔎 의심 많은 고객! <b>📋 심사 결과</b>를 펼쳐 근거를 확인해야 답변할 수 있어요.':k.P.proxy?'👪 가족이 대신 건 전화예요. 개인정보 안내 원칙을 지키세요.':k.P.flip?'🔄 말을 바꾸는 고객이에요. 서류 기준 원칙을 지키세요.':k.P.pro?'💼 전직 설계사! 점수 <b>2배</b>, 실수하면 <b>−10점</b> 민원이에요.':'고객 말이 끝나면 답변이 나와요. 말풍선을 누르면 바로 넘어가요.'}</p>`}</div>`;
   const B=document.getElementById('cmb');B.scrollTop=B.scrollHeight;ccFit();
   if(!k.end){const n=document.getElementById('cnow');k.typed=0;typeInto(n,cur.q,()=>{k.typed=1;if(k.P.doubt&&!st.ccOpen&&!st.tut)return;document.getElementById('copts').hidden=false;B.scrollTop=B.scrollHeight;if(k.P.rush&&!st.tut)rushStart(k,cur)})}
@@ -3002,7 +3011,7 @@ function openDexHub(k){if(k==='code'){openDex();return}clearInterval(IT.dexT);le
   else b=`<p class="gmd">🪲 발견 ${new Set([...(CR.isoSeen||[]),...(CR.isoDex||[])]).size}/${ISPC.length}종 · 🐣 번식 성공 ${(CR.isoDex||[]).length}종<br>시나리오 모드에서 한 번이라도 들이면 도감이 열려요</p><div class="scdg ig">${[['콩벌레',1],['쥐며느리',0]].map(([gn,rl])=>`<h4 class="igh">${gn} <small>${rl?'위협받으면 공처럼 말아요':'몸을 못 말고 도망가요'}</small></h4>`+ISPC.map((p,i)=>i).filter(i=>ISPC[i].roll===rl).sort((a,b)=>ISPC[a].t-ISPC[b].t||ISPC[a].n.localeCompare(ISPC[b].n,'ko')).map(i=>{const p=ISPC[i],bred=(CR.isoDex||[]).includes(i),got=(CR.isoSeen||[]).includes(i)||bred;return`<div class="scdc${got?'':' no'}"><canvas data-idx="${i}" ${got?'':'data-lk="1"'} width="60" height="40"></canvas><span>${got?p.n+(bred?' 🐣':''):'???'}</span><small>${got?`${ITIERN[p.t]} · ${f(ITIER[p.t])}원`:ITIERN[p.t]}</small></div>`}).join('')).join('')}</div><h4 class="igh">키우는 법</h4><p class="gmd">콩벌레는 <b>부수입</b>이에요. 안 키워도 게임 진행에는 지장이 없지만, 잘 키우면 분양으로 돈을 벌어요.</p><ul class="covl hpl">${ISCARE.map(([a,b,c])=>`<li><b>${a}</b><span>${b}</span>${c?`<span>${c}</span>`:''}</li>`).join('')}</ul>`;
   const wasDex=!gmo.hidden&&gmo.classList.contains('dexm');gOpen('📒 수첩',dexTabs(k)+b);gmo.classList.add('dexm');if(wasDex)gmo.firstElementChild.classList.add('noanim');if(k==='ham'||k==='iso'||k==='sp')scnDexDraw()}
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('#gmo [data-dxt]');if(t)openDexHub(t.dataset.dxt)});
-function openDex(){dexN=100;const wasDex=!gmo.hidden&&gmo.classList.contains('dexm');gOpen('📒 수첩',dexTabs('code')+`<div class="edihelp"><b>먼저 구분하세요</b><p><strong>질병·상해 구분</strong>은 진단명·질병분류기호와 사고 원인으로 판단하고, <strong>약관상 수술 해당 여부</strong>는 실제 수술기록과 가입 약관의 수술 정의·제외 조항을 대조합니다. EDI 코드는 시행된 행위를 확인하는 보조자료이며 코드만으로 지급·면책을 결정하지 않습니다.</p></div><div class="dexsearchrow"><input id="dexq" class="dexq" type="search" placeholder="질병코드·진단명 검색" autocomplete="off" aria-label="질병코드 검색"><input id="ediq" class="dexq" type="search" placeholder="수가코드·처치/수술명 검색" autocomplete="off" aria-label="EDI 코드 검색"></div><p class="dexn" id="dexn" aria-live="polite"></p><div class="dexl" id="dexl"></div><p class="dexsrc">KCD 9차 (건강보험심사평가원 상병분류기호, 2025.12.16)</p><p class="dexn" id="edin" aria-live="polite">EDI 기초 데이터 불러오는 중…</p><div class="edil" id="edil"></div><p class="dexsrc">출처: 건강보험심사평가원 「2026 건강보험요양급여비용」 및 2026 KDRG 분류집, 의·치과 수가파일(2026.07.01 시행), 포괄수가제 요양급여비용·청구방법(2025), 수술일자 기재 수술코드(2025), 치핵수술 산정기준(2025). 데이터 정리일 2026.11.25 · 수록 42개 · 전체 수가 마스터 아님 · 기본코드 및 조건별 코드 예시<br><a href="https://www.hira.or.kr/rc/drug/insuadtcrtr/bbsView.do?brdBltNo=53155&brdScnBltNo=4&pgmid=HIRAA030069000400" target="_blank" rel="noopener">심평원 2026.07.01 시행 수가파일</a> · <a href="https://www.hira.or.kr/ebooksc/2026/01/BZ202601272870642.pdf" target="_blank" rel="noopener">2026 KDRG 분류집</a> · <a href="https://www.hira.or.kr/ebooksc/2025/03/BZ202503051269788.pdf" target="_blank" rel="noopener">2025 포괄수가제 수가·청구방법</a> · <a href="https://www.hira.or.kr/ebooksc/2025/12/BZ202512192693303.pdf" target="_blank" rel="noopener">2025 수술코드</a> · <a href="https://www.hira.or.kr/rc/insu/insuadtcrtr/InsuAdtCrtrPopup.do?mtgHmeDd=20250901&mtgMtrRegSno=0001&sno=4" target="_blank" rel="noopener">치핵수술 수가 산정기준</a></p>`);gmo.classList.add('dexm');if(wasDex)gmo.firstElementChild.classList.add('noanim');dexRender();dexLoad().then(dexRender).catch(()=>{const L=document.getElementById('dexl');if(L)L.innerHTML='<p class="gmd">이 브라우저에서는 코드 목록을 열 수 없어요. 최신 브라우저로 열어 주세요.</p>'});ediLoad().then(ediRender).catch(()=>{const L=document.getElementById('edil');if(L)L.innerHTML='<p class="gmd">EDI 코드 목록을 불러오지 못했어요.</p>'});setTimeout(()=>{const i=document.getElementById('dexq');if(i&&!MOBQ())i.focus()},50)}
+function openDex(){dexN=100;const wasDex=!gmo.hidden&&gmo.classList.contains('dexm');gOpen('📒 수첩',dexTabs('code')+`<div class="edihelp"><b>먼저 구분하세요</b><p><strong>질병·상해 구분</strong>은 진단명·질병분류기호와 사고 원인으로 판단하고, <strong>약관상 수술 해당 여부</strong>는 실제 수술기록과 가입 약관의 수술 정의·제외 조항을 대조합니다. EDI 코드는 시행된 행위를 확인하는 보조자료이며 코드만으로 지급·면책을 결정하지 않습니다.</p></div><div class="dexsearchrow"><input id="dexq" class="dexq" type="search" placeholder="질병코드·진단명 검색" autocomplete="off" aria-label="질병코드 검색"><input id="ediq" class="dexq" type="search" placeholder="수가코드·처치/수술명 검색" autocomplete="off" aria-label="EDI 코드 검색"></div><p class="dexn" id="dexn" aria-live="polite"></p><div class="dexl" id="dexl"></div><p class="dexsrc">KCD 9차 (건강보험심사평가원 상병분류기호, 2025.12.16)</p><p class="dexn" id="edin" aria-live="polite">EDI 기초 데이터 불러오는 중…</p><div class="edil" id="edil"></div><p class="dexsrc">출처: 건강보험심사평가원 「2026 건강보험요양급여비용」 및 2026 KDRG 분류집, 의·치과 수가파일(2026.07.01 시행), 포괄수가제 요양급여비용·청구방법(2025), 수술일자 기재 수술코드(2025), 치핵수술 산정기준(2025). 데이터 정리일 2026.11.25 · 수록 80개 · 전체 수가 마스터 아님 · 기본코드 및 조건별 코드 예시<br><a href="https://www.hira.or.kr/rc/drug/insuadtcrtr/bbsView.do?brdBltNo=53155&brdScnBltNo=4&pgmid=HIRAA030069000400" target="_blank" rel="noopener">심평원 2026.07.01 시행 수가파일</a> · <a href="https://www.hira.or.kr/ebooksc/2026/01/BZ202601272870642.pdf" target="_blank" rel="noopener">2026 KDRG 분류집</a> · <a href="https://www.hira.or.kr/ebooksc/2025/03/BZ202503051269788.pdf" target="_blank" rel="noopener">2025 포괄수가제 수가·청구방법</a> · <a href="https://www.hira.or.kr/ebooksc/2025/12/BZ202512192693303.pdf" target="_blank" rel="noopener">2025 수술코드</a> · <a href="https://www.hira.or.kr/rc/insu/insuadtcrtr/InsuAdtCrtrPopup.do?mtgHmeDd=20250901&mtgMtrRegSno=0001&sno=4" target="_blank" rel="noopener">치핵수술 수가 산정기준</a></p>`);gmo.classList.add('dexm');if(wasDex)gmo.firstElementChild.classList.add('noanim');dexRender();dexLoad().then(dexRender).catch(()=>{const L=document.getElementById('dexl');if(L)L.innerHTML='<p class="gmd">이 브라우저에서는 코드 목록을 열 수 없어요. 최신 브라우저로 열어 주세요.</p>'});ediLoad().then(ediRender).catch(()=>{const L=document.getElementById('edil');if(L)L.innerHTML='<p class="gmd">EDI 코드 목록을 불러오지 못했어요.</p>'});setTimeout(()=>{const i=document.getElementById('dexq');if(i&&!MOBQ())i.focus()},50)}
 let EDI_DATA=null,EDIP=null,caseEdiOpen=false,caseEdiQuery='';
 document.addEventListener('input',e=>{if(e.target.id==='caseEdiq')caseEdiQuery=e.target.value});
 document.addEventListener('toggle',e=>{if(e.target&&e.target.id==='caseEdiPanel')caseEdiOpen=e.target.open},true);
