@@ -611,7 +611,7 @@ const secOf=id=>petOf(id)||'iso';
 const secIds=()=>PETS[SEC]?activePetIds(PETS[SEC]):activeALL();
 Object.entries(PETS).forEach(([k,P])=>P.ids.forEach((id,i)=>{XSP[id]={n:`${P.n} ${i+1}`,ln:'',env:'',roll:0,fam:'',hab:'',pet:k};IMG[id]=P.img}));
 Object.values(PETS.worm.stages).forEach(st=>st.ids.forEach((id,i)=>{XSP[id].n=`${st.n} 통 ${i+1}`;XSP[id].stage=st.n}));IMG.wa1='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzNDQgMjU2Ij48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9ImciIGN4PSI1MCUiIGN5PSI0NSUiIHI9IjcwJSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZTZkY2NkIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjOGY3YTYzIi8+PC9yYWRpYWxHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjM0NCIgaGVpZ2h0PSIyNTYiIGZpbGw9InVybCgjZykiLz48dGV4dCB4PSIxNzIiIHk9IjE2MCIgZm9udC1zaXplPSIxMjAiIHRleHQtYW5jaG9yPSJtaWRkbGUiPvCfqrI8L3RleHQ+PC9zdmc+';
-const shelfOf=id=>SHELF.find(s=>s.tubs.includes(id));const locOf=id=>(D.memo&&D.memo['loc:'+id]&&D.memo['loc:'+id].body)||shelfOf(id)?.id||'';const locName=id=>SHELF.find(x=>x.id===locOf(id))?.n||'미지정';const allAnimalIds=()=>[...activeALL(),...Object.values(PETS).flatMap(p=>p.ids)].filter(id=>!(D.removed||[]).includes(id));
+const baseShelfOf=id=>SHELF.find(s=>s.tubs.includes(id));const locOf=id=>{const m=D.memo&&D.memo['loc:'+id];return m?m.body:(baseShelfOf(id)?.id||'')};const shelfOf=id=>SHELF.find(s=>s.id===locOf(id))||baseShelfOf(id);const locName=id=>SHELF.find(x=>x.id===locOf(id))?.n||'미지정';const allAnimalIds=()=>[...activeALL(),...Object.values(PETS).flatMap(p=>p.ids)].filter(id=>!(D.removed||[]).includes(id));
 const spOf=id=>XSP[id]||ISPC[parseInt(id)];
 const isIso=id=>!XSP[id];
 const galOf=id=>{const g=D.gal&&D.gal[id]||{};return Object.keys(g).map(Number).filter(n=>n>=1&&n<=9).sort((a,b)=>a-b).map(n=>Object.assign({slot:n},g[n])).filter(x=>x.thumb)};
@@ -1060,7 +1060,7 @@ function refreshDetail(first){const id=CUR;if(!id)return;const sp=spOf(id),E=env
    ${growthTimeline(id)}
    ${canEdit()?`<div class="card" style="margin:14px 0"><b>📍 사육장 위치</b><p class="mut" style="font-size:12px;margin:4px 0 8px">변경하면 선반 배열과 다른 가족 기기에도 반영돼요.</p><select id="animalLocation" class="input"><option value="">위치 미지정</option>${SHELF.map(x=>`<option value="${x.id}" ${locOf(id)===x.id?'selected':''}>${x.n} · ${x.d}</option>`).join('')}</select><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn sm" id="animalRename">✏️ 동물 이름 수정</button><button class="btn sm" id="animalDelete">🗑 동물 완전 삭제</button></div></div>`:''}
    <h2 class="sec">📜 ${hasProf(id)?'이 아이':'이 통'} 전체 기록</h2><div class="card">${(()=>{const it=mixFeed(x=>x.tub===id);return it.length?feedHTML(it.slice(0,80),true,true):'<p class="empty">아직 기록이 없어요.</p>'})()}</div>`;
-  d.innerHTML=`<div class="dh"><button class="btn sm" id="dback">← 뒤로</button><h2>${esc(tubNm(id))}</h2><span class="chip">${XSP[id]&&XSP[id].pet?(XSP[id].stage||PETS[XSP[id].pet].n):shelfOf(id).n}</span></div><div class="dbody">${body}</div>`;
+  d.innerHTML=`<div class="dh"><button class="btn sm" id="dback">← 뒤로</button><h2>${esc(tubNm(id))}</h2><span class="chip">${XSP[id]&&XSP[id].pet?(XSP[id].stage||PETS[XSP[id].pet].n):locName(id)}</span></div><div class="dbody">${body}</div>`;
   $('#dback').onclick=()=>history.back();
   d.querySelectorAll('[data-vm]').forEach(b=>b.onclick=()=>{VM=b.dataset.vm;refreshDetail(true)});
   d.querySelectorAll('[data-ph]').forEach(b=>b.onclick=()=>viewPhoto(b.dataset.ph));
