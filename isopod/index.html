@@ -889,17 +889,26 @@ const grpAttr=ids=>RM?`data-grp="${ids.join(',')}" role="button"`:'';
 const DMS=[['photo','사진만'],['name','이름만'],['both','사진+이름'],['cnt','사진+개체수']];
 let MV=false,MVP=null;
 let SWAP_FROM=null,SWAP_PRESS_TIMER=null;
+const shelfOrderMap=()=>{try{return JSON.parse(D.memo?.['shelf-order']?.body||'{}')}catch(e){return{}}};
+const orderedShelfIds=(loc,ids)=>{const saved=shelfOrderMap()[loc],a=Array.isArray(saved)?saved.filter(id=>ids.includes(id)):[];ids.forEach(id=>{if(!a.includes(id))a.push(id)});return a};
 async function swapShelfTubs(a,b){
  if(!needEdit()||!a||!b||a===b)return;
  const la=locOf(a),lb=locOf(b),btns=document.querySelectorAll('#shv .tb2');
  btns.forEach(x=>x.disabled=true);
+ const order=shelfOrderMap(),aa=orderedShelfIds(la,allAnimalIds().filter(id=>locOf(id)===la)),bb=la===lb?aa:orderedShelfIds(lb,allAnimalIds().filter(id=>locOf(id)===lb));
+ const ia=aa.indexOf(a),ib=bb.indexOf(b);
+ if(ia<0||ib<0){btns.forEach(x=>x.disabled=false);toast('⚠ 사육통 위치를 확인하지 못했어요');return}
+ if(la===lb){[aa[ia],aa[ib]]=[aa[ib],aa[ia]];order[la]=aa}
+ else{aa[ia]=b;bb[ib]=a;order[la]=aa;order[lb]=bb}
  try{
   await rpc('iso_memo_set',{t:'loc:'+a,b:lb});
   try{await rpc('iso_memo_set',{t:'loc:'+b,b:la})}
   catch(e){await rpc('iso_memo_set',{t:'loc:'+a,b:la}).catch(()=>{});throw e}
-  D.memo['loc:'+a]={body:lb,who:D.ed,upd:new Date().toISOString()};
-  D.memo['loc:'+b]={body:la,who:D.ed,upd:new Date().toISOString()};
-  SWAP_FROM=null;save();await syncMemo();toast('두 사육통의 위치를 서로 바꿨어요');vShelf();
+  const now=new Date().toISOString();
+  D.memo['loc:'+a]={body:lb,who:D.ed,upd:now};D.memo['loc:'+b]={body:la,who:D.ed,upd:now};
+  await rpc('iso_memo_set',{t:'shelf-order',b:JSON.stringify(order)});
+  D.memo['shelf-order']={body:JSON.stringify(order),who:D.ed,upd:now};
+  SWAP_FROM=null;save();await syncMemo();toast('두 사육통의 자리를 서로 바꿨어요');vShelf();
  }catch(e){btns.forEach(x=>x.disabled=false);toast('⚠ 위치를 바꾸지 못했어요. 연결 상태를 확인해 주세요')}
 }
 function bindShelfSwap(){
@@ -942,7 +951,7 @@ function vPet(){const P=PETS[SEC],st=P.stages?P.stages[D.tab==='larva'?'larva':'
     $('#rmClr').onclick=()=>{SEL.clear();upd()};$('#rmGo').onclick=()=>{if(SEL.size)rmSheet()};upd()}
   bindCommon()}
 function vShelf(){if(PETS[SEC])return vPet();if(!canEdit()){RM=false;SEL.clear()}const sv=['tax','cu'].includes(D.sv)?D.sv:'shelf';if(sv!=='cu')MV=false;if(MV)RM=false;
-  const locIds=allAnimalIds(),cols=SHELF.filter(x=>x.id!=='fl').map(x=>({...x,tubs:locIds.filter(id=>locOf(id)===x.id)})).filter(x=>x.tubs.length),fl0=SHELF.find(x=>x.id==='fl'),fl=fl0?({...fl0,tubs:locIds.filter(id=>locOf(id)===fl0.id)}):null;
+  const locIds=allAnimalIds(),cols=SHELF.filter(x=>x.id!=='fl').map(x=>({...x,tubs:orderedShelfIds(x.id,locIds.filter(id=>locOf(id)===x.id))})).filter(x=>x.tubs.length),fl0=SHELF.find(x=>x.id==='fl'),fl=fl0?({...fl0,tubs:orderedShelfIds(fl0.id,locIds.filter(id=>locOf(id)===fl0.id))}):null;
   const body=sv==='shelf'
    ?`<div class="cols">${cols.map(c=>`<section class="col"><div class="shl" ${grpAttr(c.tubs)}><b>${c.n}</b><small>${c.d}</small></div><div class="stk2">${c.tubs.map(tileH).join('')}</div></section>`).join('')}</div>
      <section class="flr"><div class="shl" ${grpAttr(fl.tubs)}><b>${fl.n}</b><small>${fl.d}</small></div><div class="frow">${fl.tubs.map(tileH).join('')}</div></section>`
