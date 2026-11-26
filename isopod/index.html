@@ -920,6 +920,8 @@ function bindShelfSwap(){
  const root=$('#shv');if(!root||!canEdit()||D.sv==='tax'||D.sv==='cu')return;
  root.querySelectorAll('.tb2[data-open]').forEach(tile=>{
   const id=tile.dataset.open;
+  tile.oncontextmenu=e=>{e.preventDefault();e.stopPropagation();return false};
+  tile.querySelectorAll('img').forEach(img=>{img.draggable=false;img.oncontextmenu=e=>{e.preventDefault();e.stopPropagation();return false}});
   tile.onpointerdown=e=>{
    if(e.pointerType==='mouse'&&e.button!==0)return;
    clearTimeout(SWAP_PRESS_TIMER);
