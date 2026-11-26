@@ -1989,7 +1989,7 @@ function submit(){
   let items=c.ans.length-(pSkip?1:0);
   if(st.notice&&c.fr){items+=1;if(sumPick(c)===0&&c.frP===c.fr)right++}
   if(c.fraud)items+=1;
-  if(st.notice&&!(st.sty&&st.sty.les){const cmp=st.scnRun&&st.scnEvK==='cmp'&&!st.cmpIt,ca=st.callAll;if(cmp)st.callAll=true;c.call=makeCall(c);st.callAll=ca;if(c.call){c.call.state='pending';c.call.at=Math.min(532,st.gm+(st.callAll||cmp?R(8,40):R(20,120)));if(cmp){st.cmpIt=c;c.cmpN=1}}}
+  if(st.notice&&!(st.sty&&st.sty.les)){const cmp=st.scnRun&&st.scnEvK==='cmp'&&!st.cmpIt,ca=st.callAll;if(cmp)st.callAll=true;c.call=makeCall(c);st.callAll=ca;if(c.call){c.call.state='pending';c.call.at=Math.min(532,st.gm+(st.callAll||cmp?R(8,40):R(20,120)));if(cmp){st.cmpIt=c;c.cmpN=1}}}
   st.ok+=right;st.totalCov+=items;st.score+=Math.round(right*10*mul);
   const s0=st.score;st.score+=0;
   if(right===items){st.score+=Math.round(20*mul);st.okClaims++}
