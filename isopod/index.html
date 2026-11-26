@@ -384,7 +384,7 @@ nav.tabs{background:#263d31!important}
 
 <!-- BUILD-INFO: 2026-11-27-03 -->
 <footer class="build-info" aria-label="사이트 빌드 정보">
- <div><strong>빌드 버전</strong> v2026.11.27-06</div>
+ <div><strong>빌드 버전</strong> v2026.11.27-07</div>
  <div><strong>최종 수정일</strong> 2026.11.27</div>
 </footer>
 <script>
@@ -826,6 +826,20 @@ function showAddAnimalForm(defaultGroup,inManager=false){
     const m={id,kind:'iso',name:nm,generic:true,speciesIndex:0,location:location.value||SHELF[0]?.id||'s1'};
     try{const metaBody=JSON.stringify(m),metaKey='a'+id.slice(1);await rpc('iso_memo_set',{t:metaKey,b:metaBody});D.memo[metaKey]={body:metaBody,who:D.ed,upd:new Date().toISOString()};hydrateDynamicAnimals();save();toast('✓ '+nm+' 사육통을 추가했어요');closeSheet();render()}
     catch(e){btn.disabled=false;btn.textContent='추가하기';toast('⚠ 추가하지 못했어요: '+String(e.message||e).slice(0,70))}
+   };
+  });
+  return;
+ }
+ if(PETS[defaultGroup]){
+  const P=PETS[defaultGroup],stage=P.stages?(D.tab==='larva'?'larva':'shelf'):'';
+  sheet(`<h3 style="margin:0 0 12px">＋ 새 ${esc(P.full||P.n)} 추가</h3><label class="mut" style="display:block;margin:8px 0 4px">이름</label><input id="petAddName" class="input" maxlength="40" placeholder="추가할 이름을 입력해 주세요" style="width:100%;padding:12px"><div class="sbb"><button class="btn" data-x>취소</button><button class="btn pri" id="petAddSave">추가하기</button></div>`,sh=>{
+   const input=sh.querySelector('#petAddName');input.focus();
+   sh.querySelector('#petAddSave').onclick=async()=>{
+    if(!needEdit())return;const nm=input.value.trim();if(!nm){toast('이름을 입력해 주세요');input.focus();return}
+    const btn=sh.querySelector('#petAddSave');btn.disabled=true;btn.textContent='추가 중…';
+    const id='x'+uid().replace(/[^a-z0-9]/gi,'').toLowerCase().slice(0,7),m={id,kind:'pet',name:nm,group:defaultGroup,stage};
+    try{await rpc('iso_memo_set',{t:id,b:JSON.stringify(m)});D.memo[id]={body:JSON.stringify(m),who:D.ed,upd:new Date().toISOString()};hydrateDynamicAnimals();save();toast(`✓ ${nm}을(를) 추가했어요`);closeSheet();if(inManager){render();openAnimalManager()}else render()}
+    catch(e){btn.disabled=false;btn.textContent='추가하기';toast('⚠ 추가하지 못했어요. 로그인과 연결 상태를 확인해 주세요')}
    };
   });
   return;
