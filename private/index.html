@@ -1069,10 +1069,11 @@ body.app.ingame .floatActions button{
     padding-right:5px!important;
   }
 }
-/* Final mobile coverage fix: keep the complete title, tag and info control
-   inside the card; long names scale down instead of pushing the card sideways. */
+/* Unified mobile layout audit: apply to EVERY coverage row, not just
+   ordinary rows. Prevent long labels (e.g. flu, wound, infect) from
+   forcing horizontal overflow or colliding with 가입/정보 controls. */
 @media(max-width:700px){
-  body.app.ingame .slide.list .cov:not(.wide) .nm{
+  body.app.ingame .slide.list .cov .nm{
     display:flex!important;
     flex-flow:row nowrap!important;
     align-items:center!important;
@@ -1080,43 +1081,66 @@ body.app.ingame .floatActions button{
     width:100%!important;
     min-width:0!important;
     max-width:100%!important;
-    overflow:hidden!important;
+    overflow:visible!important;
     gap:3px!important;
     white-space:nowrap!important;
+    word-break:keep-all!important;
+    overflow-wrap:normal!important;
+    line-height:1.2!important;
   }
-  body.app.ingame .slide.list .cov:not(.wide) .nm .covName{
+  body.app.ingame .slide.list .cov .nm .covName{
     display:block!important;
     flex:0 1 auto!important;
     min-width:0!important;
     max-width:100%!important;
     white-space:nowrap!important;
+    word-break:keep-all!important;
     overflow:visible!important;
-    font-size:clamp(10px,3.25vw,12px)!important;
+    overflow-wrap:normal!important;
+    text-overflow:clip!important;
+    font-size:clamp(9px,3.15vw,12px)!important;
     line-height:1.2!important;
-    letter-spacing:-.35px!important;
+    letter-spacing:-.4px!important;
   }
-  body.app.ingame .slide.list .cov:not(.wide) .nm .tg{
+  body.app.ingame .slide.list .cov .nm .tg{
+    display:inline-flex!important;
     flex:0 0 auto!important;
+    align-items:center!important;
     white-space:nowrap!important;
     font-size:9px!important;
-    padding:1px 4px!important;
+    line-height:1.15!important;
+    padding:1px 3px!important;
   }
-  body.app.ingame .slide.list .cov:not(.wide) .nm .info{
+  body.app.ingame .slide.list .cov .nm .info{
+    display:inline-flex!important;
     flex:0 0 24px!important;
     width:24px!important;
     min-width:24px!important;
+    max-width:24px!important;
     height:24px!important;
     margin:0!important;
     padding:0!important;
+    align-items:center!important;
+    justify-content:center!important;
   }
-  body.app.ingame .slide.list .cov:not(.wide) .seg{
+  body.app.ingame .slide.list .cov:not(.wide){
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    align-items:stretch!important;
+    gap:6px!important;
+  }
+  body.app.ingame .slide.list .cov:not(.wide) .seg,
+  body.app.ingame .slide.list .cov:not(.wide) .sel{
     width:100%!important;
     min-width:0!important;
     max-width:100%!important;
+    flex:1 1 auto!important;
+    transform:none!important;
+  }
+  body.app.ingame .slide.list .cov:not(.wide) .seg{
     display:flex!important;
     flex-flow:row nowrap!important;
     gap:4px!important;
-    transform:none!important;
   }
   body.app.ingame .slide.list .cov:not(.wide) .seg button{
     flex:1 1 0!important;
