@@ -1869,35 +1869,80 @@ addEventListener('resize',()=>filesHint());
 function setupFloatingDrag(){
   const box=document.querySelector('.floatActions'),ids=['dvb','go','toolToggle'];
   if(!box)return;
-  let mode=false,active=null,longTimer=0,longFired=false,suppressClick=false;
+  let mode=false,active=null,longTimer=0,longFired=false,suppressClick=false,moved=false;
   const side=CR.floatSide==='left'?'left':'right';
   document.body.classList.toggle('floatLeft',side==='left');
-  const orderKey='claimFloatOrder_v1';
-  try{const saved=JSON.parse(localStorage.getItem(orderKey)||'null');if(Array.isArray(saved)){saved.filter(id=>ids.includes(id)).concat(ids.filter(id=>!saved.includes(id))).forEach(id=>{const el=document.getElementById(id);if(el)box.appendChild(el)})}}catch(e){}
+  const orderKey='claimFloatOrder_v1',posKey='claimFloatPosition_v1';
+  try{
+    const saved=JSON.parse(localStorage.getItem(orderKey)||'null');
+    if(Array.isArray(saved))saved.filter(id=>ids.includes(id)).concat(ids.filter(id=>!saved.includes(id))).forEach(id=>{const el=document.getElementById(id);if(el)box.appendChild(el)});
+  }catch(e){}
   const setMode=v=>{mode=v;document.body.classList.toggle('floatMoveMode',mode);};
   const saveOrder=()=>{try{localStorage.setItem(orderKey,JSON.stringify([...box.children].map(el=>el.id).filter(id=>ids.includes(id))))}catch(e){}};
-  const clearLong=()=>{if(longTimer)clearTimeout(longTimer);longTimer=0};
+  const clampPosition=()=>{
+    const r=box.getBoundingClientRect(),pad=6;
+    const x=Math.max(pad,Math.min(innerWidth-r.width-pad,r.left));
+    const y=Math.max(pad,Math.min(innerHeight-r.height-pad,r.top));
+    box.style.setProperty('left',x+'px','important');
+    box.style.setProperty('top',y+'px','important');
+    box.style.setProperty('right','auto','important');
+    box.style.setProperty('bottom','auto','important');
+    box.style.setProperty('transform','none','important');
+    try{localStorage.setItem(posKey,JSON.stringify({x,y}))}catch(e){}
+  };
+  try{
+    const p=JSON.parse(localStorage.getItem(posKey)||'null');
+    if(p&&Number.isFinite(p.x)&&Number.isFinite(p.y)){
+      box.style.setProperty('left',p.x+'px','important');
+      box.style.setProperty('top',p.y+'px','important');
+      box.style.setProperty('right','auto','important');
+      box.style.setProperty('bottom','auto','important');
+      box.style.setProperty('transform','none','important');
+      requestAnimationFrame(clampPosition);
+    }
+  }catch(e){}
+  const clearLong=()=>{if(longTimer)clearTimeout(longTimer);longTimer=0;};
   ids.forEach(id=>{
     const el=document.getElementById(id);if(!el||el.dataset.dragReady)return;el.dataset.dragReady='1';
     el.addEventListener('contextmenu',e=>{if(mode||longFired)e.preventDefault()});
     el.addEventListener('pointerdown',e=>{
       if(e.button!==undefined&&e.button!==0)return;
-      clearLong();longFired=false;
-      active={el,pid:e.pointerId,y:e.clientY,wasMode:mode};
+      clearLong();longFired=false;moved=false;
+      const rect=box.getBoundingClientRect();
+      active={el,pid:e.pointerId,startX:e.clientX,startY:e.clientY,left:rect.left,top:rect.top,wasMode:mode};
       try{el.setPointerCapture(e.pointerId)}catch(err){}
-      if(!mode)longTimer=setTimeout(()=>{if(!active)return;longFired=true;setMode(true);el.classList.add('dragging');suppressClick=true;},500);
+      if(!mode)longTimer=setTimeout(()=>{
+        if(!active)return;
+        longFired=true;setMode(true);el.classList.add('dragging');suppressClick=true;
+        box.style.setProperty('left',active.left+'px','important');
+        box.style.setProperty('top',active.top+'px','important');
+        box.style.setProperty('right','auto','important');
+        box.style.setProperty('bottom','auto','important');
+        box.style.setProperty('transform','none','important');
+      },500);
     });
     el.addEventListener('pointermove',e=>{
-      if(!active||e.pointerId!==active.pid||!mode)return;
-      const target=[...box.children].filter(x=>x!==active.el).find(x=>e.clientY<x.getBoundingClientRect().top+x.getBoundingClientRect().height/2);
-      if(target)box.insertBefore(active.el,target);else box.appendChild(active.el);
+      if(!active||e.pointerId!==active.pid)return;
+      const dx=e.clientX-active.startX,dy=e.clientY-active.startY;
+      if(!mode&&Math.hypot(dx,dy)>12){clearLong();active=null;return;}
+      if(!mode||(!longFired&&!active.wasMode))return;
+      if(Math.abs(dx)+Math.abs(dy)>2)moved=true;
+      box.style.setProperty('left',(active.left+dx)+'px','important');
+      box.style.setProperty('top',(active.top+dy)+'px','important');
+      box.style.setProperty('right','auto','important');
+      box.style.setProperty('bottom','auto','important');
+      box.style.setProperty('transform','none','important');
     });
     const end=e=>{
       clearLong();if(!active||e.pointerId!==active.pid)return;
       const wasMode=active.wasMode,el0=active.el;
-      if(mode){el0.classList.remove('dragging');saveOrder();if(!longFired&&!wasMode){setMode(false);suppressClick=true}}
+      if(mode){
+        el0.classList.remove('dragging');
+        if(longFired||moved){clampPosition();saveOrder();}
+        if(!longFired&&!moved&&!wasMode){setMode(false);suppressClick=true;}
+      }
       active=null;
-      if(longFired){setTimeout(()=>{suppressClick=false},450)}
+      if(longFired||moved)setTimeout(()=>{suppressClick=false},450);
       longFired=false;
     };
     el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end);
@@ -1906,6 +1951,7 @@ function setupFloatingDrag(){
       if(mode){e.preventDefault();e.stopImmediatePropagation();setMode(false);saveOrder();return}
     },true);
   });
+  addEventListener('resize',()=>{if(box.isConnected&&box.style.left)clampPosition()},{passive:true});
 }
 
 function render(res){if(!inf.hidden)closeInfo(false);closeCalc();closeGp(false);setTimeout(filesHint,0);
