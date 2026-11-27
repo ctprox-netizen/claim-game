@@ -1243,6 +1243,36 @@ body.app.ingame .floatActions button{
     white-space:nowrap!important;
   }
 }
+
+/* Definitive mobile fix: cancel the legacy horizontal shifts applied to
+   diagnosis and surgery decision controls. */
+@media (max-width:700px){
+  body.app.ingame .slide.list .cov:not(.wide) > .seg{
+    transform:none!important;
+    position:relative!important;
+    left:auto!important;
+    right:auto!important;
+    width:100%!important;
+    min-width:100%!important;
+    max-width:100%!important;
+    margin-left:0!important;
+    margin-right:0!important;
+    box-sizing:border-box!important;
+    display:flex!important;
+    flex-flow:row nowrap!important;
+    gap:0!important;
+  }
+  body.app.ingame .slide.list .cov:not(.wide) > .seg button{
+    flex:1 1 0!important;
+    width:50%!important;
+    min-width:0!important;
+    max-width:50%!important;
+    box-sizing:border-box!important;
+  }
+  body.app.ingame:not(.floatLeft) .slide.list .cov:not(.wide) .seg{
+    transform:none!important;
+  }
+}
 </style>
 </head>
 <body>
