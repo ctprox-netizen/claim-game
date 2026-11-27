@@ -1006,85 +1006,69 @@ body.app.ingame .floatActions button{
 }
 
 
-/* Keep disease-surgery and actual-expense controls on one horizontal line. */
+/* Stable mobile coverage layout: full-width name row, controls below.
+   Keep every coverage name readable; never truncate long labels. */
 @media(max-width:700px){
-  body.app.ingame .slide.list .cov .nm,
-  body.app.ingame .slide.list .cov.wide .nm{
-    display:flex!important;
-    flex-flow:row nowrap!important;
-    align-items:center!important;
-    white-space:nowrap!important;
-    word-break:keep-all!important;
-    overflow-wrap:normal!important;
-    width:max-content!important;
-    min-width:max-content!important;
-    max-width:none!important;
+  body.app.ingame .slide.list .cov:not(.wide){
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    align-items:stretch!important;
+    gap:6px!important;
   }
-  body.app.ingame .slide.list .cov>div:first-child{
-    min-width:0!important;
-    overflow:visible!important;
-  }
-  body.app.ingame .slide.list .cov .seg{
-    display:flex!important;
-    flex-flow:row nowrap!important;
-    white-space:nowrap!important;
-  }
-  body.app.ingame .slide.list .cov .seg button{
-    white-space:nowrap!important;
-    word-break:keep-all!important;
-    flex:1 0 auto!important;
-  }
-}
-
-
-/* Consistent one-line labels for every coverage type on phones. */
-@media(max-width:700px){
   body.app.ingame .slide.list .cov .nm{
     display:flex!important;
     flex-flow:row nowrap!important;
     align-items:center!important;
-    white-space:nowrap!important;
+    justify-content:flex-start!important;
+    width:100%!important;
     min-width:0!important;
     max-width:100%!important;
-    gap:3px!important;
+    gap:4px!important;
+    white-space:nowrap!important;
     overflow:visible!important;
-    font-size:12px!important;
-    line-height:1.15!important;
+    font-size:13px!important;
+    line-height:1.25!important;
   }
   body.app.ingame .slide.list .cov .nm .covName{
-    display:block!important;
+    display:inline!important;
     flex:0 1 auto!important;
     min-width:0!important;
+    max-width:none!important;
     white-space:nowrap!important;
     word-break:keep-all!important;
-    overflow:hidden!important;
-    text-overflow:ellipsis!important;
-    font-size:clamp(10px,3.15vw,12px)!important;
-    letter-spacing:-.35px!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+    font-size:clamp(11px,3.6vw,13px)!important;
+    letter-spacing:-.25px!important;
   }
   body.app.ingame .slide.list .cov .nm .info{
-    flex:0 0 28px!important;
-    width:28px!important;
-    min-width:28px!important;
-    height:28px!important;
+    flex:0 0 26px!important;
+    width:26px!important;
+    min-width:26px!important;
+    height:26px!important;
     margin:0 0 0 2px!important;
   }
-  body.app.ingame .slide.list .cov:not(.wide){
-    grid-template-columns:minmax(0,1fr) auto!important;
-    align-items:center!important;
+  body.app.ingame .slide.list .cov:not(.wide) .seg,
+  body.app.ingame .slide.list .cov:not(.wide) .sel{
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    flex:1 1 auto!important;
+    transform:none!important;
   }
   body.app.ingame .slide.list .cov:not(.wide) .seg{
-    width:auto!important;
-    min-width:112px!important;
-    flex:0 0 auto!important;
+    display:flex!important;
+    flex-flow:row nowrap!important;
+    gap:4px!important;
   }
-  body.app.ingame .slide.list .cov:not(.wide) .sel{
-    width:auto!important;
-    min-width:112px!important;
-    max-width:132px!important;
+  body.app.ingame .slide.list .cov:not(.wide) .seg button{
+    flex:1 1 0!important;
+    min-width:0!important;
+    white-space:nowrap!important;
+    padding-left:5px!important;
+    padding-right:5px!important;
   }
 }
-
 </style>
 </head>
 <body>
