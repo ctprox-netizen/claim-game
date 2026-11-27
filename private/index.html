@@ -1468,7 +1468,7 @@ const surgCodeLabel=(name,code)=>{const e=SURG_EDI[name];if(!e)return'수가코�
  const GRADE={'치핵 절제술':1,'항문열창 절제술':1,'내시경적 결장 용종절제술':1,'내시경적 위 용종절제술':1,'내시경적 직장 용종절제술':1,'피부 열상 봉합술':1,'수정체유화술 및 인공수정체 삽입술':2,'서혜부 탈장 교정술':2,'복강경 충수절제술':3,'복강경 담낭절제술':3,'요골 관혈적 정복 및 내고정술':3,'슬개골 관혈적 정복술':3,
   '갑상선 반절제술':4,'관상동맥 스텐트 삽입술':4,'요추 디스크 제거술':4,'위 부분절제술':5,'인공 슬관절 치환술':5};
 const uniqD=a=>[...new Set(a.map(d=>fd(d)))];
-function visN(c){const all=uniqD((c.visits||[]).map(v=>v.d)),hs=new Set(c.days?Array.from({length:c.days},(_,i)=>fd(addD(c.inc,i))):[]),ok=all.filter(d=>!hs.has(d));return{raw:(c.visits||[]).length,u:all.length,ins:all.length-ok.length,n:ok.length}}
+function visN(c){const all=uniqD((c.visits||[]).map(v=>v.d)),hasVerifiedHosp=!!(c.docs&&c.docs.hosp&&c.days>0),hs=new Set(hasVerifiedHosp?Array.from({length:c.days},(_,i)=>fd(addD(c.inc,i))):[]),ok=all.filter(d=>!hs.has(d));return{raw:(c.visits||[]).length,u:all.length,ins:all.length-ok.length,n:ok.length,admissionVerified:hasVerifiedHosp}}
 function ptN(c){const u=uniqD(c.pt||[]).length;return{raw:(c.pt||[]).length,u,n:Math.min(10,u)}}
 const rdays=(k,c)=>{const C=COV[k];const n=(c.rooms||[]).filter(r=>C.rm.includes(r[0])).reduce((a,r)=>a+r[1],0);return C.cap?Math.min(n,C.cap):n};
 const val=(k,c,v)=>{const C=COV[k];if(!v||C.pay)return 0;if(C.fx)return v===2?C.fx(c):0;if(C.carG)return CG[v];if(C.rm){const b=C.amt*rdays(k,c);return v===1?b/2:b}if(C.vals)return C.vals[v];if(C.grade)return GR[v];const b=C.u?C.amt*c.days:C.amt;return v===1?b/2:b};
