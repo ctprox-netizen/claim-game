@@ -949,6 +949,32 @@ body.app.ingame .floatActions button{
   line-height:1.05!important;
 }
 
+
+/* Keep each coverage title on one horizontal line on narrow phones. */
+@media(max-width:700px){
+  body.app.ingame .slide.list .cov .nm{
+    display:flex!important;
+    flex-wrap:nowrap!important;
+    white-space:nowrap!important;
+    word-break:keep-all!important;
+    overflow-wrap:normal!important;
+    min-width:max-content!important;
+    max-width:none!important;
+    font-size:13px!important;
+    line-height:1.15!important;
+    gap:3px!important;
+  }
+  body.app.ingame .slide.list .cov .nm .info{
+    flex:0 0 30px!important;
+    width:30px!important;
+    min-width:30px!important;
+    margin-left:2px!important;
+  }
+  body.app.ingame .slide.list .cov:not(.wide){
+    grid-template-columns:minmax(0,1fr) auto!important;
+  }
+}
+
 </style>
 </head>
 <body>
