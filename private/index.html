@@ -2317,10 +2317,11 @@ document.addEventListener('keydown',e=>{if(!gpop.hidden&&e.key==='Escape')closeG
 function openInfo(k,btn){infFrom=btn;document.getElementById('inft').textContent=COV[k].n+' · 지급기준';
   const L=INFO[k]();document.getElementById('infb').innerHTML=L.map(x=>x.startsWith('<table')||x.startsWith('<div')?`<div class="scroll">${x}</div>`:`<p>${x}</p>`).join('')+(k==='pay'?'':'<p class="note">공통: 계약일 이전 발생 건은 부지급. 필수 서류가 미제출이면 부지급. 폭행 사고는 경찰서 사고사실확인원상 <b>일방적 피해자</b>일 때만 보상(쌍방폭행이면 모든 상해 담보 부지급). 오토바이·원동기·전동킥보드 <b>운전 중</b> 사고는 이륜차 특약이 없으면 면책.</p>');
   inf.hidden=false;btn.setAttribute('aria-expanded','true');place(btn);document.getElementById('infx').focus({preventScroll:true})}
-function place(btn,el=inf){const r=btn.getBoundingClientRect(),W=el.offsetWidth,H=el.offsetHeight,vw=document.documentElement.clientWidth;
+function place(btn,el=inf){const r=btn.getBoundingClientRect(),W=el.offsetWidth,H=el.offsetHeight,vw=document.documentElement.clientWidth,vh=document.documentElement.clientHeight;
   let x=Math.min(Math.max(12,r.left-12),vw-W-12),y=r.bottom+8;
-  if(y+H>innerHeight-8)y=r.top-H-8>8?r.top-H-8:Math.max(8,innerHeight-H-8);
-  el.style.left=x+scrollX+'px';el.style.top=y+scrollY+'px'}
+  if(y+H>vh-8)y=r.top-H-8>8?r.top-H-8:Math.max(8,vh-H-8);
+  if(el===gpop){el.style.position='fixed';el.style.left=x+'px';el.style.top=y+'px'}
+  else{el.style.left=x+scrollX+'px';el.style.top=y+scrollY+'px'}}
 function closeInfo(focus=true){if(inf.hidden)return;inf.hidden=true;infFrom&&infFrom.setAttribute('aria-expanded','false');focus&&infFrom&&infFrom.focus({preventScroll:true})}
 document.getElementById('infx').addEventListener('click',closeInfo);
 {let tp=null;const sc=t=>{const e=t.closest&&t.closest('.scroll');return e?e.scrollLeft+','+e.scrollTop:''};inf.addEventListener('pointerdown',e=>{tp=e.isPrimary?{x:e.clientX,y:e.clientY,t:Date.now(),s:sc(e.target),b:document.getElementById('infb').scrollTop}:null});inf.addEventListener('pointercancel',()=>{tp=null});inf.addEventListener('pointerup',e=>{const p=tp;tp=null;if(!p||st.tut||e.target.closest('button,a,input,select'))return;if(Math.hypot(e.clientX-p.x,e.clientY-p.y)<10&&Date.now()-p.t<400&&sc(e.target)===p.s&&document.getElementById('infb').scrollTop===p.b)setTimeout(()=>closeInfo(false),0)})}
