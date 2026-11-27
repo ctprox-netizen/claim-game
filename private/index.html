@@ -55,7 +55,7 @@
  body.app .dpop{top:50%!important;bottom:auto!important;left:8px!important;right:8px!important;transform:translateY(-50%)!important;max-height:82dvh}
  body.app .dpop .dsl{max-height:64dvh!important}
 }
-</style>
+.xfw{display:none!important}\n</style>
 <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700;800;900&family=Nanum+Myeongjo:wght@800&display=swap" rel="stylesheet">
 <style>
 /* VOICE: 사무실 책상 위 실무 게임 — 차분하지만 손에 잡히는 서류 감각
@@ -370,7 +370,7 @@ main{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:24px;p
 .notice .res,.call .res{margin-top:8px}
 .call{margin-top:16px;border:2px solid #1d1a17;border-radius:10px;padding:12px;background:#fff8e6}
 .call .ch{font:800 18px "Noto Sans KR",sans-serif;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}.call .ch small{font:700 13px "Noto Sans KR";color:#5a4316}
-.cb{margin:8px 0;padding:9px 12px;border-radius:12px;font-size:14.5px;line-height:1.5;max-width:92%}
+.cb{margin:8px 0;padding:9px 12px;border-radius:12px;font-size:14.5px;line-height:1.5;max-width:92%;min-width:0;overflow-wrap:anywhere}
 .cb.c{background:#fff;border:1.5px solid #1d1a17;border-top-left-radius:2px;font-family:"Noto Sans KR",sans-serif;font-weight:700}
 .cb.c.now{border-width:2.5px}
 .cb.me{background:#1d4ed8;color:#fff;margin-left:auto;border-top-right-radius:2px}
@@ -548,14 +548,14 @@ table.sil th{background:#f3efe7}
 body.app .dslide{position:relative;background:#fffdf7;border-radius:8px}.dsh{position:sticky;top:0;z-index:2;background:#1d1a17;color:#fff;font-weight:800;font-size:13.5px;padding:7px 10px;border-radius:8px 8px 0 0}.dsh small{font-weight:500;font-size:11px;opacity:.85;margin-left:4px}
 .dsec{padding:6px 2px 10px;border-bottom:3px double #1d1a17}.dst{font-weight:800;font-size:13px;color:#1d4ed8;margin:4px 4px 6px}.dsec .doc{margin:0}.dmiss{margin:10px 6px;font-size:13px;color:#e08a00}.dend{text-align:center;font-size:12px;color:#6b625a;margin:12px 0 16px}
 body.app .policy.ondocs .total,body.app .policy.ondocs .flag,body.app .policy.ondocs .rqn,body.app .policy.ondocs .gorow,body.app .policy.ondocs .phead,body.app .policy.ondocs .stamp{display:none}
-.ccw{position:relative;min-width:0}.ccw .ccase{position:static;left:auto;right:auto;bottom:auto;margin:6px 0;max-height:min(28dvh,220px);overflow-y:auto;overscroll-behavior:contain;z-index:auto;box-shadow:0 3px 12px -5px #0005}
+.ccw{position:relative;min-width:0}.ccw .ccase{position:static;left:auto;right:auto;bottom:auto;margin:6px 0;max-height:min(38dvh,300px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;z-index:auto;box-shadow:0 3px 12px -5px #0005}
 .pfoot .gorow .go,.pfoot .gorow .back2{margin-top:0}.pfoot .gorow{margin:2px 0 6px}
 .stw{display:flex;justify-content:center;padding:18px 0 12px}.stw .go{width:auto;min-width:72%;margin:0 auto;padding:0 22px;background:#1d4ed8;border-color:#1d4ed8;color:#fff}
 body.app.ingame>header,body.app.ingame>.bar{display:none}
 body.app .dslide{scroll-snap-type:y mandatory;scroll-padding-top:34px}.dsec{scroll-snap-align:center;scroll-snap-stop:always}.dend{scroll-snap-align:end}
 body.app .dvw{display:flex;justify-content:center;padding:14px 0 2px}.dvb{min-height:46px;min-width:72%;border:2px solid #1d1a17;border-radius:10px;background:#fff3d6;color:#1d1a17;font:800 15.5px inherit;font-family:inherit;cursor:pointer;padding:4px 16px}.dvb small{display:block;font-weight:500;font-size:11.5px;color:#5a5048}
 .dvw{display:flex;justify-content:center;padding:14px 0 2px}
-@media(max-width:700px){.dpop .dsl{max-height:calc(76vh - var(--fb,0px))!important;max-height:calc(76dvh - var(--fb,0px))!important}}
+@media(max-width:700px){body.app .dpop{position:fixed!important;top:50%!important;bottom:auto!important;left:8px!important;right:8px!important;transform:translateY(-50%)!important;max-height:82dvh!important}.dpop .dsl{max-height:64dvh!important}}
 .cov.locked{opacity:.38;filter:grayscale(1);pointer-events:none}.cov.locked .seg button{cursor:not-allowed}.lkn{font-size:11.5px;font-weight:600;color:#5a5048}
 @media(max-width:700px){
  body.app .phead{flex-wrap:nowrap;gap:6px;overflow:hidden;white-space:nowrap}
@@ -737,18 +737,83 @@ body.app .go{margin-top:7px;min-height:44px;font-size:16px;border-radius:9px}
 body.app .stw{padding:8px 0 2px}
 }
 
-/* Mobile header: prevent the receipt and policy labels from colliding */
+/* Final mobile document viewer override: keep modal and pages within the viewport. */
 @media(max-width:700px){
-  body.app .cbar{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:6px 10px;padding:0 12px;margin:8px auto 6px}
-  body.app .cbar .cid{min-width:0;white-space:normal;overflow-wrap:anywhere;line-height:1.35;font-size:12.5px!important}
-  body.app .cbar .clk2{min-width:max-content;margin:0;font-size:12px!important;line-height:1.35;text-align:right}
-  body.app .policy .phead{display:grid!important;grid-template-columns:minmax(0,1fr);align-items:start;justify-items:start;gap:6px;overflow:visible!important;white-space:normal!important;padding-bottom:8px}
-  body.app .policy .phead h2{display:block!important;min-width:0;max-width:100%;margin:0;font-size:16px;line-height:1.35;white-space:normal}
-  body.app .policy .phead .cdate{display:inline-flex;width:max-content;max-width:100%;margin:0;padding:3px 8px;gap:6px;white-space:normal;line-height:1.35}
-  body.app .policy .phead .meta{display:flex;flex-wrap:wrap!important;align-items:center;min-width:0;max-width:100%;gap:4px 12px;margin:0;overflow:visible!important;white-space:normal!important;line-height:1.5;font-size:12px}
-  body.app .policy .phead .meta span{min-width:0;max-width:100%;white-space:normal!important;overflow:visible!important;overflow-wrap:anywhere;text-overflow:clip}
-  body.app .policy .phead .hint{display:none!important}
+ body.app .dpop{position:fixed!important;top:50%!important;bottom:auto!important;left:8px!important;right:8px!important;transform:translateY(-50%)!important;max-height:82dvh!important}
+ body.app .dpop .dsl{max-height:64dvh!important}
 }
+
+/* Mobile claim header: separate title, contract date, and insured/policy metadata. */
+@media(max-width:700px){
+ body.app .policy .phead{display:flex!important;flex-wrap:wrap!important;align-items:center!important;gap:6px 8px!important;overflow:visible!important;white-space:normal!important}
+ body.app .policy .phead h2{display:block!important;flex:1 1 130px!important;min-width:0!important;margin:0!important;font-size:15px!important;line-height:1.3!important;white-space:normal!important}
+ body.app .policy .phead .cdate{flex:0 0 auto!important;margin:0!important;white-space:nowrap!important}
+ body.app .policy .phead .meta{display:flex!important;flex:1 1 100%!important;flex-wrap:wrap!important;gap:3px 10px!important;min-width:0!important;overflow:visible!important;white-space:normal!important}
+ body.app .policy .phead .meta span{max-width:100%!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;overflow-wrap:anywhere!important}
+}
+
+
+/* Restore native vertical touch scrolling and fling momentum on compact screens. */
+@media(max-width:700px){
+ body.app .slides{
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch!important;
+  touch-action:pan-y!important;
+  scroll-behavior:auto!important;
+ }
+ body.app .slides>.slide{
+  overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch!important;
+  touch-action:pan-y!important;
+  overscroll-behavior-y:auto!important;
+  scroll-behavior:auto!important;
+ }
+}
+
+/* Call panel and compact-screen usability pass. */
+.cmb{min-width:0;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y}
+.ns .ntxt{-webkit-line-clamp:3;line-clamp:3}
+.ns{min-width:0;overflow-wrap:anywhere}
+.caseedi,.caseedibody,.edii,.edidetail{min-width:0;overflow-wrap:anywhere}
+@media(max-width:700px){
+ body.app .callm{padding:8px 8px calc(8px + env(safe-area-inset-bottom))}
+ body.app .cm{width:100%;max-height:calc(100dvh - 16px - env(safe-area-inset-bottom));padding:10px;border-radius:14px}
+ body.app .cmb{min-height:0;max-height:100%;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+ body.app .caseedi .edil{max-height:36dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+ body.app .caseedi .dexq{width:100%;min-width:0}
+ body.app .edii{overflow-wrap:anywhere}
+ body.app .policy .pbody,body.app .policy .pfoot{min-width:0;max-width:100%}
+}
+/* Compact claim header and soft visual grouping for coverage rows. */
+@media(max-width:700px){
+ body.app .policy .phead{display:flex!important;flex-wrap:nowrap!important;align-items:center!important;gap:5px!important;white-space:nowrap!important;overflow:hidden!important}
+ body.app .policy .phead h2{display:block!important;flex:0 0 auto!important;min-width:0!important;margin:0!important;font-size:13px!important;line-height:1.2!important;white-space:nowrap!important}
+ body.app .policy .phead .cdate{display:inline-flex!important;flex:0 0 auto!important;margin:0!important;padding:2px 5px!important;gap:3px!important}
+ body.app .policy .phead .cdate span{display:inline!important;font-size:10px!important}
+ body.app .policy .phead .cdate b{font-size:12px!important}
+ body.app .policy .phead .meta{display:block!important;flex:1 1 auto!important;min-width:0!important;margin:0!important;overflow:hidden!important;white-space:nowrap!important;font-size:11px!important}
+ body.app .policy .phead .meta span:first-child{display:inline!important;max-width:100%!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+ body.app .policy .phead .meta span:first-child .lb{display:inline!important}
+ body.app .policy .phead .meta span+span{display:none!important}
+ body.app .policy .phead .hint{display:none!important}
+ body.app .slide.list .cgh{display:none!important}
+ body.app .slide.list .cov{margin-top:3px!important;margin-bottom:4px!important;padding:6px 8px!important;border-width:1px!important;border-radius:7px!important;box-shadow:none!important}
+}
+/* Compact floating controls for the claim review screen. */
+body.app.ingame .floatActions{position:fixed;z-index:90;left:10px;right:10px;bottom:max(10px,env(safe-area-inset-bottom));display:flex;align-items:center;justify-content:space-between;gap:8px;pointer-events:none}
+body.app.ingame .floatActions button{pointer-events:auto;min-height:46px;border:1.5px solid #2b2926;border-radius:13px;padding:0 12px;font:800 13px inherit;font-family:inherit;box-shadow:0 3px 12px #0003;white-space:nowrap}
+body.app.ingame .floatDoc{background:#fff3d6;color:#2b2926;flex:0 0 auto}
+body.app.ingame .floatFinish{background:#1d4ed8;color:#fff;border-color:#1d4ed8!important;flex:1 1 auto;max-width:70%;min-width:0;overflow:hidden;text-overflow:ellipsis}
+body.app.ingame .floatTool{position:fixed;z-index:92;right:10px;top:calc(10px + env(safe-area-inset-top));background:#fff;color:#2b2926;min-height:38px!important;padding:0 11px!important;font-size:12px!important}
+body.app.ingame .policy .pfoot{padding-bottom:66px!important}
+body.app.ingame .policy .pfoot .total{padding-bottom:5px}
+body.app.ingame .caseedi>summary{display:none!important}
+body.app.ingame .caseedi{display:none!important}
+body.app.ingame .caseedi[open]{display:block!important;position:fixed!important;inset:0!important;z-index:91!important;background:#0005!important}
+body.app.ingame .caseedi[open]>.caseedibody{display:block!important;position:absolute!important;top:58px!important;right:10px!important;left:10px!important;max-height:68dvh!important;overflow:auto!important;background:#fff!important;border:1px solid #d8d0c4!important;border-radius:12px!important;padding:12px!important;box-shadow:0 8px 30px #0004!important}
+body.app.ingame .slides{padding-bottom:12px!important}
+@media(min-width:701px){body.app.ingame .floatActions{left:auto;right:22px;bottom:18px;width:min(440px,calc(100% - 44px))}body.app.ingame .floatTool{top:16px;right:22px}}
 </style>
 </head>
 <body>
@@ -1024,13 +1089,7 @@ function judgeMedicalExpense(k,c,s,N,no){
 return no('실손의료비 판정 규칙을 찾을 수 없습니다');}
 function judgeDiseaseSurgery(k,c,s,N,no){
   if(s.implant&&c.surg&&(k==='dGrade'))return no('임플란트 식립술은 1~5종 수술 분류표에 없음 — 해당 없음');
-  if(s.implant&&c.surg&&(k==='dSurg'||k==='dSurgS')){
-    if(s.cause==='d')return no('질병(치주질환 등)으로 인한 임플란트 — 면책');
-    if(k!=='iSurg')return no('상해 원인 수술 — 질병수술비 대상 아님');
-    if(s.implant===1)return no('치조골 이식 없는 임플란트 — 면책');
-    if(!c.docs.surg)return no('수술확인서 미제출 — 서류가 없으면 지급 불가');
-    return{d:2,amt:COV[k].amt,w:`치아파절(상해) · 치조골 이식 동반 임플란트 — 지급`};
-  }
+  if(s.implant&&c.surg&&(k==='dSurg'||k==='dSurgS'))return no(s.cause==='d'?'질병(치주질환 등)으로 인한 임플란트 — 면책':'상해 원인 수술 — 질병수술비 대상 아님');
   if(k==='dGrade'){
     if(!c.surg)return no('수술 시행 내역 없음');
     if(s.cause!=='d')return no(`${s.cause==='d'?'질병':'상해'} 원인 수술 — ${N} 대상 아님`);
@@ -1306,8 +1365,8 @@ function genOnce(forceSurgery=false){
     const hard=st.lv>=3;if(Math.random()<(hard?.25:.15)){c.owner=c.ben=c.who[0]+pick(OLD)}
     const q=Math.random(),x=hard?.4:.35,y=hard?.067:.056;
     c.holder=c.ben!==c.who?(q<1-x?c.ben:q<1-x/3?c.who:third()):(q<1-y?c.who:third());
-    groups.push(['지급처',['pay']]);
   }
+  groups.push(['지급처',['pay']]);
   const P2=n=>String(n).padStart(2,'0');
   c.birth=`${R(1955,2004)}.${P2(R(1,12))}.${P2(R(1,28))}`;c.sex=pick(['남','여']);c.dr=pick(SN)+pick(GN);c.dr2=pick(SN)+pick(GN);c.lic=R(10000,99999);c.chart=R(1000000,9999999);c.regno=`${TODAY.getFullYear()}-${String(TODAY.getMonth()+1).padStart(2,'0')}${String(TODAY.getDate()).padStart(2,'0')}${R(10000,99999)}`;
   c.addr=pick(['서울특별시','경기도 수원시','인천광역시','대전광역시','부산광역시','광주광역시'])+' ○○구 ○○로 '+R(1,300);
@@ -1487,28 +1546,33 @@ function policyHTML(c,res){
   const tag=k=>LV[st.lv].tag?`<span class="tg${c.enr.has(k)?'':' no'}">${c.enr.has(k)?'가입':'미가입'}</span>`:'';
   const rsel=i=>st.notice&&needR(c,i)?`<label class="rsn"><span>부지급·감액 사유</span><select class="sel" data-r="${i}" ${res?'disabled':''}><option value="">사유 선택</option>${Object.entries(RS).map(([k,t])=>`<option value="${k}" ${c.rs[i]===k?'selected':''}>${t}</option>`).join('')}</select></label>`:'';
   const rres=i=>st.notice&&c.ans[i].r?` · 사유: <b>${RS[c.ans[i].r]}</b>`:'';
-  const silRow=(i)=>{const a=c.ans[i],ok=okP(c,i);return`<div class="cov wide"><div><div class="nm">실손의료비${tag('sil')}${mag('sil')}${res?'':`<button class="info calcb" data-calc="${i}" aria-label="계산기 열기">${CALCI}</button>`}</div><div class="am">영수증 기준 지급액 입력</div></div>
+  const silRow=(i)=>{const a=c.ans[i],ok=okP(c,i);return`<div class="cov wide" data-cg="${c.gi[i]}" style="background:${['#f3f7fb','#f5f7f1','#fbf5ef','#f5f2fa'][Math.abs(c.gi[i])%4]};border-color:${['#d9e5ef','#dfe8d5','#eee0d2','#e5dced'][Math.abs(c.gi[i])%4]}"><div><div class="nm">실손의료비${tag('sil')}${mag('sil')}${res?'':`<button class="info calcb" data-calc="${i}" aria-label="계산기 열기">${CALCI}</button>`}</div><div class="am">영수증 기준 지급액 입력</div></div>
     <div class="silin"><button class="silv calcb" data-calc="${i}" aria-label="실손의료비 지급액 입력 (현재 ${f(c.pick[i]||0)}원)" ${res?'disabled':''}>${c.pick[i]?f(c.pick[i]):'<span class="ph">눌러서 입력</span>'}</button><span>원</span>${res?'':`<button data-z="${i}">0원</button>`}</div>
-    ${false?`<div class="res"><span class="mk">— ${c.inv?'현장조사 의뢰로 심사 생략':c.flag?'조사 의뢰로 심사 생략':c.xfr?'표준부서 이관으로 심사 생략':isBig(c)?'표준부서 이관 대상 · 간편심사 대상 아님':'현장조사 대상 건 · 지급 심사 대상 아님'}</span></div>`:res?`<div class="res"><span class="mk ${ok?'ok':'bad'}">${ok?'✓ 정답':'✗ 오답'}</span><span>정답: <b>${a.amt?f(a.amt)+'원 지급':'부지급'}</b> · ${a.w}</span></div>`:''}</div>`};
+    ${res&&(c.flag||c.inv||c.nd||c.xfr||isBig(c))?`<div class="res"><span class="mk">— ${c.inv?'현장조사 의뢰로 심사 생략':c.flag?'조사 의뢰로 심사 생략':c.xfr?'표준부서 이관으로 심사 생략':isBig(c)?'표준부서 이관 대상 · 간편심사 대상 아님':'현장조사 대상 건 · 지급 심사 대상 아님'}</span></div>`:res?`<div class="res"><span class="mk ${ok?'ok':'bad'}">${ok?'✓ 정답':'✗ 오답'}</span><span>정답: <b>${a.amt?f(a.amt)+'원 지급':'부지급'}</b> · ${a.w}</span></div>`:''}</div>`};
   return `<aside class="paper policy" aria-label="보험금 심사표">
   ${res?`<div class="stamp">심사완료</div>`:''}
   <div class="phead"><h2>보험금 심사표${c.boss?' <span class="bossb">👑 보스</span>':''}</h2>
   <div class="cdate"><span><i class="lb2">보험 </i>계약일</span><b>${fd(c.con)}</b></div>
-  <div class="meta"><span><i class="lb">피보험자 </i><b>${c.who}</b></span><span><i class="lb">증권번호 </i><b>${c.no}</b></span></div>
+  <div class="meta"><span><i class="lb">이름 </i><b>${c.who}</b></span><span><i class="lb">증권번호 </i><b>${c.no}</b></span></div>
   <p class="hint">청구 항목별로 <b>가입한 담보</b>만 보여요. 가입 조건과 금액은 폴더의 <b>보험증권</b>에서 확인하세요.</p></div>
   <div class="slides" id="slides">
-  ${(()=>{const RW=c.covs.map((k,i)=>{const gh=k!=='pay'&&c.covs.filter(x=>x!=='pay').length>3&&(i===0||c.gi[i]!==c.gi[i-1])?`<div class="cgh">${c.groups[c.gi[i]][0]}</div>`:'',lk=k==='pay'&&!payShown(c,res);if(lk&&res)return '';if(k==='sil')return gh+silRow(i);const C=COV[k],L=C.carG?CGL:C.grade?GRL:C.opts||['부지급','','지급'];
+  ${(()=>{const RW=c.covs.map((k,i)=>{const gh='',lk=k==='pay'&&!payShown(c,res);if(k==='pay')return '';if(lk&&res)return '';if(k==='sil')return gh+silRow(i);const C=COV[k],L=C.carG?CGL:C.grade?GRL:C.opts||['부지급','','지급'];
     const dn=dGet(c,i),ctl=isDay(k)?`<button class="sel selb dayb" data-dp="${i}" aria-haspopup="dialog" aria-label="${C.n} 보상 ${dUnit(k)}수: ${dn?dn+dUnit(k):'부지급'}" ${res?'disabled':''}><span>${dn?`<b>${dn}${dUnit(k)}</b> · ${won(dn*C.amt)}`:'부지급 (0'+dUnit(k)+')'}</span><i aria-hidden="true">▾</i></button>`:C.grade||C.carG?`<button class="sel selb" data-gp="${i}" aria-haspopup="listbox" aria-label="${C.n} 결정: ${L[c.pick[i]]}" ${res?'disabled':''}><span>${L[c.pick[i]]}</span><i aria-hidden="true">▾</i></button>`
       :`<div class="seg" role="group" aria-label="${C.n} 결정">${L.map((t,v)=>t?`<button data-i="${i}" data-v="${v}" aria-pressed="${c.pick[i]===v}" ${res?'disabled':''}>${t}</button>`:'').join('')}</div>`;
-    return gh+`<div class="cov${k==='pay'?' wide':''}${lk?' locked':''}" ${lk?'aria-disabled="true"':''}><div><div class="nm">${C.n}${tag(k)}${lk?mag(k).replace('<button ','<button disabled tabindex="-1" '):mag(k)}</div></div>${lk?ctl.replace(/<button /g,'<button disabled tabindex="-1" '):ctl}
-    ${false?`<div class="res"><span class="mk">— ${c.inv?'현장조사 의뢰로 심사 생략':c.flag?'조사 의뢰로 심사 생략':c.xfr?'표준부서 이관으로 심사 생략':isBig(c)?'표준부서 이관 대상 · 간편심사 대상 아님':'현장조사 대상 건 · 지급 심사 대상 아님'}</span></div>`:res?(()=>{const a=c.ans[i],ok=okP(c,i),lab=isDay(k)?(a.d?aDays(c,i)+dUnit(k):'부지급'):C.grade||C.carG||C.opts?L[a.d]:['부지급','','지급'][a.d];return`<div class="res"><span class="mk ${ok?'ok':'bad'}">${ok?'✓ 정답':'✗ 오답'}</span><span>정답: <b>${lab}${a.amt&&!C.grade&&!C.carG&&!C.opts?' '+won(a.amt):''}</b> · ${a.w}</span></div>`})():''}
-  </div>`});const em=c.groups.filter((g,j)=>!c.covs.some((k,i)=>c.gi[i]===j)).map(g=>g[0]);
-    return`<section class="slide list"><div class="gh">담보별 판단 <small>${c.covs.filter(k=>k!=='pay').length}개 · 각 담보를 확인해 주세요</small></div><details class="caseedi" id="caseEdiPanel" ${caseEdiOpen?'open':''}><summary>🧰 심사 도구 <small>수술·처치 EDI 코드 검색</small></summary><div class="caseedibody"><input id="caseEdiq" class="dexq" type="search" value="${ediEsc(caseEdiQuery)}" placeholder="수가코드·수술명 검색 (예: Q3013, 치핵절제술)" autocomplete="off" aria-label="심사 중 EDI 코드 검색"><p class="dexn" id="caseEdin" aria-live="polite">EDI 코드 목록을 불러오는 중…</p><div class="edil" id="caseEdil"></div><p class="dexsrc">심평원 공개자료 기반 선별 데이터 · 전체 수가마스터 아님 · EDI 코드만으로 약관상 수술 해당 여부를 확정하지 않습니다.</p></div></details>${RW.join('')}${em.length?`<p class="nog">가입 담보가 없는 청구 항목: <b>${em.join(', ')}</b>${res&&st.notice?' (미가입)':''}</p>`:''}${st.notice&&(res?(c.fr||sumPick(c)===0):sumPick(c)===0)?`<div class="frin">${noticeHTML(c,res)}</div>`:''}<div class="dvw"><button class="dvb" id="dvb">📂 서류 보기 <small>좌우로 넘기기 · 톡 누르면 닫기</small></button></div></section>`})()}
+    return gh+`<div class="cov${k==='pay'?' wide':''}${lk?' locked':''}" data-cg="${c.gi[i]}" style="background:${['#f3f7fb','#f5f7f1','#fbf5ef','#f5f2fa'][Math.abs(c.gi[i])%4]};border-color:${['#d9e5ef','#dfe8d5','#eee0d2','#e5dced'][Math.abs(c.gi[i])%4]}" ${lk?'aria-disabled="true"':''}><div><div class="nm">${C.n}${tag(k)}${lk?mag(k).replace('<button ','<button disabled tabindex="-1" '):mag(k)}</div></div>${lk?ctl.replace(/<button /g,'<button disabled tabindex="-1" '):ctl}
+    ${res&&(c.flag||c.inv||c.nd||c.xfr||isBig(c))?`<div class="res"><span class="mk">— ${c.inv?'현장조사 의뢰로 심사 생략':c.flag?'조사 의뢰로 심사 생략':c.xfr?'표준부서 이관으로 심사 생략':isBig(c)?'표준부서 이관 대상 · 간편심사 대상 아님':'현장조사 대상 건 · 지급 심사 대상 아님'}</span></div>`:res?(()=>{const a=c.ans[i],ok=okP(c,i),lab=isDay(k)?(a.d?aDays(c,i)+dUnit(k):'부지급'):C.grade||C.carG||C.opts?L[a.d]:['부지급','','지급'][a.d];return`<div class="res"><span class="mk ${ok?'ok':'bad'}">${ok?'✓ 정답':'✗ 오답'}</span><span>정답: <b>${lab}${a.amt&&!C.grade&&!C.carG&&!C.opts?' '+won(a.amt):''}</b> · ${a.w}</span></div>`})():''}
+  </div>`});const em=c.groups.filter((g,j)=>g[0]!=='지급처'&&!c.covs.some((k,i)=>c.gi[i]===j)).map(g=>g[0]);
+    return`<section class="slide list"><div class="gh">담보별 판단 <small>${c.covs.filter(k=>k!=='pay').length}개 · 각 담보를 확인해 주세요</small></div><details class="caseedi" id="caseEdiPanel" ${caseEdiOpen?'open':''}><summary>🧰 심사 도구 <small>수술·처치 EDI 코드 검색</small></summary><div class="caseedibody"><input id="caseEdiq" class="dexq" type="search" value="${ediEsc(caseEdiQuery)}" placeholder="수가코드·수술명 검색 (예: Q3013, 치핵절제술)" autocomplete="off" aria-label="심사 중 EDI 코드 검색"><p class="dexn" id="caseEdin" aria-live="polite">EDI 코드 목록을 불러오는 중…</p><div class="edil" id="caseEdil"></div><p class="dexsrc">심평원 공개자료 기반 선별 데이터 · 전체 수가마스터 아님 · EDI 코드만으로 약관상 수술 해당 여부를 확정하지 않습니다.</p></div></details>${RW.join('')}${em.length?`<p class="nog">가입 담보가 없는 청구 항목: <b>${em.join(', ')}</b>${res&&st.notice?' (미가입)':''}</p>`:''}</section>`})()}
   </div>
   <div class="pfoot">
 <div class="snav"><button id="sp" aria-label="이전 항목">‹ 이전</button><span id="sn"></span><button id="snx" aria-label="다음 항목">다음 ›</button></div>
   <div class="total"><span>${res?'내 결정 / 정답 지급액':'결정 지급액 합계'}</span><b id="sumV">${f(sum)}원${res?` / ${f(ans)}원`:''}</b></div>
-  
+  ${st.tut?'':res?(c.inv&&c.nd?`<p class="rqn frd">🔎 <b>현장조사 의뢰 적중!</b> ${c.ndW}</p>`:c.inv?'<p class="rqn bad">⚠ 계약 후 치료 이력인데 현장조사 의뢰 — 지급 지연 민원 (−15점)</p>':c.nd?`<p class="rqn bad">🔎 <b>고지의무 위반 의심 건을 놓쳤어요</b> (−20점) · ${c.ndW}</p>`:'')+(c.flag&&c.fraud?`<p class="rqn frd">🚩 <b>사기 적발!</b> ${c.fraudW||''}</p>`:c.flag?'<p class="rqn bad">⚠ 정상 청구를 조사 의뢰했어요 — 고객 민원 (−20점)</p>':c.fraud?`<p class="rqn bad">🚨 <b>보험사기를 놓쳤어요</b> (−30점) · ${c.fraudW||''}</p>`:'')+(c.xfr&&isBig(c)?`<p class="rqn frd">🏢 <b>표준부서 이관 적중!</b> ${bigTxt(c)} — 모든 담보 지급액 합계가 200만원을 넘으면 간편심사 대상이 아니에요.</p>`:c.xfr?'<p class="rqn bad">⚠ 간편심사로 처리할 건을 이관했어요 — 처리 지연 (−15점)</p>':isBig(c)?`<p class="rqn bad">🏢 <b>이관 대상을 직접 심사했어요</b> (−20점) · ${bigTxt(c)} — 합계 200만원 초과 건은 표준부서로 이관해요.</p>`:'')
+    :`<div class="xfw"><button class="flag xfb" id="xfer" aria-expanded="${!!st.xfo}" aria-pressed="${!!(c.flag||c.inv||c.xfr)}"><span>${c.flag?'🚩 사기 조사 의뢰함':c.inv?'🔎 현장조사 의뢰함':c.xfr?'🏢 표준부서 이관함':'📤 의뢰 · 이관'}</span><i aria-hidden="true">${st.xfo?'▴':'▾'}</i></button>${st.xfo?`<div class="xfp" role="menu">
+      <button class="xfo" id="flag" role="menuitemradio" aria-checked="${!!c.flag}"><b>🚩 사기 조사 의뢰</b><small>서류가 위조·변조된 것 같을 때 (이름·병원·날짜·진단명 불일치)</small></button>
+      ${st.lv>=2?`<button class="xfo" id="inv" role="menuitemradio" aria-checked="${!!c.inv}"><b>🔎 현장조사 의뢰</b><small>계약 전부터 치료받은 이력(고지의무 위반)이 의심될 때</small></button>`:''}
+      ${st.lv>=1&&!st.tut?`<button class="xfo" id="xfr" role="menuitemradio" aria-checked="${!!c.xfr}"><b>🏢 표준부서 이관</b><small>모든 담보 지급액 합계가 200만원을 넘는 건 — 간편심사 대상이 아니에요</small></button>`:''}
+      ${c.flag||c.inv||c.xfr?'<button class="xfo xfc" id="xfc">↩ 선택 취소 · 직접 심사하기</button>':''}</div>`:''}</div>`}
 </div>
   </aside>`;
 }
@@ -1540,7 +1604,7 @@ function dsCur(ds){if(!ds)return;const secs=[...ds.querySelectorAll('.dsec')];if
   if(fb){fb.setAttribute('aria-expanded','true');fb.classList.add('seen');const fs=fb.parentElement;if(fs&&fs.scrollWidth>fs.clientWidth)fs.scrollTo({left:Math.max(0,fb.offsetLeft-fs.clientWidth/2+fb.offsetWidth/2),behavior:'smooth'})}}
 function dsTo(ds,sec,sm=true){const hd=(ds.querySelector('.dsh')||{}).offsetHeight||0,vh=ds.clientHeight-hd;let top=sec.offsetTop-hd-Math.max(0,(vh-sec.offsetHeight)/2);ds.scrollTo({top:Math.max(0,top),behavior:sm?'smooth':'auto'})}
 function dsStep(ds,d){const secs=[...ds.querySelectorAll('.dsec')];let k=secs.findIndex(s=>+s.dataset.j===cur);if(k<0)k=0;const n=secs[k+d];if(n){dsTo(ds,n);setTimeout(()=>dsCur(ds),450)}else if(d>0){ds.scrollTo({top:ds.scrollHeight,behavior:'smooth'})}}
-function openDoc(j){const its=items(),a=avail();if(!its[j]||a.indexOf(j)<0)return;
+function openDoc(j){const pageY=window.scrollY,its=items(),a=avail();if(!its[j]||a.indexOf(j)<0)return;
   if(DESKQ()&&document.getElementById('dpane')){showPane(j);return}
   const sl=document.getElementById('slides'),ds=sl&&sl.querySelector('.dslide');
   if(ds&&MOBQ()){const sec=ds.querySelector(`.dsec[data-j="${j}"]`);sl.scrollTo({left:0,behavior:'smooth'});if(sec)dsTo(ds,sec);setTimeout(()=>dsCur(ds),450);return}
@@ -1550,7 +1614,7 @@ function openDoc(j){const its=items(),a=avail();if(!its[j]||a.indexOf(j)<0)retur
     mb.innerHTML=`<div class="dcar" id="dcar">${a.map(i=>`<div class="dsl" data-j="${i}">${its[i].outerHTML}</div>`).join('')}</div>`;
     ov.hidden=false;dc=document.getElementById('dcar');dc.scrollLeft=a.indexOf(j)*dc.clientWidth;setCur(j);
     let tm;dc.addEventListener('scroll',()=>{clearTimeout(tm);const p=Math.round(dc.scrollLeft/dc.clientWidth),jj=a[p];if(jj!==undefined&&jj!==cur){setCur(jj,false);dc.children[p].scrollTop=0}tm=setTimeout(()=>setCur(cur),180)},{passive:true});
-    const tile=document.querySelector(`[data-f="${j}"]`);tile&&place(tile,ov);document.getElementById('mx').focus({preventScroll:true})}
+    const tile=document.querySelector(`[data-f="${j}"]`);if(tile&&!MOBQ())place(tile,ov);document.getElementById('mx').focus({preventScroll:true});if(MOBQ())requestAnimationFrame(()=>window.scrollTo(0,pageY))}
   else dc.scrollTo({left:a.indexOf(j)*dc.clientWidth,behavior:'smooth'})}
 function guideLock(){const s=st.tut?TS[tsI]:SG.cur;if(!s||s.allowClose)return false;const n=Date.now();if(!guideLock.t||n-guideLock.t>2500){guideLock.t=n;toast(st.tut?'👆 안내를 따라 진행해 주세요':'👆 사수 설명을 먼저 들어요')}return true}
 function userCloseDoc(){if(guideLock())return;closeDoc()}
@@ -1667,9 +1731,11 @@ function dpClose(){const i=gpop._dp;if(i==null)return;const W=document.getElemen
 function openFr(btn){closeCalc();closeInfo(false);closeDoc(false);gpFrom=btn;const c=st.c;gpop.className='pop gpop frp';
   gpop.innerHTML=`<div class="ph"><b>부지급 사유</b><button id="gpx" aria-label="닫기">✕</button></div><div class="gpl">${Object.entries(RS).filter(([k])=>k!=='reduce').map(([k,t])=>`<button role="option" data-frv="${k}" aria-selected="${c.frP===k}">${t}</button>`).join('')}</div>`;
   gpop.hidden=false;btn.setAttribute('aria-expanded','true');place(btn,gpop);const s=gpop.querySelector('[aria-selected="true"]');s&&s.focus({preventScroll:true})}
+function openPay(btn){closeCalc();closeInfo(false);closeDoc(false);gpFrom=btn;const c=st.c,i=c.covs.indexOf('pay');if(i<0)return;gpop.className='pop gpop frp';gpop.innerHTML=`<div class="ph"><b>수익자 계좌 확인</b><button id="gpx" aria-label="닫기">✕</button></div><div class="gpl"><button role="option" data-pv="0" aria-selected="${c.pick[i]===0}">✓ 예금주 일치 · 지급 진행</button><button role="option" data-pv="1" aria-selected="${c.pick[i]===1}">! 예금주 불일치 · 지급 보류</button></div>`;gpop.hidden=false;btn.setAttribute('aria-expanded','true');place(btn,gpop);const s=gpop.querySelector('[aria-selected="true"]');s&&s.focus({preventScroll:true})}
 function closeGp(focus){if(gpop.hidden)return;if(gpop._dp!=null){const i=gpop._dp,W=document.getElementById('whl');gpop._dp=null;if(W&&!st.done)dSet(st.c,i,Math.max(0,Math.round(W.scrollTop/44)));gpop.hidden=true;gpFrom&&gpFrom.setAttribute('aria-expanded','false');render(false);return}gpop.hidden=true;gpFrom&&gpFrom.setAttribute('aria-expanded','false');focus&&gpFrom&&gpFrom.focus({preventScroll:true})}
 gpop.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.id==='dpok')return dpClose();if(b.id==='gpx')return closeGp(true);
-  if(b.dataset.frv!==undefined&&!st.done){st.c.frP=b.dataset.frv;closeGp(false);render(false);const t=document.querySelector('[data-frp]');t&&t.focus({preventScroll:true});return}
+  if(b.dataset.frv!==undefined&&!st.done){st.c.frP=b.dataset.frv;closeGp(false);render(false);document.getElementById('go')?.focus({preventScroll:true});return}
+  if(b.dataset.pv!==undefined&&!st.done){const i=st.c.covs.indexOf('pay');if(i>=0)st.c.pick[i]=+b.dataset.pv;closeGp(false);render(false);document.getElementById('go')?.focus({preventScroll:true});return}
   if(b.dataset.gv!==undefined&&!st.done){const i=+b.dataset.gi;st.c.pick[i]=+b.dataset.gv;closeGp(false);render(false);const t=document.querySelector(`[data-gp="${i}"]`);t&&t.focus({preventScroll:true})}});
 document.addEventListener('click',e=>{if(!gpop.hidden&&!gpop.contains(e.target)&&!e.target.closest('[data-gp],[data-frp],[data-dp]'))closeGp(false)});
 document.addEventListener('keydown',e=>{if(!gpop.hidden&&e.key==='Escape')closeGp(true)});
@@ -1722,7 +1788,7 @@ function render(res){if(!inf.hidden)closeInfo(false);closeCalc();closeGp(false);
   document.body.classList.remove('startm','endm','subm');document.body.classList.add('ingame','app');const c=st.c,os=document.getElementById('slides');if(c.resetSx){c.sx=null;c.resetSx=0}else if(os)c.sx=os.scrollLeft;
   const keep=os&&!c._fresh,sTops=keep?[...os.children].map(e=>e.scrollTop):[],wy=scrollY;const fx=keep&&document.getElementById('files')?document.getElementById('files').scrollLeft:0;c._fresh=false;
   const it=st.queue[st.cur];
-  app.innerHTML=`<div class="cbar"><span class="cid"><i class="cidl">접수 </i>${it.id}</span><span class="clk2" id="clk2"></span></div><main><section class="folder" aria-label="청구 서류 폴더"><button class="bkb" id="back" aria-label="일정창으로 돌아가기">←<span> 일정<i class="bkd">창</i></span></button><div class="ftitle"><span>청구 서류 · ${c.who}</span><small>눌러서 열람</small></div><div class="files" id="files"></div><div class="dpane" id="dpane" aria-label="서류 보기"></div></section>${policyHTML(c,res)}</main><div id="store" hidden>${c.docsH||(c.docsH=ndDocs(c,fraudDocs(c,bigDocs(c,docsHTML(c)))))}</div>`;
+  app.innerHTML=`<div class="cbar"><span class="cid"><i class="cidl">접수 </i>${it.id}</span><span class="clk2" id="clk2"></span></div><main><section class="folder" aria-label="청구 서류 폴더"><button class="bkb" id="back" aria-label="일정창으로 돌아가기">←<span> 일정<i class="bkd">창</i></span></button><div class="ftitle"><span>청구 서류 · ${c.who}</span><small>눌러서 열람</small></div><div class="files" id="files"></div><div class="dpane" id="dpane" aria-label="서류 보기"></div></section>${policyHTML(c,res)}</main><div id="store" hidden>${c.docsH||(c.docsH=ndDocs(c,fraudDocs(c,bigDocs(c,docsHTML(c)))))}</div><div class="floatActions"><button class="floatDoc" id="dvb">📂 서류 보기</button><button class="floatFinish" id="go">${res?'일정창으로 돌아가기':sumPick(c)>0?(c.covs.includes('pay')&&c.pick[c.covs.indexOf('pay')]<0?'수익자 확인 후 지급심사완료':c.covs.includes('pay')&&c.pick[c.covs.indexOf('pay')]===1?'지급보류 후 심사완료':'지급심사완료'):(st.notice&&!c.frP?'부지급 사유 선택 후 심사완료':'심사완료')}</button><button class="floatTool" id="toolToggle">🧰 심사도구</button></div>`;
   ediLoad().then(()=>{if(document.getElementById('caseEdiq'))ediRender('caseEdiq','caseEdil','caseEdin')}).catch(()=>{const n=document.getElementById('caseEdin');if(n)n.textContent='EDI 코드 목록을 불러오지 못했어요.'});
   tiles();hud();paneInit(c);
   const D=0;if(D){const s0=document.getElementById('slides'),its=items(),ds=document.createElement('div');ds.className='slide dslide';ds.setAttribute('aria-label','청구 서류');
@@ -1732,8 +1798,7 @@ function render(res){if(!inf.hidden)closeInfo(false);closeCalc();closeGp(false);
     let tp=null;ds.addEventListener('pointerdown',e=>{tp=e.isPrimary?{x:e.clientX,y:e.clientY,t:Date.now(),st:ds.scrollTop}:null});ds.addEventListener('pointercancel',()=>{tp=null});
     ds.addEventListener('pointerup',e=>{const s=tp;tp=null;if(!s||st.tut&&false)return;if(Date.now()-s.t>300||Math.hypot(e.clientX-s.x,e.clientY-s.y)>10||Math.abs(ds.scrollTop-s.st)>4)return;
       const r=ds.getBoundingClientRect(),y=(e.clientY-r.top)/r.height;if(y<.35)dsStep(ds,-1);else if(y>.65)dsStep(ds,1)})}
-  {const s1=document.getElementById('slides'),sls=[...s1.children].filter(x=>!x.classList.contains('dslide')),last=sls[sls.length-1];if(res)sls.slice(0,-1).forEach(x=>x.insertAdjacentHTML('beforeend','<div class="stw"><button class="go" data-goin="1">일정창으로 돌아가기 →</button></div>'));
-    const pB=!res&&payBlock(c);if(last)last.insertAdjacentHTML('beforeend',`<div class="stw">${pB?'<p class="pbh">💳 지급 계좌 예금주 확인을 먼저 선택하세요</p>':''}<button class="go${pB?' blk':''}" id="go" ${pB?'aria-disabled="true"':''}>${res?'일정창으로 돌아가기 →':'심사 완료 · 도장 찍기'}</button></div>`)}
+  
   {const s2=document.getElementById('slides');if(MOBQ()&&s2){let t0=null;s2.addEventListener('touchstart',e=>{const t=e.touches[0];t0=s2.scrollLeft<=2&&e.touches.length===1&&!st.tut?{x:t.clientX,y:t.clientY,lk:0}:null},{passive:true});
     s2.addEventListener('touchmove',e=>{if(!t0)return;const t=e.touches[0],dx=t.clientX-t0.x,dy=t.clientY-t0.y;if(!t0.lk&&(Math.abs(dx)>10||Math.abs(dy)>10))t0.lk=dx>0&&Math.abs(dx)>Math.abs(dy)*1.3?1:-1;if(t0.lk===1)pgDrag(dx)},{passive:true});
     s2.addEventListener('touchend',e=>{if(!t0)return;const t=e.changedTouches[0],dx=t.clientX-t0.x,lk=t0.lk;t0=null;if(lk!==1)return;if(dx>80&&s2.scrollLeft<=2)pgGo(1,()=>{closeInfo(false);inbox()});else pgBack()},{passive:true});s2.addEventListener('touchcancel',()=>{if(t0&&t0.lk===1)pgBack();t0=null},{passive:true})}}
@@ -1747,10 +1812,10 @@ const clock=s=>`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
 function stopT(){if(st.tid&&st.last){const now=Date.now();st.gm=Math.min(540,st.gm+GM*(now-st.last)/1000);st.last=now}clearInterval(st.tid);st.tid=null;st.last=null}
 const DAY_SEC=900,VOL=[{n:'적음',k:6},{n:'보통',k:10},{n:'많음',k:16},{n:'매우 많음',k:22},{n:'폭주',k:30}],GM=540/DAY_SEC,hm=m=>{const t=540+Math.floor(m);return`${String(Math.floor(t/60)).padStart(2,'0')}:${String(t%60).padStart(2,'0')}`};
 function arrive(){st.regPick=null;
-  let c=seeded(()=>{let c=gen();if(st.scnRun&&st.scnRule&&Math.random()<.45)for(let t=0;t<120;t++){if(st.scnRule==='ktas3'?c.covs.includes('er')&&c.er===3:c.covs.includes('burn')&&c.burn==='표재성 2도'&&c.s.grp==='burn')break;c=gen()}return c});if(st.scnRun&&st.wBoss&&st.queue.length===1){st.wBoss=0;c=seeded(bossClaim)}st.regPick=null;
+  let c=seeded(()=>{let c=gen();if(st.scnRun&&st.scnRule&&Math.random()<.45)for(let t=0;t<120;t++){if(st.scnRule==='ktas3'?c.covs.includes('er')&&c.er===3:c.covs.includes('burn')&&c.burn==='표재성 2도'&&c.s.grp==='burn')break;c=gen()}c.fraud=null;c.nd=0;c.ndY=0;c.big=null;return c});if(st.scnRun&&st.wBoss&&st.queue.length===1){st.wBoss=0;c=seeded(bossClaim)}st.regPick=null;
   const it={id:c.regno,c,at:st.gm,done:false};st.queue.push(it);
   if(st.scr==='game'){toast(`📥 새 접수 ${it.id} · ${c.who}`)}return it}
-function bossClaim(){const lv=st.lv;st.lv=3;let b=null;for(let i=0;i<14;i++){const c=gen(),n=c.covs.filter(k=>k!=='pay').length;if(!b||n>b.n)b={c,n}}const c=b.c;st.lv=lv;c.boss=1;return c}
+function bossClaim(){const lv=st.lv;st.lv=3;let b=null;for(let i=0;i<14;i++){const c=gen(),n=c.covs.filter(k=>k!=='pay').length;if(!b||n>b.n)b={c,n}}const c=b.c;st.lv=lv;c.fraud=null;c.nd=0;c.ndY=0;c.big=null;c.boss=1;return c}
 const TQ=[];function toast(t){TQ.push(t);if(TQ.length===1)toastNext()}
 function toastNext(){const e=document.getElementById('toast');if(!TQ.length){e.hidden=true;return}e.textContent=TQ[0];e.hidden=false;clearTimeout(st.tt);st.tt=setTimeout(()=>{TQ.shift();toastNext()},TQ.length>1?1800:2600)}
 function missingDocs(c){const m=[];if(c.days&&!c.docs.hosp)m.push('입원 확인서');if(c.surg&&!c.docs.surg)m.push('수술 확인서');if(st.sil&&!c.docs.rcpt)m.push('진료비 영수증');if(c.car&&!c.docs.carDoc)m.push('부상급수 확인서');return m}
@@ -1947,14 +2012,14 @@ function callCase(it){const c=it.c,LB=(C,v)=>(C.carG?CGL:C.grade?GRL:C.opts||['�
     return`<li><div class="ccn">${k==='sil'?'실손의료비':C.n} <span class="mk ${ok?'ok':'bad'}">${ok?'✓':'✗'}</span></div><div>내 결정 <b>${mine}</b>${ok?'':` · 정답 <b>${right}</b>`}</div><div class="ccw">${a.w}</div></li>`}).join('');
   const T=sumPick(c);
   return`<div class="ccase" id="ccase" ${st.ccOpen?'':'hidden'}><div class="cch">접수 ${it.id} · 피보험자 <b>${c.who}</b>${c.ben!==c.who?` · 수익자 <b>${c.ben}</b>`:''} · 계약일 ${fd(c.con)}</div><ul>${rows}</ul><div class="cct">결정 지급액 합계 <b>${won(T)}</b>${c.ns>=0&&c.nsO?` · 보낸 안내: ${c.nsO[c.ns]}`:''}</div></div>`}
-function ccFit(){const p=document.getElementById('ccase');if(p&&!p.hidden){p.style.maxHeight='min(28dvh, 220px)';p.style.overflowY='auto'}}
+function ccFit(){const p=document.getElementById('ccase');if(p&&!p.hidden){p.style.maxHeight='min(38dvh, 300px)';p.style.overflowY='auto';p.style.overscrollBehavior='contain';p.style.webkitOverflowScrolling='touch'}}
 function callRender(){const it=st.inCall,c=it.c,k=c.call,cur=k.turns[k.t];
   const L=k.hist.length-1,bub=k.hist.map((x,i)=>`<p class="cb c">${x.q}</p><p class="cb me${x.ok?'':' bad'}">${x.ans}</p>${x.ok?'':`<p class="cb c"${i===L?' id="crx"':''}>${i===L&&!k.typedEnd?'':x.rx}</p>`}`).join('')+(k.end===1?`<p class="cb c" id="crx">${k.typedEnd?'네, 자세히 설명해 주셔서 감사합니다.':''}</p>`:'');
   const prog=`${k.end?k.hist.length:k.t+1} / ${k.turns.length}턴`;
   callM.innerHTML=`<div class="cm"><div class="cmh"><span>📞 통화 중 · <b>${c.ben}</b> 고객</span><small>🕘 <b id="cclk">${hm(st.gm)}</b> · ${k.P.n} · ${prog} · 접수 ${it.id}</small></div>
    <div class="ccw">${callCase(it)}<button class="cctg" id="cctg" aria-expanded="${!!st.ccOpen}">📋 이 건 심사 결과 ${st.ccOpen?'접기 ▼':'보기 ▲'}</button></div>
    <div class="cmb" id="cmb">${bub}${k.end?`<div class="res"><span class="mk ${k.end===1?'ok':'bad'}">${k.end===1?`✓ 응대 완료 +${k.got}`:`✗ 응대 실패 ${k.got?(k.got>0?'+':'')+k.got:''}`}</span><span>${k.end===1?'꼬리 질문까지 모두 정확하고 정중하게 응대했어요.':'그럴듯해 보여도 지킬 수 없는 약속, 틀린 규정, 고객 권리를 막는 말, 서류 조작을 권하는 말은 모두 민원으로 이어져요. 답변의 <b>세부 내용</b>을 끝까지 읽어 보세요.'}</span></div>`
-     :`<p class="cb c now" id="cnow"></p><div class="nss" id="copts" hidden>${cur.o.map((t,j)=>`<button class="ns" data-call="${j}"><span>○</span><span class="ntxt">${callChoiceText(t)}</span></button>`).join('')}</div>`}</div>
+     :`<p class="cb c now" id="cnow"></p><div class="nss" id="copts" hidden>${cur.o.map((t,j)=>`<button class="ns" data-call="${j}" title="${ediEsc(t)}" aria-label="${ediEsc(t)}"><span>○</span><span class="ntxt">${callChoiceText(t)}</span></button>`).join('')}</div>`}</div>
    ${k.end?'<button class="go" id="cend">통화 종료</button>':`<p class="hint" id="chint">${k.P.rush&&!st.tut?'⏱ 급한 고객! 답변이 나오면 <b>8초 안에</b> 골라야 해요.':k.P.old?'👵 어르신 고객이에요. 어려운 말보다 차근차근 정확하게 안내하는 답을 고르세요.':k.P.doubt&&!st.tut?'🔎 의심 많은 고객! <b>📋 심사 결과</b>를 펼쳐 근거를 확인해야 답변할 수 있어요.':k.P.proxy?'👪 가족이 대신 건 전화예요. 개인정보 안내 원칙을 지키세요.':k.P.flip?'🔄 말을 바꾸는 고객이에요. 서류 기준 원칙을 지키세요.':k.P.pro?'💼 전직 설계사! 점수 <b>2배</b>, 실수하면 <b>−10점</b> 민원이에요.':'고객 말이 끝나면 답변이 나와요. 말풍선을 누르면 바로 넘어가요.'}</p>`}</div>`;
   const B=document.getElementById('cmb');B.scrollTop=B.scrollHeight;ccFit();
   if(!k.end){const n=document.getElementById('cnow');k.typed=0;typeInto(n,cur.q,()=>{k.typed=1;if(k.P.doubt&&!st.ccOpen&&!st.tut)return;document.getElementById('copts').hidden=false;B.scrollTop=B.scrollHeight;if(k.P.rush&&!st.tut)rushStart(k,cur)})}
@@ -1988,12 +2053,15 @@ function submit(){
   const mul=LV[st.lv].mul;
   let items=c.ans.length-(pSkip?1:0);
   if(st.notice&&c.fr){items+=1;if(sumPick(c)===0&&c.frP===c.fr)right++}
-  if(c.fraud)items+=1;
-  if(st.notice&&!(st.sty&&st.sty.les)){const cmp=st.scnRun&&st.scnEvK==='cmp'&&!st.cmpIt,ca=st.callAll;if(cmp)st.callAll=true;c.call=makeCall(c);st.callAll=ca;if(c.call){c.call.state='pending';c.call.at=Math.min(532,st.gm+(st.callAll||cmp?R(8,40):R(20,120)));if(cmp){st.cmpIt=c;c.cmpN=1}}}
+  if(c.flag||c.inv||c.xfr){right=(c.flag&&c.fraud)||(c.inv&&c.nd)||(c.xfr&&isBig(c))?1:0;items=1}else if(c.nd||isBig(c)){right=0;items=1}else if(c.fraud)items+=1;
+  if(st.notice&&!c.flag&&!c.inv&&!c.xfr&&!isBig(c)&&!(st.sty&&st.sty.les)){const cmp=st.scnRun&&st.scnEvK==='cmp'&&!st.cmpIt,ca=st.callAll;if(cmp)st.callAll=true;c.call=makeCall(c);st.callAll=ca;if(c.call){c.call.state='pending';c.call.at=Math.min(532,st.gm+(st.callAll||cmp?R(8,40):R(20,120)));if(cmp){st.cmpIt=c;c.cmpN=1}}}
   st.ok+=right;st.totalCov+=items;st.score+=Math.round(right*10*mul);
   const s0=st.score;st.score+=0;
   if(right===items){st.score+=Math.round(20*mul);st.okClaims++}
   const it=st.queue[st.cur];
+  if(c.flag)st.score+=c.fraud?Math.round(30*mul):-20;else if(c.fraud)st.score-=30;
+  if(c.inv)st.score+=c.nd?Math.round(25*mul):-15;else if(c.nd&&!c.flag)st.score-=20;
+  if(c.xfr)st.score+=isBig(c)?Math.round(25*mul):-15;else if(isBig(c)&&!c.flag&&!c.inv)st.score-=20;
   const fxl=afterSubmit(it,c,right,items,mul);
   it.done=true;it.right=right;it.items=items;it.pts=Math.round(right*10*mul)+(st.score-s0);
   st.done=true;c.resetSx=1;render(true);stampFX(right===items,it.pts,fxl);hud();
@@ -2013,10 +2081,10 @@ function end(){const scnDay=!!st.scnRun;stopT();callReset();st.scr='end';st.msgs
    <p>접수 <b>${st.queue.length}건</b> · 처리 <b>${dn}건</b> · 미처리 <b>${un}건</b>${un?` (−${un*15}점)`:''}</p>
    <p>담보 판단 정확도 <b>${acc}%</b> (${st.ok}/${st.totalCov}) · 완벽 처리 <b>${st.okClaims}건</b></p>
    <p>${LV[st.lv].n} · ${st.sil?'실손 포함':'실손 제외'} · 접수량 ${VOL[st.vol].n}${G.ch||scnDay?'':isBest?' · 🏆 최고 기록 경신!':best?` · 최고 기록 ${best.score}점`:''}</p><p style="color:#6b625a">${msg}</p>
-   <p>최고 콤보 <b>🔥${st.g.maxC}</b> · 전화 응대 성공 <b>${st.g.callOk}통</b></p>
+   <p>최고 콤보 <b>🔥${st.g.maxC}</b> · 사기 적발 <b>${st.g.fraud}건</b> · 전화 응대 성공 <b>${st.g.callOk}통</b></p>
    ${G.html}
    ${!scnDay&&!st.tut?'<button class="go ghost" id="shareC">📤 결과 카드 공유</button>':''}<button class="go" id="again">처음 화면으로</button></section>`;
-  st.shareD={mode:G.ch?`🗓 데일리 챌린지 · ${new Date().getMonth()+1}월 ${new Date().getDate()}일`:VS?'🤖 AI 대결':st.sty?`📖 튜토리얼 ${st.sty.ch+1}장`:'📋 샌드박스',title:`${G.gr} 등급`,big:`${st.score}점`,lines:[`처리 ${dn}건 · 담보 정확도 ${acc}%`,`최고 콤보 🔥${st.g.maxC}`,G.ch&&st.lastCh?st.lastCh.row:`${LV[st.lv].n} · ${st.sil?'실손 포함':'실손 제외'}`],tx:G.ch?chText():null};
+  st.shareD={mode:G.ch?`🗓 데일리 챌린지 · ${new Date().getMonth()+1}월 ${new Date().getDate()}일`:VS?'🤖 AI 대결':st.sty?`📖 튜토리얼 ${st.sty.ch+1}장`:'📋 샌드박스',title:`${G.gr} 등급`,big:`${st.score}점`,lines:[`처리 ${dn}건 · 담보 정확도 ${acc}%`,`최고 콤보 🔥${st.g.maxC} · 사기 적발 ${st.g.fraud}건`,G.ch&&st.lastCh?st.lastCh.row:`${LV[st.lv].n} · ${st.sil?'실손 포함':'실손 제외'}`],tx:G.ch?chText():null};
   if(G.fan)setTimeout(()=>sfx('fan'),300);
 }
 app.addEventListener('click',e=>{
@@ -2034,7 +2102,8 @@ app.addEventListener('click',e=>{
   if(b.id==='sp'||b.id==='snx'){const sl=document.getElementById('slides');sl.scrollBy({left:(b.id==='sp'?-1:1)*(sl.clientWidth+12),behavior:'smooth'});return}
   if(b.id==='go'&&b.dataset.next==='1'){const sl=document.getElementById('slides');sl.scrollBy({left:sl.clientWidth+12,behavior:'smooth'});return}
   if(b.dataset.goin){inbox();return}
-  if(b.id==='go'){if(b.disabled)return;if(!st.done&&payBlock(st.c)){toast('💳 지급 계좌 예금주 확인을 먼저 선택하세요');sfx('bad');const r=document.querySelector('[data-info="pay"]');const row=r&&r.closest('.cov');if(row){const sl=document.getElementById('slides');sl.scrollTo({left:(sl.clientWidth+12)*0,behavior:'smooth'});row.scrollIntoView({block:'center',behavior:'smooth'});row.classList.remove('flash');void row.offsetWidth;row.classList.add('flash')}return}if(!st.done)submit();else inbox();return}
+  if(b.id==='go'){if(b.disabled)return;if(st.done){inbox();return}const c=st.c,total=sumPick(c),pi=c.covs.indexOf('pay');if(total>0&&pi>=0&&c.pick[pi]<0){openPay(b);return}if(total<=0&&st.notice&&!c.frP){openFr(b);return}submit();return}
+  if(b.id==='toolToggle'){const p=document.getElementById('caseEdiPanel');if(p){p.open=!p.open;if(p.open)ediLoad().then(()=>ediRender('caseEdiq','caseEdil','caseEdin')).catch(()=>{});}return}
   if(b.id==='tutopen'){tutStart();return}
   if(b.id==='back'||b.id==='back2'){inbox();window.scrollTo({top:0});return}
   if(b.dataset.q!==undefined){openQ(+b.dataset.q);return}
@@ -2091,10 +2160,13 @@ app.addEventListener('click',e=>{
   if(b.id==='mbox'){openMbox();return}
   if(b.id==='cbox'){openCbox();return}
   if(b.id==='pull'){if(LS&&LS.time&&LS.arr.length){const nt=LS.arr[0][0];if(st.gm<nt)st.gm=nt;lesArr(false);sfx('coin');inbox(true);return}if(st.sched.length&&!st.tut){st.sched.shift();arrive();sfx('coin');inbox(true)}return}
-    if(b.id==='msb'){openMissions();return}if(b.id==='acb'){openAch();return}if(b.id==='chb'){openCh();return}
+  if(b.id==='xfer'&&!st.done){st.xfo=!st.xfo;render(false);if(st.xfo){const g=document.getElementById('go'),p=document.querySelector('.xfp');requestAnimationFrame(()=>{g&&g.scrollIntoView({block:'nearest'});p&&p.scrollIntoView({block:'nearest'})})}return}
+  if(['flag','inv','xfr','xfc'].includes(b.id)&&!st.done){const c=st.c,k=b.id,on=k!=='xfc'&&!c[k];c.flag=c.inv=c.xfr=false;if(on)c[k]=true;st.xfo=false;render(false);return}
+  if(b.id==='msb'){openMissions();return}if(b.id==='acb'){openAch();return}if(b.id==='chb'){openCh();return}
   if(b.id==='snd'){togSnd();return}
   if(b.id==='share'){shareCh();return}
 });
+document.addEventListener('click',e=>{const p=document.getElementById('caseEdiPanel');if(p&&p.open&&e.target===p)p.open=false});
 app.addEventListener('input',e=>{
   const t=e.target;if(t.dataset.s===undefined||st.done)return;
   const v=+t.value.replace(/[^0-9]/g,'')||0;st.c.pick[+t.dataset.s]=v;
@@ -2130,7 +2202,7 @@ function tutStart(){const c=tutPrep();st.tut=true;st.callAll=true;st.notice=true
    {sel:'#inf',t:`담보마다 <b>지급 조건</b>이 있어요. 이 조건과 서류 내용을 대조하는 게 심사의 핵심이에요.`,btn:'확인'},
    {sel:()=>!gpop.hidden?gpop:row(t1)(),t:`<b>${N(t1)}</b>: ${c.ans[t1].w}<br>→ 조건을 충족하니 ${isDay(c.covs[t1])?`<b>[▾]</b>를 누르고 위아래로 굴려서 <b>${aDays(c,t1)}${dUnit(c.covs[t1])}</b>을 눌러요.`:'<b>[지급]</b>을 눌러요.'}`,done:()=>gpop.hidden&&decOk(c,t1)},
    {sel:()=>!gpop.hidden?gpop:row(t0)(),t:`<b>${N(t0)}</b>: ${c.ans[t0].w}<br>→ 조건에 안 맞으니 <b>부지급</b>이 맞아요. ${c.pick[t0]===0?'기본값이 부지급이라 그대로 두면 돼요.':isDay(c.covs[t0])?'[▾]를 눌러 <b>0일</b>로 굴려요.':'[부지급]을 눌러요.'}`,done:()=>decOk(c,t0),btn:'알겠어요'},
-   {sel:()=>{const g=document.getElementById('go'),s=document.getElementById('slides');if(g&&s){const r=g.getBoundingClientRect(),R=s.getBoundingClientRect();if(r.left>=R.left-2&&r.right<=R.right+2){if(r.bottom>R.bottom||r.top<R.top)g.scrollIntoView({block:'nearest'});return g}}return document.getElementById('snx')},t:`<b>결정 지급액 합계</b>로 금액을 확인하고, 심사표 <b>맨 아래</b>의 <b>[심사 완료 · 도장 찍기]</b>를 눌러요.`,done:()=>st.queue[0].done},
+   {sel:()=>{const g=document.getElementById('go'),s=document.getElementById('slides');if(g&&s){const r=g.getBoundingClientRect(),R=s.getBoundingClientRect();if(r.left>=R.left-2&&r.right<=R.right+2){if(r.bottom>R.bottom||r.top<R.top)g.scrollIntoView({block:'nearest'});return g}}return document.getElementById('snx')},t:`<b>결정 지급액 합계</b>로 금액을 확인하고, 심사표 화면 아래 고정된 <b>[심사완료]</b>를 눌러요.`,done:()=>st.queue[0].done},
    {sel:'.res',t:`도장을 찍으면 담보별 <b>✓ 정답 / ✗ 오답</b>과 판정 사유가 나와요. 틀린 건 여기서 복습해요.`,btn:'다음'},
    {sel:()=>{const sl=document.getElementById('slides');if(!sl)return document.getElementById('back');const btns=[...sl.querySelectorAll('.go')];const v=btns.find(g=>{const r=g.getBoundingClientRect(),R=sl.getBoundingClientRect();return r.width>0&&r.left>=R.left-2&&r.right<=R.right+2});const g=v||document.getElementById('go')||btns[0];if(g){const R=sl.getBoundingClientRect(),r=g.getBoundingClientRect();if(r.bottom>R.bottom||r.top<R.top)g.scrollIntoView({block:'nearest'});return g}return document.getElementById('back')},free:true,t:`다 봤으면 아래 <b>[일정창으로 돌아가기 →]</b> 버튼을 눌러 목록으로 돌아가요.`,done:()=>st.scr==='inbox',
     after:()=>{if(!c.call){c.call=makeCall(c);if(c.call)c.call.state='pending'}if(c.call)c.call.at=st.gm}},
@@ -2138,7 +2210,7 @@ function tutStart(){const c=tutPrep();st.tut=true;st.callAll=true;st.notice=true
    {sel:'#cctg',t:`어떤 건 문의인지 <b>[📋 이 건 심사 결과 보기]</b>를 눌러 확인하며 응대해요.`,done:()=>!!st.ccOpen,skip:()=>!c.call},
    {pos:'top',sel:'#copts',t:`고객 말이 끝나면 답변이 나와요. <b>사유·근거·다음 절차</b>를 정확하고 정중하게 안내하는 답을 고르세요.`,done:()=>!st.inCall||!!document.getElementById('cend'),skip:()=>!c.call},
    {sel:'#cend',t:`통화 결과가 나와요. <b>[통화 종료]</b>를 눌러요.`,done:()=>!st.inCall,skip:()=>!c.call},
-   {sel:null,t:`🎉 <b>튜토리얼 끝!</b> 실제 게임에서는<ul><li>시간이 계속 흘러요 (하루 = 실제 15분)</li><li>필요한 서류가 <b>미제출</b>이면 그 담보는 부지급</li><li>지급액이 0원이면 <b>부지급 사유</b> 선택</li><li>실손 포함이면 영수증으로 <b>실손 금액</b> 계산 (🧮 계산기)</li><li>연속 정답 <b>🔥콤보</b>, 빠른 처리 <b>⚡보너스</b>, 매일 <b>🎯미션</b>으로 승진하세요!</li></ul>처음엔 <b>매우 쉬움 · 실손 제외</b>로 시작해 보세요. 서류가 어려우면 ⚙️ 설정에서 <b>간편 서류</b>로 바꿀 수 있어요.`,btn:'처음 화면으로',fin:true}];
+   {sel:null,t:`🎉 <b>튜토리얼 끝!</b> 실제 게임에서는<ul><li>시간이 계속 흘러요 (하루 = 실제 15분)</li><li>필요한 서류가 <b>미제출</b>이면 그 담보는 부지급</li><li>지급액이 0원이면 <b>부지급 사유</b> 선택</li><li>실손 포함이면 영수증으로 <b>실손 금액</b> 계산 (🧮 계산기)</li><li>서류끼리 이름·병원이 다르거나 날짜를 고친 흔적이 있으면 <b>🚩 사기 조사 의뢰</b></li><li>연속 정답 <b>🔥콤보</b>, 빠른 처리 <b>⚡보너스</b>, 매일 <b>🎯미션</b>으로 승진하세요!</li></ul>처음엔 <b>매우 쉬움 · 실손 제외</b>로 시작해 보세요. 서류가 어려우면 ⚙️ 설정에서 <b>간편 서류</b>로 바꿀 수 있어요.`,btn:'처음 화면으로',fin:true}];
   tsI=0;st.lv=0;inbox();window.scrollTo({top:0});startT();coach.hidden=false;tutRender();clearInterval(tsTimer);tsTimer=setInterval(tutPoll,250)}
 function tutEnd(go){clearInterval(tsTimer);tsTimer=null;coach.hidden=true;tspot.hidden=true;if(tsHl)tsHl.classList.remove('chl');tsHl=null;st.tut=false;st.callAll=false;st.ccOpen=false;
   if(go){st.lv=0;st.pick=false;st.newbie=!!CR.nb;st.vol=0}else if(st._keep)Object.assign(st,st._keep);start()}
@@ -2315,21 +2387,21 @@ function stampFX(ok,pts,lines){const RMo=matchMedia('(prefers-reduced-motion: re
   if(!RMo){app.classList.add(ok?'shk':'shk2');setTimeout(()=>app.classList.remove('shk','shk2'),450)}
   setTimeout(()=>d.classList.add('out'),1300);setTimeout(()=>d.remove(),1800)}
 /* 미션 */
-const MPOOL=[{id:'perfect',t:'완벽 처리 {n}건',n:[3,5,7]},{id:'combo',t:'한 근무에서 {n}연속 정확',n:[3,5],max:1},{id:'callOk',t:'고객 전화 {n}통 응대 성공',n:[1,2]},{id:'fraud',t:'보험사기 {n}건 적발',n:[1]},
+const MPOOL=[{id:'perfect',t:'완벽 처리 {n}건',n:[3,5,7]},{id:'combo',t:'한 근무에서 {n}연속 정확',n:[3,5],max:1},{id:'callOk',t:'고객 전화 {n}통 응대 성공',n:[1,2]},
   {id:'silOk',t:'실손 {n}건 정확 계산 (실손 포함 모드)',n:[2,3]},{id:'exOk',t:'면책기간 내 진단 {n}건 정확히 부지급',n:[1,2]},{id:'gradeA',t:'하루 정산 A등급 이상 {n}회',n:[1]},{id:'speed',t:'⚡신속 보너스 {n}회 받기',n:[3,5]},
   {id:'dayOk',t:'일당 담보 일수 {n}건 정확히 맞추기',n:[3,5]},{id:'payHold',t:'예금주 불일치 {n}건 정확히 지급 보류',n:[1,2]},{id:'carEx',t:'자동차·폭행·이륜차 특수 사유 {n}건 정확 판정',n:[1,2]},
   {id:'trapOk',t:'대상 아닌 진단(함정) {n}건 정확히 부지급',n:[2,3]},{id:'urgOk',t:'⚡빠른 지급 요청 {n}건 기한 내 처리',n:[1,2]},{id:'reasOk',t:'🔁담당 변경 건 {n}건 정확 처리',n:[1]},
-  {id:'msgOk',t:'📩처리 결과 문의 {n}회 적절히 회신',n:[1,2]},{id:'boss',t:'👔팀장님 지시 {n}회 완수',n:[1]},{id:'ndOk',t:'🔎고지의무 위반 의심 {n}건 현장조사 의뢰 (보통 이상)',n:[1]}];
+  {id:'msgOk',t:'📩처리 결과 문의 {n}회 적절히 회신',n:[1,2]},{id:'boss',t:'👔팀장님 지시 {n}회 완수',n:[1]},];
 function missions(){const d=today();if(CR.ms&&CR.ms.L.some(m=>m.id==='reqOk'))CR.ms=null;if(!CR.ms||CR.ms.d!==d){const r=rng(d*7+3),pool=MPOOL.slice(),L=[];
     while(L.length<3){const m=pool.splice(Math.floor(r()*pool.length),1)[0],n=m.n[Math.floor(r()*m.n.length)];L.push({id:m.id,t:m.t.replace('{n}',n),n,p:0,done:false,max:!!m.max})}CR.ms={d,L};saveCR()}return CR.ms.L}
 function mProg(id,v=1){if(st.tut)return;missions().forEach(m=>{if(m.id!==id||m.done)return;m.p=m.max?Math.max(m.p,v):m.p+v;if(m.p>=m.n){m.p=m.n;m.done=true;CR.xp+=100;st.gXp=(st.gXp||0)+100;toast(`🎯 미션 완료! ${m.t} · +100 XP`);sfx('coin')}});saveCR()}
 /* 업적 */
-const ACH=[['first','🏁','첫 퇴근','하루 근무를 끝까지 마쳤어요'],['s','🌟','S등급 심사관','하루 정산 S등급'],['combo10','🔥','불꽃 콤보','한 근무에서 10연속 정확'],['fraud1','🕵️','첫 사기 적발','보험사기를 처음 적발'],
-  ['fraud5','🦅','사기 사냥꾼','보험사기 누적 5건 적발'],['flawless','💯','무결점의 하루','5건 이상 처리 · 정확도 100% · 미처리 0'],['rush','🌪️','폭주 생존','접수량 폭주에서 미처리 0'],['hard','🏔️','베테랑','매우 어려움에서 A등급 이상'],
+const ACH=[['first','🏁','첫 퇴근','하루 근무를 끝까지 마쳤어요'],['s','🌟','S등급 심사관','하루 정산 S등급'],['combo10','🔥','불꽃 콤보','한 근무에서 10연속 정확'],
+  ['flawless','💯','무결점의 하루','5건 이상 처리 · 정확도 100% · 미처리 0'],['rush','🌪️','폭주 생존','접수량 폭주에서 미처리 0'],['hard','🏔️','베테랑','매우 어려움에서 A등급 이상'],
   ['calls10','☎️','상담의 달인','고객 전화 누적 10통 응대 성공'],['sil20','🧮','실손 마스터','실손 누적 20건 정확 계산'],['promo','👔','과장님','과장으로 승진'],['rankMax','🎖️','심사 장인','최고 직급 \'심사 장인\' 달성'],['ch','🗓️','챌린저','데일리 챌린지 완료'],
   ['perf50','🎯','정밀 심사','완벽 처리 누적 50건'],['days10','📅','성실 근무','하루 근무 누적 10일'],
   ['allLv','🧗','전 난이도 정복','5개 난이도 모두에서 퇴근'],['trap20','🪤','함정 탐지기','대상 아닌 진단 누적 20건 정확히 부지급'],['car5','🚗','자동차 보상 전문가','자동차·폭행·이륜차 특수 사유 누적 5건 정확 판정'],
-  ['implant','🦷','임플란트 판정관','임플란트 청구 건 완벽 처리'],['dxFraud','🔬','위조 감별사','진단명 위조 사기 적발'],['msg10','📩','쪽지 해결사','처리 결과 문의 누적 10회 적절히 회신'],['boss3','🤝','팀장님 오른팔','팀장님 지시 누적 3회 완수'],['thx5','💌','감사 인사 부자','고객 감사 인사 누적 5회'],['nd1','🔎','현장조사 전문가','고지의무 위반 의심 건 첫 현장조사 의뢰 적중'],['story','📖','에이스 심사자','튜토리얼 모드 12장 완료'],['vsWin1','🤖','AI 이겼다!','AI 대결에서 첫 승리'],['vsAce','🦅','인간 승리','에이스 AI를 상대로 승리'],['scnClear','📜','20일 버티기 성공','시나리오 모드에서 파산 없이 20일 완주'],['scnKing','👑','이달의 심사왕','시나리오에서 올해의 심사왕 또는 SIU 스카우트 달성'],['auditOk','🔍','감사 무사 통과','시나리오 감사 주간을 감봉 없이 통과'],['roomFull','🛋️','풀옵션 원룸','시나리오 상점 물품 10종을 모두 구매'],['isoDex','🪲','콩벌레 브리더','도감의 콩벌레 모두 번식 성공'],['isoFarm','💰','콩벌레 재벌','시나리오 한 판에서 콩벌레 분양 수익 6만원 달성'],['hamRare','✨','희귀 햄스터','시나리오에서 희귀 모프 햄스터 만나기'],['hamDex','📖','햄스터 박사','햄스터 모프 10종 모두 만나기'],['hamFam','🐹','햄스터 대가족','햄스터 3마리와 함께 시나리오 끝까지 생존'],['spAll','🐾','특수 동물 박사','특수 동물 5종을 모두 한 번씩 들여보기'],['xfr1','🏢','선 넘지 않는 심사자','지급액 합계 200만원 초과 건을 표준부서로 첫 이관'],['cert','🎓','손해사정사','시나리오에서 손해사정 학원을 3일 다 듣고 자격증 따기'],['save0','🐷','여유로운 저축','여유 난이도 시나리오를 잔고 30만원 이상으로 완주'],['save1','💰','알뜰 사회초년생','보통 난이도 시나리오를 잔고 20만원 이상으로 완주'],['save2','💎','짠테크 장인','빡빡 난이도 시나리오를 잔고 15만원 이상으로 완주']];
+  ['implant','🦷','임플란트 판정관','임플란트 청구 건 완벽 처리'],['msg10','📩','쪽지 해결사','처리 결과 문의 누적 10회 적절히 회신'],['boss3','🤝','팀장님 오른팔','팀장님 지시 누적 3회 완수'],['thx5','💌','감사 인사 부자','고객 감사 인사 누적 5회'],['story','📖','에이스 심사자','튜토리얼 모드 12장 완료'],['vsWin1','🤖','AI 이겼다!','AI 대결에서 첫 승리'],['vsAce','🦅','인간 승리','에이스 AI를 상대로 승리'],['scnClear','📜','20일 버티기 성공','시나리오 모드에서 파산 없이 20일 완주'],['scnKing','👑','이달의 심사왕','시나리오에서 올해의 심사왕 또는 SIU 스카우트 달성'],['auditOk','🔍','감사 무사 통과','시나리오 감사 주간을 감봉 없이 통과'],['roomFull','🛋️','풀옵션 원룸','시나리오 상점 물품 10종을 모두 구매'],['isoDex','🪲','콩벌레 브리더','도감의 콩벌레 모두 번식 성공'],['isoFarm','💰','콩벌레 재벌','시나리오 한 판에서 콩벌레 분양 수익 6만원 달성'],['hamRare','✨','희귀 햄스터','시나리오에서 희귀 모프 햄스터 만나기'],['hamDex','📖','햄스터 박사','햄스터 모프 10종 모두 만나기'],['hamFam','🐹','햄스터 대가족','햄스터 3마리와 함께 시나리오 끝까지 생존'],['spAll','🐾','특수 동물 박사','특수 동물 5종을 모두 한 번씩 들여보기'],['cert','🎓','손해사정사','시나리오에서 손해사정 학원을 3일 다 듣고 자격증 따기'],['save0','🐷','여유로운 저축','여유 난이도 시나리오를 잔고 30만원 이상으로 완주'],['save1','💰','알뜰 사회초년생','보통 난이도 시나리오를 잔고 20만원 이상으로 완주'],['save2','💎','짠테크 장인','빡빡 난이도 시나리오를 잔고 15만원 이상으로 완주']];
 {const S=new Set(ACH.map(a=>a[0]));CR.ach=(CR.ach||[]).filter(id=>S.has(id))}
 const tInc=k=>(CR.tot[k]=(CR.tot[k]||0)+1);
 function unlock(id){if(st.tut||CR.ach.includes(id))return;CR.ach.push(id);saveCR();const a=ACH.find(x=>x[0]===id);if(!a)return;st.newAch=(st.newAch||[]).concat(id);toast(`🏅 업적 달성: ${a[1]} ${a[2]}`);sfx('fan')}
@@ -2337,13 +2409,16 @@ function unlock(id){if(st.tut||CR.ach.includes(id))return;CR.ach.push(id);saveCR
 function afterSubmit(it,c,right,items,mul){const g=st.g,L=[],perfect=right===items;let bonus=0;
   if(perfect){g.combo++;g.perfect++;g.maxC=Math.max(g.maxC,g.combo);
     if(g.combo>=2){const cb=Math.round(5*Math.min(g.combo-1,6)*mul);bonus+=cb;L.push(`🔥 ${g.combo}연속 +${cb}`)}
-    const w=st.gm-it.at;if(w<=25){const sb=Math.round(10*mul);bonus+=sb;L.push(`⚡ 신속 처리 +${sb}`);mProg('speed')}
-    else if(w<=50){const sb=Math.round(5*mul);bonus+=sb;L.push(`⚡ 신속 +${sb}`);mProg('speed')}
-    mProg('perfect');mProg('combo',g.combo);if(g.combo>=10)unlock('combo10');if(!st.tut){if(tInc('perf')>=50)unlock('perf50');if(c.s.implant)unlock('implant')}}
+    const w=st.gm-it.at;if(!c.flag&&!c.inv&&!c.xfr&&w<=25){const sb=Math.round(10*mul);bonus+=sb;L.push(`⚡ 신속 처리 +${sb}`);mProg('speed')}
+    else if(!c.flag&&!c.inv&&!c.xfr&&w<=50){const sb=Math.round(5*mul);bonus+=sb;L.push(`⚡ 신속 +${sb}`);mProg('speed')}
+    mProg('perfect');mProg('combo',g.combo);if(g.combo>=10)unlock('combo10');if(!st.tut){if(tInc('perf')>=50)unlock('perf50');if(c.s.implant&&!c.flag)unlock('implant')}}
   else{if(g.combo>=3)L.push(`💔 ${g.combo}연속 콤보 끊김`);g.combo=0}
+  if(c.flag&&c.fraud){g.fraud++;CR.tot.fraud++;L.unshift('🚩 사기 적발!');mProg('fraud');unlock('fraud1');if(CR.tot.fraud>=5)unlock('fraud5');if(c.fraud==='dx')unlock('dxFraud')}
+  else if(c.flag)L.unshift('⚠ 정상 건 조사 의뢰');else if(c.fraud)L.unshift('🚨 사기를 놓쳤어요');
+  if(c.inv&&c.nd){g.nd=(g.nd||0)+1;L.unshift('🔎 현장조사 적중!');mProg('ndOk');unlock('nd1')}else if(c.inv)L.unshift('⚠ 정상 건 현장조사 의뢰');else if(c.nd&&!c.flag)L.unshift('🔎 고지의무 위반 의심을 놓쳤어요');if(c.xfr&&isBig(c)){L.unshift('🏢 표준부서 이관 적중!');unlock('xfr1')}else if(c.xfr)L.unshift('⚠ 간편심사 건을 이관');else if(c.big)L.unshift('🏢 이관 대상을 놓쳤어요');
   if(st.tut){st.score+=bonus;return L}
-  c.covs.forEach((k,i)=>{if(!okP(c,i))return;if(k==='sil'){g.silOk++;CR.tot.sil++;mProg('silOk');if(CR.tot.sil>=20)unlock('sil20')}if(c.ans[i].r==='exempt')mProg('exOk');if(isDay(k)&&c.ans[i].d){mProg('dayOk')}if(k==='pay'&&c.ans[i].d===1)mProg('payHold');if(c.ans[i].r==='excl'){mProg('trapOk');if(tInc('trap')>=20)unlock('trap20')}});
-  if(c.covs.some((k,i)=>['auto','assault','moto'].includes(c.ans[i].r))&&c.covs.every((k,i)=>!['auto','assault','moto'].includes(c.ans[i].r)||okP(c,i))){mProg('carEx');if(tInc('car')>=5)unlock('car5')}
+  if(!c.flag&&!c.inv&&!c.nd)c.covs.forEach((k,i)=>{if(!okP(c,i))return;if(k==='sil'){g.silOk++;CR.tot.sil++;mProg('silOk');if(CR.tot.sil>=20)unlock('sil20')}if(c.ans[i].r==='exempt')mProg('exOk');if(isDay(k)&&c.ans[i].d){mProg('dayOk')}if(k==='pay'&&c.ans[i].d===1)mProg('payHold');if(c.ans[i].r==='excl'){mProg('trapOk');if(tInc('trap')>=20)unlock('trap20')}});
+  if(!c.flag&&!c.inv&&c.covs.some((k,i)=>['auto','assault','moto'].includes(c.ans[i].r))&&c.covs.every((k,i)=>!['auto','assault','moto'].includes(c.ans[i].r)||okP(c,i))){mProg('carEx');if(tInc('car')>=5)unlock('car5')}
   if(it.urg&&!it.urg.fail&&st.gm<=it.urg.dl){const ub=10;bonus+=ub;L.push(`⚡ 빠른 지급 처리 +${ub}`);mProg('urgOk')}
   if(it.reas&&perfect){bonus+=5;L.push('🔁 담당 변경 건 정확 처리 +5');mProg('reasOk')}
   st.score+=bonus;saveCR();return L}
@@ -2534,14 +2609,14 @@ function lesKit(){const K={},D=DESKQ();K.D=D;K.cs=LS.cs;
   K.wheel=(c,i,tx)=>({sel:K.dp(i),t:tx,done:()=>gpop.hidden&&decOk(c,i)});
   K.miss=()=>{const e=document.querySelector('.file.miss');if(e)e.scrollIntoView({block:'nearest',inline:'nearest'});return e};
   K.missName=c=>{const e=items().find(a=>a.classList.contains('missing'));return e?e.dataset.t:'서류'};
-  K.go=()=>{const g=document.getElementById('go'),s=document.getElementById('slides');if(g&&s){const r=g.getBoundingClientRect(),R=s.getBoundingClientRect();if(r.left>=R.left-2&&r.right<=R.right+2){if(r.bottom>R.bottom||r.top<R.top)g.scrollIntoView({block:'nearest'});return g}}return document.getElementById('snx')};
-  K.goT='다 정했으면 <b>다음 ›</b>으로 심사표로 넘어가서 맨 아래 <b>[심사 완료 · 도장 찍기]</b>를 눌러요.';
-  K.stamp=c=>({sel:K.go,t:()=>vis('#go')?'다 정했으면 <b>[심사 완료 · 도장 찍기]</b>를 눌러요. 도장을 찍으면 결정이 확정돼요.':K.goT,done:K.dn(c)});
+  K.go=()=>document.getElementById('go')||document.getElementById('snx');
+  K.goT='다 정했으면 화면 아래 고정된 <b>[심사완료]</b> 버튼을 눌러요.';
+  K.stamp=c=>({sel:K.go,t:()=>vis('#go')?'화면 아래 고정된 <b>[심사완료]</b> 버튼을 눌러요.':K.goT,done:K.dn(c)});
   K.res=tx=>({sel:()=>document.querySelector('.slide.list .res'),t:tx,btn:'네'});
   K.allOk=c=>{const it=K.itOf(c);return!!it&&it.right===it.items};
-  K.payI=c=>c.covs.indexOf('pay');K.payRow=c=>sgRow(c.covs.indexOf('pay'));
-  K.payStep=(c,tx)=>({sel:()=>{const i=K.payI(c),r=sgRow(i)();return r&&r.querySelector(`[data-i="${i}"][data-v="${c.ans[i].d}"]`)},t:tx,done:()=>decOk(c,K.payI(c)),ok:()=>sumPick(c)>0});
-  K.fr=(c,tx)=>({sel:()=>{if(!gpop.hidden)return gpop;const e=document.querySelector('.frb');if(e){const sl=document.getElementById('slides'),s=e.closest('.slide');if(sl&&s&&Math.abs(sl.scrollLeft-s.offsetLeft)>4)sl.scrollLeft=s.offsetLeft;e.scrollIntoView({block:'nearest'})}return e},t:tx,done:()=>c.frP===c.fr&&gpop.hidden});
+  K.payI=c=>c.covs.indexOf('pay');K.payRow=c=>document.getElementById('go');
+  K.payStep=(c,tx)=>({sel:()=>document.getElementById('go'),t:tx,done:()=>decOk(c,K.payI(c)),ok:()=>sumPick(c)>0});
+  K.fr=(c,tx)=>({sel:()=>!gpop.hidden?gpop:document.getElementById('go'),t:tx,done:()=>c.frP===c.fr&&gpop.hidden});
   K.calcB=i=>()=>!calc.hidden?calc:document.querySelector(`.slide.list [data-calc="${i}"]`);
   K.gp=(c,i,tx)=>({sel:()=>!gpop.hidden?gpop:document.querySelector(`.slide.list [data-gp="${i}"]`),t:tx,done:()=>gpop.hidden&&decOk(c,i)});
   const xfS=id=>()=>{const e=document.getElementById(id);return e&&e.getClientRects().length?e:document.getElementById('xfer')};K.flagS=(c,tx)=>({sel:xfS('flag'),t:tx+'<br><small>(📤 <b>의뢰 · 이관</b> 버튼을 열면 있어요)</small>',done:()=>!!c.flag});K.invS=(c,tx)=>({sel:xfS('inv'),t:tx+'<br><small>(📤 <b>의뢰 · 이관</b> 버튼을 열면 있어요)</small>',done:()=>!!c.inv});
@@ -2580,7 +2655,7 @@ function lesBeats0(K){const [c1,c2,c3,c4,c5]=K.cs,{inG,dn,D,docEl,nav,openDocs,c
     {sel:'#inf',t:'다 봤으면 이 창을 <b>톡</b> 눌러서 닫아요.',done:()=>inf.hidden},
     {sel:yes(0),t:'코드도 맞고, 계약 후에 진단받았고. 조건이 다 맞으니까 <b>[지급]</b>! 눌러 봐요.',done:()=>decOk(c1,0)},
     {sel:'.total',t:`아래 <b>결정 지급액 합계</b>가 <b>${amt(c1,'stone')}</b>으로 바뀌었죠?`,btn:'네'},
-    {sel:go,t:()=>vis('#go')?'다 정했으면 <b>[심사 완료 · 도장 찍기]</b>를 눌러요. 도장을 찍으면 결정이 확정돼요.':goT,done:dn(c1)},
+    {sel:go,t:()=>vis('#go')?'다 정했으면 화면 아래 고정된 <b>[심사완료]</b>를 눌러요. 도장을 찍으면 결정이 확정돼요.':goT,done:dn(c1)},
     {sel:()=>document.querySelector('.slide.list .res'),t:'도장을 찍으면 바로 채점돼요. <b>✓</b>면 정답! 첫 건 성공이에요. 👏',btn:'야호'},
     back(c1,'다 봤으면 아래 <b>[일정창으로 돌아가기 →]</b> 버튼을 눌러 목록으로 돌아가요.',1)]},
   {when:()=>st.scr==='inbox'&&LS.i===2,steps:()=>[
@@ -2598,7 +2673,7 @@ function lesBeats0(K){const [c1,c2,c3,c4,c5]=K.cs,{inG,dn,D,docEl,nav,openDocs,c
     {sel:row(1),t:`그럼 ${COV.dHosp.n}은? 입원은 했는데… 이름을 잘 봐요. <b>질병</b>입원일당이에요.`,btn:'아…'},
     {sel:row(1),t:'이 건은 사고로 다친 <b>상해</b>죠? 그래서 질병입원일당은 <b>부지급</b>이 맞아요. 부지급은 기본값이라 <b>그대로 두면</b> 돼요.',btn:'그렇구나'},
     {sel:row(1),t:'담보 이름만 보고 질병/상해를 헷갈리는 게 신입 때 제일 흔한 실수예요. 저도 첫 주에 했어요. 😅',btn:'조심할게요'},
-    {sel:go,t:()=>vis('#go')?'다 정했으면 <b>[심사 완료 · 도장 찍기]</b>를 눌러요. 도장을 찍으면 결정이 확정돼요.':goT,done:dn(c2)},
+    {sel:go,t:()=>vis('#go')?'다 정했으면 화면 아래 고정된 <b>[심사완료]</b>를 눌러요. 도장을 찍으면 결정이 확정돼요.':goT,done:dn(c2)},
     {sel:()=>document.querySelector('.slide.list .res'),t:'둘 다 정답! 부지급한 담보도 옆에 <b>사유</b>가 같이 나오죠? 고객한테 안내할 때도 이 사유로 설명해요.',btn:'네'},
     back(c2,'목록으로 돌아가요.',2)]},
   {when:()=>st.scr==='inbox'&&LS.i===4,steps:()=>[
@@ -2830,7 +2905,7 @@ function lesBeats4(K){const [a,b,c,d,e]=K.cs,{inG,doc,nav,openDocs,closeDocs,row
   open(c,'세 번째 건이에요. 이번엔 <b>예금주</b>를 배울 거예요.'),
   {when:inG(c),steps:()=>[
     {sel:K.yes(0),t:`${COV.gout.n}는 통풍(M10) 진단이면 지급이에요. 코드가 <b>${c.s.code}</b>니까 <b>[지급]</b>.`,done:()=>decOk(c,0)},
-    {sel:K.payRow(c),t:'지급액이 생기면 아래에 <b>지급 계좌 예금주 확인</b> 줄이 열려요. 보험금은 증권의 <b>수익자</b>에게 줘야 하거든요.',btn:'네'},
+    {sel:K.payRow(c),t:'지급액이 생기면 화면 아래 <b>[수익자 확인 후 지급심사완료]</b> 버튼을 눌러 예금주가 수익자와 일치하는지 확인해요.',btn:'네'},
     openDocs('청구서 예금주랑 증권 수익자를 비교해 봐요. <b>[📂 서류 보기]</b>.'),
     doc('보험금 청구서',null,`청구서 맨 아래 <b>예금주</b>는 <b>${c.holder}</b>.`),
     nav('보험증권','증권으로 넘겨요. {m}'),
@@ -2987,7 +3062,7 @@ function openDexHub(k){if(k==='code'){openDex();return}clearInterval(IT.dexT);le
   else b=`<p class="gmd">🪲 발견 ${new Set([...(CR.isoSeen||[]),...(CR.isoDex||[])]).size}/${ISPC.length}종 · 🐣 번식 성공 ${(CR.isoDex||[]).length}종<br>시나리오 모드에서 한 번이라도 들이면 도감이 열려요</p><div class="scdg ig">${[['콩벌레',1],['쥐며느리',0]].map(([gn,rl])=>`<h4 class="igh">${gn} <small>${rl?'위협받으면 공처럼 말아요':'몸을 못 말고 도망가요'}</small></h4>`+ISPC.map((p,i)=>i).filter(i=>ISPC[i].roll===rl).sort((a,b)=>ISPC[a].t-ISPC[b].t||ISPC[a].n.localeCompare(ISPC[b].n,'ko')).map(i=>{const p=ISPC[i],bred=(CR.isoDex||[]).includes(i),got=(CR.isoSeen||[]).includes(i)||bred;return`<div class="scdc${got?'':' no'}"><canvas data-idx="${i}" ${got?'':'data-lk="1"'} width="60" height="40"></canvas><span>${got?p.n+(bred?' 🐣':''):'???'}</span><small>${got?`${ITIERN[p.t]} · ${f(ITIER[p.t])}원`:ITIERN[p.t]}</small></div>`}).join('')).join('')}</div><h4 class="igh">키우는 법</h4><p class="gmd">콩벌레는 <b>부수입</b>이에요. 안 키워도 게임 진행에는 지장이 없지만, 잘 키우면 분양으로 돈을 벌어요.</p><ul class="covl hpl">${ISCARE.map(([a,b,c])=>`<li><b>${a}</b><span>${b}</span>${c?`<span>${c}</span>`:''}</li>`).join('')}</ul>`;
   const wasDex=!gmo.hidden&&gmo.classList.contains('dexm');gOpen('📒 수첩',dexTabs(k)+b);gmo.classList.add('dexm');if(wasDex)gmo.firstElementChild.classList.add('noanim');if(k==='ham'||k==='iso'||k==='sp')scnDexDraw()}
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('#gmo [data-dxt]');if(t)openDexHub(t.dataset.dxt)});
-function openDex(){dexN=100;const wasDex=!gmo.hidden&&gmo.classList.contains('dexm');gOpen('📒 수첩',dexTabs('code')+`<div class="edihelp"><b>먼저 구분하세요</b><p><strong>질병·상해 구분</strong>은 진단명·질병분류기호와 사고 원인으로 판단하고, <strong>약관상 수술 해당 여부</strong>는 실제 수술기록과 가입 약관의 수술 정의·제외 조항을 대조합니다. EDI 코드는 시행된 행위를 확인하는 보조자료이며 코드만으로 지급·면책을 결정하지 않습니다.</p></div><div class="dexsearchrow"><input id="dexq" class="dexq" type="search" placeholder="질병코드·진단명 검색" autocomplete="off" aria-label="질병코드 검색"><input id="ediq" class="dexq" type="search" placeholder="수가코드·처치/수술명 검색" autocomplete="off" aria-label="EDI 코드 검색"></div><p class="dexn" id="dexn" aria-live="polite"></p><div class="dexl" id="dexl"></div><p class="dexsrc">KCD 9차 (건강보험심사평가원 상병분류기호, 2025.12.16)</p><p class="dexn" id="edin" aria-live="polite">EDI 기초 데이터 불러오는 중…</p><div class="edil" id="edil"></div><p class="dexsrc">출처: 건강보험심사평가원 「2026 건강보험요양급여비용」 및 2026 KDRG 분류집, 의·치과 수가파일(2026.07.01 시행), 포괄수가제 요양급여비용·청구방법(2025), 수술일자 기재 수술코드(2025), 치핵수술 산정기준(2025). 데이터 정리일 2026.11.25 · 수록 42개 · 전체 수가 마스터 아님 · 기본코드 및 조건별 코드 예시<br><a href="https://www.hira.or.kr/rc/drug/insuadtcrtr/bbsView.do?brdBltNo=53155&brdScnBltNo=4&pgmid=HIRAA030069000400" target="_blank" rel="noopener">심평원 2026.07.01 시행 수가파일</a> · <a href="https://www.hira.or.kr/ebooksc/2026/01/BZ202601272870642.pdf" target="_blank" rel="noopener">2026 KDRG 분류집</a> · <a href="https://www.hira.or.kr/ebooksc/2025/03/BZ202503051269788.pdf" target="_blank" rel="noopener">2025 포괄수가제 수가·청구방법</a> · <a href="https://www.hira.or.kr/ebooksc/2025/12/BZ202512192693303.pdf" target="_blank" rel="noopener">2025 수술코드</a> · <a href="https://www.hira.or.kr/rc/insu/insuadtcrtr/InsuAdtCrtrPopup.do?mtgHmeDd=20250901&mtgMtrRegSno=0001&sno=4" target="_blank" rel="noopener">치핵수술 수가 산정기준</a></p>`);gmo.classList.add('dexm');if(wasDex)gmo.firstElementChild.classList.add('noanim');dexRender();dexLoad().then(dexRender).catch(()=>{const L=document.getElementById('dexl');if(L)L.innerHTML='<p class="gmd">이 브라우저에서는 코드 목록을 열 수 없어요. 최신 브라우저로 열어 주세요.</p>'});ediLoad().then(ediRender).catch(()=>{const L=document.getElementById('edil');if(L)L.innerHTML='<p class="gmd">EDI 코드 목록을 불러오지 못했어요.</p>'});setTimeout(()=>{const i=document.getElementById('dexq');if(i&&!MOBQ())i.focus()},50)}
+function openDex(){dexN=100;const wasDex=!gmo.hidden&&gmo.classList.contains('dexm');gOpen('📒 수첩',dexTabs('code')+`<div class="edihelp"><b>먼저 구분하세요</b><p><strong>질병·상해 구분</strong>은 진단명·질병분류기호와 사고 원인으로 판단하고, <strong>약관상 수술 해당 여부</strong>는 실제 수술기록과 가입 약관의 수술 정의·제외 조항을 대조합니다. EDI 코드는 시행된 행위를 확인하는 보조자료이며 코드만으로 지급·면책을 결정하지 않습니다.</p></div><div class="dexsearchrow"><input id="dexq" class="dexq" type="search" placeholder="질병코드·진단명 검색" autocomplete="off" aria-label="질병코드 검색"><input id="ediq" class="dexq" type="search" placeholder="수가코드·처치/수술명 검색" autocomplete="off" aria-label="EDI 코드 검색"></div><p class="dexn" id="dexn" aria-live="polite"></p><div class="dexl" id="dexl"></div><p class="dexsrc">KCD 9차 (건강보험심사평가원 상병분류기호, 2025.12.16)</p><p class="dexn" id="edin" aria-live="polite">EDI 기초 데이터 불러오는 중…</p><div class="edil" id="edil"></div><p class="dexsrc">출처: 건강보험심사평가원 「2026 건강보험요양급여비용」 및 2026 KDRG 분류집, 의·치과 수가파일(2026.07.01 시행), 포괄수가제 요양급여비용·청구방법(2025), 수술일자 기재 수술코드(2025), 치핵수술 산정기준(2025). 데이터 정리일 2026.11.25 · 수록 80개 · 전체 수가 마스터 아님 · 기본코드 및 조건별 코드 예시<br><a href="https://www.hira.or.kr/rc/drug/insuadtcrtr/bbsView.do?brdBltNo=53155&brdScnBltNo=4&pgmid=HIRAA030069000400" target="_blank" rel="noopener">심평원 2026.07.01 시행 수가파일</a> · <a href="https://www.hira.or.kr/ebooksc/2026/01/BZ202601272870642.pdf" target="_blank" rel="noopener">2026 KDRG 분류집</a> · <a href="https://www.hira.or.kr/ebooksc/2025/03/BZ202503051269788.pdf" target="_blank" rel="noopener">2025 포괄수가제 수가·청구방법</a> · <a href="https://www.hira.or.kr/ebooksc/2025/12/BZ202512192693303.pdf" target="_blank" rel="noopener">2025 수술코드</a> · <a href="https://www.hira.or.kr/rc/insu/insuadtcrtr/InsuAdtCrtrPopup.do?mtgHmeDd=20250901&mtgMtrRegSno=0001&sno=4" target="_blank" rel="noopener">치핵수술 수가 산정기준</a></p>`);gmo.classList.add('dexm');if(wasDex)gmo.firstElementChild.classList.add('noanim');dexRender();dexLoad().then(dexRender).catch(()=>{const L=document.getElementById('dexl');if(L)L.innerHTML='<p class="gmd">이 브라우저에서는 코드 목록을 열 수 없어요. 최신 브라우저로 열어 주세요.</p>'});ediLoad().then(ediRender).catch(()=>{const L=document.getElementById('edil');if(L)L.innerHTML='<p class="gmd">EDI 코드 목록을 불러오지 못했어요.</p>'});setTimeout(()=>{const i=document.getElementById('dexq');if(i&&!MOBQ())i.focus()},50)}
 let EDI_DATA=null,EDIP=null,caseEdiOpen=false,caseEdiQuery='';
 document.addEventListener('input',e=>{if(e.target.id==='caseEdiq')caseEdiQuery=e.target.value});
 document.addEventListener('toggle',e=>{if(e.target&&e.target.id==='caseEdiPanel')caseEdiOpen=e.target.open},true);
