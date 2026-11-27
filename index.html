@@ -55,7 +55,7 @@
  body.app .dpop{top:50%!important;bottom:auto!important;left:8px!important;right:8px!important;transform:translateY(-50%)!important;max-height:82dvh}
  body.app .dpop .dsl{max-height:64dvh!important}
 }
-</style>
+.xfw{display:none!important}\n</style>
 <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700;800;900&family=Nanum+Myeongjo:wght@800&display=swap" rel="stylesheet">
 <style>
 /* VOICE: 사무실 책상 위 실무 게임 — 차분하지만 손에 잡히는 서류 감각
@@ -1812,10 +1812,10 @@ const clock=s=>`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
 function stopT(){if(st.tid&&st.last){const now=Date.now();st.gm=Math.min(540,st.gm+GM*(now-st.last)/1000);st.last=now}clearInterval(st.tid);st.tid=null;st.last=null}
 const DAY_SEC=900,VOL=[{n:'적음',k:6},{n:'보통',k:10},{n:'많음',k:16},{n:'매우 많음',k:22},{n:'폭주',k:30}],GM=540/DAY_SEC,hm=m=>{const t=540+Math.floor(m);return`${String(Math.floor(t/60)).padStart(2,'0')}:${String(t%60).padStart(2,'0')}`};
 function arrive(){st.regPick=null;
-  let c=seeded(()=>{let c=gen();if(st.scnRun&&st.scnRule&&Math.random()<.45)for(let t=0;t<120;t++){if(st.scnRule==='ktas3'?c.covs.includes('er')&&c.er===3:c.covs.includes('burn')&&c.burn==='표재성 2도'&&c.s.grp==='burn')break;c=gen()}if(!st.tut&&Math.random()<(st.sty&&st.sty.fr!=null?st.sty.fr:st.scnRun&&st.scnFr?st.scnFr:FRP[st.lv]))c.fraud=pick(c.s.cause==='d'?['name','edit','hos','dx']:['name','edit','hos']);if(!st.tut&&!c.fraud&&st.lv>=2)ndSetup(c);if(!st.tut&&!st.sty&&!c.fraud&&!c.nd&&st.lv>=1&&Math.random()<.07)bigSetup(c);return c});if(st.scnRun&&st.wBoss&&st.queue.length===1){st.wBoss=0;c=seeded(bossClaim)}st.regPick=null;
+  let c=seeded(()=>{let c=gen();if(st.scnRun&&st.scnRule&&Math.random()<.45)for(let t=0;t<120;t++){if(st.scnRule==='ktas3'?c.covs.includes('er')&&c.er===3:c.covs.includes('burn')&&c.burn==='표재성 2도'&&c.s.grp==='burn')break;c=gen()}c.fraud=null;c.nd=0;c.ndY=0;c.big=null;return c});if(st.scnRun&&st.wBoss&&st.queue.length===1){st.wBoss=0;c=seeded(bossClaim)}st.regPick=null;
   const it={id:c.regno,c,at:st.gm,done:false};st.queue.push(it);
   if(st.scr==='game'){toast(`📥 새 접수 ${it.id} · ${c.who}`)}return it}
-function bossClaim(){const lv=st.lv;st.lv=3;let b=null;for(let i=0;i<14;i++){const c=gen(),n=c.covs.filter(k=>k!=='pay').length;if(!b||n>b.n)b={c,n}}const c=b.c;if(Math.random()<.45)c.fraud=pick(c.s.cause==='d'?['name','edit','hos','dx']:['name','edit','hos']);else ndSetup(c);st.lv=lv;c.boss=1;return c}
+function bossClaim(){const lv=st.lv;st.lv=3;let b=null;for(let i=0;i<14;i++){const c=gen(),n=c.covs.filter(k=>k!=='pay').length;if(!b||n>b.n)b={c,n}}const c=b.c;st.lv=lv;c.fraud=null;c.nd=0;c.ndY=0;c.big=null;c.boss=1;return c}
 const TQ=[];function toast(t){TQ.push(t);if(TQ.length===1)toastNext()}
 function toastNext(){const e=document.getElementById('toast');if(!TQ.length){e.hidden=true;return}e.textContent=TQ[0];e.hidden=false;clearTimeout(st.tt);st.tt=setTimeout(()=>{TQ.shift();toastNext()},TQ.length>1?1800:2600)}
 function missingDocs(c){const m=[];if(c.days&&!c.docs.hosp)m.push('입원 확인서');if(c.surg&&!c.docs.surg)m.push('수술 확인서');if(st.sil&&!c.docs.rcpt)m.push('진료비 영수증');if(c.car&&!c.docs.carDoc)m.push('부상급수 확인서');return m}
@@ -2387,21 +2387,21 @@ function stampFX(ok,pts,lines){const RMo=matchMedia('(prefers-reduced-motion: re
   if(!RMo){app.classList.add(ok?'shk':'shk2');setTimeout(()=>app.classList.remove('shk','shk2'),450)}
   setTimeout(()=>d.classList.add('out'),1300);setTimeout(()=>d.remove(),1800)}
 /* 미션 */
-const MPOOL=[{id:'perfect',t:'완벽 처리 {n}건',n:[3,5,7]},{id:'combo',t:'한 근무에서 {n}연속 정확',n:[3,5],max:1},{id:'callOk',t:'고객 전화 {n}통 응대 성공',n:[1,2]},{id:'fraud',t:'보험사기 {n}건 적발',n:[1]},
+const MPOOL=[{id:'perfect',t:'완벽 처리 {n}건',n:[3,5,7]},{id:'combo',t:'한 근무에서 {n}연속 정확',n:[3,5],max:1},{id:'callOk',t:'고객 전화 {n}통 응대 성공',n:[1,2]},
   {id:'silOk',t:'실손 {n}건 정확 계산 (실손 포함 모드)',n:[2,3]},{id:'exOk',t:'면책기간 내 진단 {n}건 정확히 부지급',n:[1,2]},{id:'gradeA',t:'하루 정산 A등급 이상 {n}회',n:[1]},{id:'speed',t:'⚡신속 보너스 {n}회 받기',n:[3,5]},
   {id:'dayOk',t:'일당 담보 일수 {n}건 정확히 맞추기',n:[3,5]},{id:'payHold',t:'예금주 불일치 {n}건 정확히 지급 보류',n:[1,2]},{id:'carEx',t:'자동차·폭행·이륜차 특수 사유 {n}건 정확 판정',n:[1,2]},
   {id:'trapOk',t:'대상 아닌 진단(함정) {n}건 정확히 부지급',n:[2,3]},{id:'urgOk',t:'⚡빠른 지급 요청 {n}건 기한 내 처리',n:[1,2]},{id:'reasOk',t:'🔁담당 변경 건 {n}건 정확 처리',n:[1]},
-  {id:'msgOk',t:'📩처리 결과 문의 {n}회 적절히 회신',n:[1,2]},{id:'boss',t:'👔팀장님 지시 {n}회 완수',n:[1]},{id:'ndOk',t:'🔎고지의무 위반 의심 {n}건 현장조사 의뢰 (보통 이상)',n:[1]}];
+  {id:'msgOk',t:'📩처리 결과 문의 {n}회 적절히 회신',n:[1,2]},{id:'boss',t:'👔팀장님 지시 {n}회 완수',n:[1]},];
 function missions(){const d=today();if(CR.ms&&CR.ms.L.some(m=>m.id==='reqOk'))CR.ms=null;if(!CR.ms||CR.ms.d!==d){const r=rng(d*7+3),pool=MPOOL.slice(),L=[];
     while(L.length<3){const m=pool.splice(Math.floor(r()*pool.length),1)[0],n=m.n[Math.floor(r()*m.n.length)];L.push({id:m.id,t:m.t.replace('{n}',n),n,p:0,done:false,max:!!m.max})}CR.ms={d,L};saveCR()}return CR.ms.L}
 function mProg(id,v=1){if(st.tut)return;missions().forEach(m=>{if(m.id!==id||m.done)return;m.p=m.max?Math.max(m.p,v):m.p+v;if(m.p>=m.n){m.p=m.n;m.done=true;CR.xp+=100;st.gXp=(st.gXp||0)+100;toast(`🎯 미션 완료! ${m.t} · +100 XP`);sfx('coin')}});saveCR()}
 /* 업적 */
-const ACH=[['first','🏁','첫 퇴근','하루 근무를 끝까지 마쳤어요'],['s','🌟','S등급 심사관','하루 정산 S등급'],['combo10','🔥','불꽃 콤보','한 근무에서 10연속 정확'],['fraud1','🕵️','첫 사기 적발','보험사기를 처음 적발'],
-  ['fraud5','🦅','사기 사냥꾼','보험사기 누적 5건 적발'],['flawless','💯','무결점의 하루','5건 이상 처리 · 정확도 100% · 미처리 0'],['rush','🌪️','폭주 생존','접수량 폭주에서 미처리 0'],['hard','🏔️','베테랑','매우 어려움에서 A등급 이상'],
+const ACH=[['first','🏁','첫 퇴근','하루 근무를 끝까지 마쳤어요'],['s','🌟','S등급 심사관','하루 정산 S등급'],['combo10','🔥','불꽃 콤보','한 근무에서 10연속 정확'],
+  ['flawless','💯','무결점의 하루','5건 이상 처리 · 정확도 100% · 미처리 0'],['rush','🌪️','폭주 생존','접수량 폭주에서 미처리 0'],['hard','🏔️','베테랑','매우 어려움에서 A등급 이상'],
   ['calls10','☎️','상담의 달인','고객 전화 누적 10통 응대 성공'],['sil20','🧮','실손 마스터','실손 누적 20건 정확 계산'],['promo','👔','과장님','과장으로 승진'],['rankMax','🎖️','심사 장인','최고 직급 \'심사 장인\' 달성'],['ch','🗓️','챌린저','데일리 챌린지 완료'],
   ['perf50','🎯','정밀 심사','완벽 처리 누적 50건'],['days10','📅','성실 근무','하루 근무 누적 10일'],
   ['allLv','🧗','전 난이도 정복','5개 난이도 모두에서 퇴근'],['trap20','🪤','함정 탐지기','대상 아닌 진단 누적 20건 정확히 부지급'],['car5','🚗','자동차 보상 전문가','자동차·폭행·이륜차 특수 사유 누적 5건 정확 판정'],
-  ['implant','🦷','임플란트 판정관','임플란트 청구 건 완벽 처리'],['dxFraud','🔬','위조 감별사','진단명 위조 사기 적발'],['msg10','📩','쪽지 해결사','처리 결과 문의 누적 10회 적절히 회신'],['boss3','🤝','팀장님 오른팔','팀장님 지시 누적 3회 완수'],['thx5','💌','감사 인사 부자','고객 감사 인사 누적 5회'],['nd1','🔎','현장조사 전문가','고지의무 위반 의심 건 첫 현장조사 의뢰 적중'],['story','📖','에이스 심사자','튜토리얼 모드 12장 완료'],['vsWin1','🤖','AI 이겼다!','AI 대결에서 첫 승리'],['vsAce','🦅','인간 승리','에이스 AI를 상대로 승리'],['scnClear','📜','20일 버티기 성공','시나리오 모드에서 파산 없이 20일 완주'],['scnKing','👑','이달의 심사왕','시나리오에서 올해의 심사왕 또는 SIU 스카우트 달성'],['auditOk','🔍','감사 무사 통과','시나리오 감사 주간을 감봉 없이 통과'],['roomFull','🛋️','풀옵션 원룸','시나리오 상점 물품 10종을 모두 구매'],['isoDex','🪲','콩벌레 브리더','도감의 콩벌레 모두 번식 성공'],['isoFarm','💰','콩벌레 재벌','시나리오 한 판에서 콩벌레 분양 수익 6만원 달성'],['hamRare','✨','희귀 햄스터','시나리오에서 희귀 모프 햄스터 만나기'],['hamDex','📖','햄스터 박사','햄스터 모프 10종 모두 만나기'],['hamFam','🐹','햄스터 대가족','햄스터 3마리와 함께 시나리오 끝까지 생존'],['spAll','🐾','특수 동물 박사','특수 동물 5종을 모두 한 번씩 들여보기'],['xfr1','🏢','선 넘지 않는 심사자','지급액 합계 200만원 초과 건을 표준부서로 첫 이관'],['cert','🎓','손해사정사','시나리오에서 손해사정 학원을 3일 다 듣고 자격증 따기'],['save0','🐷','여유로운 저축','여유 난이도 시나리오를 잔고 30만원 이상으로 완주'],['save1','💰','알뜰 사회초년생','보통 난이도 시나리오를 잔고 20만원 이상으로 완주'],['save2','💎','짠테크 장인','빡빡 난이도 시나리오를 잔고 15만원 이상으로 완주']];
+  ['implant','🦷','임플란트 판정관','임플란트 청구 건 완벽 처리'],['msg10','📩','쪽지 해결사','처리 결과 문의 누적 10회 적절히 회신'],['boss3','🤝','팀장님 오른팔','팀장님 지시 누적 3회 완수'],['thx5','💌','감사 인사 부자','고객 감사 인사 누적 5회'],['story','📖','에이스 심사자','튜토리얼 모드 12장 완료'],['vsWin1','🤖','AI 이겼다!','AI 대결에서 첫 승리'],['vsAce','🦅','인간 승리','에이스 AI를 상대로 승리'],['scnClear','📜','20일 버티기 성공','시나리오 모드에서 파산 없이 20일 완주'],['scnKing','👑','이달의 심사왕','시나리오에서 올해의 심사왕 또는 SIU 스카우트 달성'],['auditOk','🔍','감사 무사 통과','시나리오 감사 주간을 감봉 없이 통과'],['roomFull','🛋️','풀옵션 원룸','시나리오 상점 물품 10종을 모두 구매'],['isoDex','🪲','콩벌레 브리더','도감의 콩벌레 모두 번식 성공'],['isoFarm','💰','콩벌레 재벌','시나리오 한 판에서 콩벌레 분양 수익 6만원 달성'],['hamRare','✨','희귀 햄스터','시나리오에서 희귀 모프 햄스터 만나기'],['hamDex','📖','햄스터 박사','햄스터 모프 10종 모두 만나기'],['hamFam','🐹','햄스터 대가족','햄스터 3마리와 함께 시나리오 끝까지 생존'],['spAll','🐾','특수 동물 박사','특수 동물 5종을 모두 한 번씩 들여보기'],['cert','🎓','손해사정사','시나리오에서 손해사정 학원을 3일 다 듣고 자격증 따기'],['save0','🐷','여유로운 저축','여유 난이도 시나리오를 잔고 30만원 이상으로 완주'],['save1','💰','알뜰 사회초년생','보통 난이도 시나리오를 잔고 20만원 이상으로 완주'],['save2','💎','짠테크 장인','빡빡 난이도 시나리오를 잔고 15만원 이상으로 완주']];
 {const S=new Set(ACH.map(a=>a[0]));CR.ach=(CR.ach||[]).filter(id=>S.has(id))}
 const tInc=k=>(CR.tot[k]=(CR.tot[k]||0)+1);
 function unlock(id){if(st.tut||CR.ach.includes(id))return;CR.ach.push(id);saveCR();const a=ACH.find(x=>x[0]===id);if(!a)return;st.newAch=(st.newAch||[]).concat(id);toast(`🏅 업적 달성: ${a[1]} ${a[2]}`);sfx('fan')}
