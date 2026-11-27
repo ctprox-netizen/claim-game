@@ -975,6 +975,36 @@ body.app.ingame .floatActions button{
   }
 }
 
+
+/* Apply the same single-line coverage-name treatment to wide rows too
+   (notably disease surgery and actual-expense medical coverage). */
+@media(max-width:700px){
+  body.app.ingame .slide.list .cov.wide .nm{
+    display:flex!important;
+    flex-wrap:nowrap!important;
+    white-space:nowrap!important;
+    word-break:keep-all!important;
+    overflow-wrap:normal!important;
+    width:max-content!important;
+    max-width:none!important;
+    min-width:max-content!important;
+    font-size:13px!important;
+    line-height:1.15!important;
+    gap:3px!important;
+  }
+  body.app.ingame .slide.list .cov.wide>div:first-child{
+    min-width:0!important;
+    max-width:100%!important;
+    overflow:visible!important;
+  }
+  body.app.ingame .slide.list .cov.wide .nm .info{
+    flex:0 0 30px!important;
+    width:30px!important;
+    min-width:30px!important;
+    margin-left:2px!important;
+  }
+}
+
 </style>
 </head>
 <body>
