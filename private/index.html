@@ -808,6 +808,7 @@ body.app .stw{padding:8px 0 2px}
  body.app .slide.list .cov{margin-top:3px!important;margin-bottom:4px!important;padding:6px 8px!important;border-width:1px!important;border-radius:7px!important;box-shadow:none!important}
 }
 /* Edge-mounted file-tab controls: reorderable stack for either hand. */
+body.app.ingame:not(.floatTabsOn) .floatActions{display:none!important}
 body.app.ingame .floatActions{position:static!important;display:contents!important}
 body.app.ingame .floatActions button{position:relative!important;inset:auto!important;z-index:110!important;flex:0 0 auto!important;width:86px!important;min-width:86px!important;max-width:86px!important;height:62px!important;min-height:62px!important;max-height:62px!important;box-sizing:border-box!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:3px!important;text-align:center!important;white-space:normal!important;overflow-wrap:anywhere!important;line-height:1.12!important;padding:5px 4px!important;border:1.5px solid #2b2926!important;border-left:0!important;border-radius:0 12px 12px 0!important;font-family:inherit!important;font-size:12px!important;font-weight:850!important;letter-spacing:-.3px!important;box-shadow:0 3px 12px #0003!important;touch-action:none!important;user-select:none!important;-webkit-user-select:none!important;cursor:pointer}
 body.app.ingame .floatActions{position:fixed!important;z-index:110!important;top:42%!important;left:auto!important;right:0!important;bottom:auto!important;width:86px!important;display:flex!important;flex-direction:column!important;gap:7px!important;align-items:stretch!important;transform:translateY(-50%)!important}
@@ -2360,6 +2361,7 @@ function setupFloatingDrag(){
   if(!box)return;
   let mode=false,active=null,longTimer=0,longFired=false,suppressClick=false,moved=false;
   document.body.classList.toggle('floatLeft',CR.floatSide==='left');
+  document.body.classList.toggle('floatTabsOn',!!CR.floatTabs);
   const posKey='claimFloatButtonPositions_v2';
   const setMode=v=>{mode=v;document.body.classList.toggle('floatMoveMode',mode);};
   const clamp=(el,x,y)=>{
@@ -2999,7 +3001,7 @@ function msgTick(){if(!st.msgs)return;if(st.evm)while(st.evm.length&&st.gm>=st.e
 
 /* ===== 게임 레이어: 콤보·도장·승진·미션·업적·사기·챌린지 ===== */
 const CK='claimCareer1';
-const CR={xp:0,ach:[],days:0,tot:{fraud:0,calls:0,sil:0},regs:null,ms:null,ch:{},snd:true};
+const CR={xp:0,ach:[],days:0,tot:{fraud:0,calls:0,sil:0},regs:null,ms:null,ch:{},snd:true,floatTabs:false};
 try{const s=JSON.parse(localStorage.getItem(CK));if(s)Object.assign(CR,s,{tot:Object.assign(CR.tot,s.tot||{})})}catch(e){}
 function saveCR(){try{localStorage.setItem(CK,JSON.stringify(CR))}catch(e){}}
 const RANKS=[['사원',0],['주임',600],['대리',1800],['과장',4000],['차장',8000],['부장',14000],['심사 장인',24000]];
@@ -5094,6 +5096,7 @@ function profHTML(){const r=rankOf(CR.xp),nx=RANKS[r+1],pc=nx?Math.round((CR.xp-
    <div class="pbtns"><button id="chb" class="chbtn">데일리 챌린지${chd?` <b>${chd.gr}</b>`:''}</button><button id="dexb" class="dexbtn" aria-label="수첩">수첩</button><button id="msb">일일미션</button><button id="acb" aria-label="업적">업적</button><button id="setb" class="setbtn" aria-label="설정" title="설정"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M19.4 13a7.6 7.6 0 0 0 0-2l2.1-1.6a.5.5 0 0 0 .1-.6l-2-3.5a.5.5 0 0 0-.6-.2l-2.5 1a7.4 7.4 0 0 0-1.7-1l-.4-2.6a.5.5 0 0 0-.5-.4h-4a.5.5 0 0 0-.5.4l-.4 2.6a7.4 7.4 0 0 0-1.7 1l-2.5-1a.5.5 0 0 0-.6.2l-2 3.5a.5.5 0 0 0 .1.6L4.6 11a7.6 7.6 0 0 0 0 2l-2.1 1.6a.5.5 0 0 0-.1.6l2 3.5c.1.2.4.3.6.2l2.5-1c.5.4 1.1.7 1.7 1l.4 2.6c0 .2.3.4.5.4h4c.2 0 .5-.2.5-.4l.4-2.6c.6-.3 1.2-.6 1.7-1l2.5 1c.2.1.5 0 .6-.2l2-3.5a.5.5 0 0 0-.1-.6L19.4 13zM12 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"/></svg></button></div></div>`}
 function openSet(){gOpen('⚙️ 설정',`<h4 class="gmh4">서류 형식</h4><div class="wzl"><button class="wzo" data-nb="0" aria-pressed="${!st.newbie}"><b>실제 양식</b><span>진짜 서류처럼 · 표와 도장까지</span></button><button class="wzo" data-nb="1" aria-pressed="${st.newbie}"><b>간편 서류</b><span>심사에 필요한 칸만 · 처음 할 때 추천</span></button></div>
   <h4 class="gmh4">버튼 부착 위치</h4><p class="gmd">서류보기·심사완료·심사도구 플래그를 편한 엄지 쪽에 붙여요.</p><div class="wzl"><button class="wzo" data-fside="left" aria-pressed="${CR.floatSide==='left'}"><b>⬅ 왼쪽에 붙이기</b><span>왼손잡이에게 추천</span></button><button class="wzo" data-fside="right" aria-pressed="${CR.floatSide!=='left'}"><b>➡ 오른쪽에 붙이기</b><span>오른손잡이에게 추천</span></button></div>
+  <h4 class="gmh4">우측 탭 버튼</h4><p class="gmd">화면 가장자리의 서류보기·심사완료·심사도구 버튼을 표시할지 선택해요. 기본은 숨김이에요.</p><div class="wzl"><button class="wzo" data-ftabs="0" aria-pressed="${!CR.floatTabs}"><b>숨기기</b><span>기본 화면을 넓게 사용</span></button><button class="wzo" data-ftabs="1" aria-pressed="${CR.floatTabs}"><b>표시하기</b><span>화면 가장자리에서 빠르게 조작</span></button></div>
   <h4 class="gmh4">효과음</h4><div class="wzl"><button class="wzo" data-snd="1" aria-pressed="${CR.snd}"><b>🔊 켜기</b></button><button class="wzo" data-snd="0" aria-pressed="${!CR.snd}"><b>🔇 끄기</b></button></div>
   <h4 class="gmh4">기록</h4><div id="rstw"><button class="rstb" id="rst1">🗑 기록 초기화</button><p class="gmd">튜토리얼 진행, 시나리오, 최고 기록, 업적, 도감이 모두 지워져요.</p></div><button class="begin" id="gmx2s">닫기</button>`)}
 function rstAsk(){const w=document.getElementById('rstw');if(!w)return;w.innerHTML=`<div class="rstwarn" role="alert"><b>⚠️ 정말 초기화할까요?</b><p>아래 기록이 <b>전부 사라지고 되돌릴 수 없어요.</b></p><ul><li>튜토리얼 진행 (열린 장)</li><li>시나리오 모드 진행 상황</li><li>최고 기록 · 직급 · 경험치 · 미션</li><li>업적 · 햄스터 도감 · 콩벌레 도감</li></ul><div class="rstbtns"><button class="rstb" id="rstno">취소</button><button class="rstb danger" id="rstyes">네, 모두 지울게요</button></div></div>`;document.getElementById('rstno').focus()}
@@ -5108,6 +5111,7 @@ gmo.addEventListener('click',e=>{if(e.target===gmo||e.target.closest('#gmx'))ret
   if(b.id==='share2'){st.lastCh=CR.ch[today()];shareCh()}
   if(b.dataset.nb!==undefined){st.newbie=b.dataset.nb==='1';CR.nb=st.newbie;saveCR();openSet();return}
   if(b.dataset.snd!==undefined){if((b.dataset.snd==='1')!==CR.snd)togSnd();openSet();return}
+  if(b.dataset.ftabs!==undefined){CR.floatTabs=b.dataset.ftabs==='1';saveCR();document.body.classList.toggle('floatTabsOn',CR.floatTabs);openSet();return}
   if(b.dataset.fside!==undefined){CR.floatSide=b.dataset.fside==='left'?'left':'right';saveCR();document.body.classList.toggle('floatLeft',CR.floatSide==='left');openSet();return}
   if(b.id==='gmxc'){gClose();return}if(b.id==='gmx2s'){gClose();if(st.scr==='start')start();return}
   if(b.dataset.sbt!==undefined){st.sbTab=+b.dataset.sbt;sbFill(st.sbTab);return}
