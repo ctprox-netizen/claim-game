@@ -801,11 +801,11 @@ body.app .stw{padding:8px 0 2px}
  body.app .slide.list .cov{margin-top:3px!important;margin-bottom:4px!important;padding:6px 8px!important;border-width:1px!important;border-radius:7px!important;box-shadow:none!important}
 }
 /* Compact floating controls for the claim review screen. */
-body.app.ingame .floatActions{position:fixed;z-index:90;left:10px;right:10px;bottom:max(10px,env(safe-area-inset-bottom));display:flex;align-items:center;justify-content:space-between;gap:8px;pointer-events:none}
-body.app.ingame .floatActions button{pointer-events:auto;min-height:46px;border:1.5px solid #2b2926;border-radius:13px;padding:0 12px;font:800 13px inherit;font-family:inherit;box-shadow:0 3px 12px #0003;white-space:nowrap}
-body.app.ingame .floatDoc{background:#fff3d6;color:#2b2926;flex:0 0 auto}
-body.app.ingame .floatFinish{background:#1d4ed8;color:#fff;border-color:#1d4ed8!important;flex:1 1 auto;max-width:70%;min-width:0;overflow:hidden;text-overflow:ellipsis}
-body.app.ingame .floatTool{position:fixed;z-index:92;right:10px;top:calc(10px + env(safe-area-inset-top));background:#fff;color:#2b2926;min-height:38px!important;padding:0 11px!important;font-size:12px!important}
+body.app.ingame .floatActions{position:fixed;z-index:90;left:10px;right:10px;bottom:max(10px,env(safe-area-inset-bottom));display:flex;align-items:center;justify-content:center;gap:8px;pointer-events:none}
+body.app.ingame .floatActions button{pointer-events:auto;min-height:48px;border:1.5px solid #2b2926;border-radius:14px;padding:0 14px;font:800 13px inherit;font-family:inherit;box-shadow:0 3px 12px #0003;white-space:nowrap}
+body.app.ingame .floatDoc{position:fixed!important;z-index:110!important;left:12px;bottom:calc(104px + env(safe-area-inset-bottom));background:#fff3d6;color:#2b2926;min-height:52px!important;min-width:64px;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
+body.app.ingame .floatFinish{background:#1d4ed8;color:#fff;border-color:#1d4ed8!important;flex:0 1 72%;max-width:72%;min-width:0;overflow:hidden;text-overflow:ellipsis}
+body.app.ingame .floatTool{position:fixed!important;z-index:110!important;right:12px;top:calc(72px + env(safe-area-inset-top));background:#fff;color:#2b2926;min-height:48px!important;min-width:64px!important;padding:0 12px!important;font-size:12px!important;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
 body.app.ingame .policy .pfoot{padding-bottom:66px!important}
 body.app.ingame .policy .pfoot .total{padding-bottom:5px}
 body.app.ingame .caseedi>summary{display:none!important}
@@ -813,7 +813,7 @@ body.app.ingame .caseedi{display:none!important}
 body.app.ingame .caseedi[open]{display:block!important;position:fixed!important;inset:0!important;z-index:91!important;background:#0005!important}
 body.app.ingame .caseedi[open]>.caseedibody{display:block!important;position:absolute!important;top:58px!important;right:10px!important;left:10px!important;max-height:68dvh!important;overflow:auto!important;background:#fff!important;border:1px solid #d8d0c4!important;border-radius:12px!important;padding:12px!important;box-shadow:0 8px 30px #0004!important}
 body.app.ingame .slides{padding-bottom:12px!important}
-@media(min-width:701px){body.app.ingame .floatActions{left:auto;right:22px;bottom:18px;width:min(440px,calc(100% - 44px))}body.app.ingame .floatTool{top:16px;right:22px}}
+@media(min-width:701px){body.app.ingame .floatActions{left:auto;right:22px;bottom:18px;width:min(440px,calc(100% - 44px))}}
 </style>
 </head>
 <body>
@@ -1784,13 +1784,25 @@ function pgGo(dir,cb){const RM=matchMedia('(prefers-reduced-motion: reduce)').ma
   app.addEventListener('touchcancel',()=>{if(t0&&t0.lk===1)pgBack();t0=null},{passive:true})}
 function filesHint(){document.querySelectorAll('.files').forEach(e=>{const u=()=>e.classList.toggle('more',e.scrollLeft+e.clientWidth<e.scrollWidth-4);u();if(!e.dataset.fh){e.dataset.fh=1;e.addEventListener('scroll',u,{passive:true})}})}
 addEventListener('resize',()=>filesHint());
+function setupFloatingDrag(){
+  ['dvb','toolToggle'].forEach(id=>{
+    const el=document.getElementById(id);if(!el||el.dataset.dragReady)return;el.dataset.dragReady='1';
+    const key='claimFloatPos_'+id;let start=null,moved=false;
+    try{const p=JSON.parse(localStorage.getItem(key)||'null');if(p&&Number.isFinite(p.x)&&Number.isFinite(p.y)){el.style.left=Math.max(4,Math.min(innerWidth-el.offsetWidth-4,p.x))+'px';el.style.top=Math.max(4,Math.min(innerHeight-el.offsetHeight-4,p.y))+'px';el.style.right='auto';el.style.bottom='auto'}}catch(e){}
+    el.addEventListener('pointerdown',e=>{if(e.button!==undefined&&e.button!==0)return;start={x:e.clientX,y:e.clientY,left:el.getBoundingClientRect().left,top:el.getBoundingClientRect().top,pid:e.pointerId};moved=false;try{el.setPointerCapture(e.pointerId)}catch(_){}});
+    el.addEventListener('pointermove',e=>{if(!start||e.pointerId!==start.pid)return;const dx=e.clientX-start.x,dy=e.clientY-start.y;if(!moved&&Math.hypot(dx,dy)<7)return;moved=true;const x=Math.max(4,Math.min(innerWidth-el.offsetWidth-4,start.left+dx)),y=Math.max(4,Math.min(innerHeight-el.offsetHeight-4,start.top+dy));el.style.left=x+'px';el.style.top=y+'px';el.style.right='auto';el.style.bottom='auto'});
+    const end=()=>{if(!start)return;if(moved){try{localStorage.setItem(key,JSON.stringify({x:parseFloat(el.style.left),y:parseFloat(el.style.top)}))}catch(e){}el.dataset.justDragged='1';setTimeout(()=>delete el.dataset.justDragged,450)}start=null};
+    el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end);
+    el.addEventListener('click',e=>{if(el.dataset.justDragged==='1'){e.preventDefault();e.stopPropagation();delete el.dataset.justDragged}},true);
+  });
+}
 function render(res){if(!inf.hidden)closeInfo(false);closeCalc();closeGp(false);setTimeout(filesHint,0);
   document.body.classList.remove('startm','endm','subm');document.body.classList.add('ingame','app');const c=st.c,os=document.getElementById('slides');if(c.resetSx){c.sx=null;c.resetSx=0}else if(os)c.sx=os.scrollLeft;
   const keep=os&&!c._fresh,sTops=keep?[...os.children].map(e=>e.scrollTop):[],wy=scrollY;const fx=keep&&document.getElementById('files')?document.getElementById('files').scrollLeft:0;c._fresh=false;
   const it=st.queue[st.cur];
   app.innerHTML=`<div class="cbar"><span class="cid"><i class="cidl">접수 </i>${it.id}</span><span class="clk2" id="clk2"></span></div><main><section class="folder" aria-label="청구 서류 폴더"><button class="bkb" id="back" aria-label="일정창으로 돌아가기">←<span> 일정<i class="bkd">창</i></span></button><div class="ftitle"><span>청구 서류 · ${c.who}</span><small>눌러서 열람</small></div><div class="files" id="files"></div><div class="dpane" id="dpane" aria-label="서류 보기"></div></section>${policyHTML(c,res)}</main><div id="store" hidden>${c.docsH||(c.docsH=ndDocs(c,fraudDocs(c,bigDocs(c,docsHTML(c)))))}</div><div class="floatActions"><button class="floatDoc" id="dvb">📂 서류 보기</button><button class="floatFinish" id="go">${res?'일정창으로 돌아가기':sumPick(c)>0?(c.covs.includes('pay')&&c.pick[c.covs.indexOf('pay')]<0?'수익자 확인 후 지급심사완료':c.covs.includes('pay')&&c.pick[c.covs.indexOf('pay')]===1?'지급보류 후 심사완료':'지급심사완료'):(st.notice&&!c.frP?'부지급 사유 선택 후 심사완료':'심사완료')}</button><button class="floatTool" id="toolToggle">🧰 심사도구</button></div>`;
   ediLoad().then(()=>{if(document.getElementById('caseEdiq'))ediRender('caseEdiq','caseEdil','caseEdin')}).catch(()=>{const n=document.getElementById('caseEdin');if(n)n.textContent='EDI 코드 목록을 불러오지 못했어요.'});
-  tiles();hud();paneInit(c);
+  setupFloatingDrag();tiles();hud();paneInit(c);
   const D=0;if(D){const s0=document.getElementById('slides'),its=items(),ds=document.createElement('div');ds.className='slide dslide';ds.setAttribute('aria-label','청구 서류');
     const ms=its.filter(e=>e.classList.contains('missing')).map(e=>e.dataset.t);
     ds.innerHTML=`<div class="dsh">📂 청구 서류 <small>위·아래 탭으로 넘기기 · 한 번 더 밀면 일정창</small></div>${avail().map(j=>`<section class="dsec" data-j="${j}"><div class="dst">${its[j].dataset.t}</div>${its[j].outerHTML}</section>`).join('')}${ms.length?`<p class="dmiss">미제출: <b>${ms.join(', ')}</b></p>`:''}<p class="dend">— 서류 끝 · 왼쪽으로 밀어 심사표로 —</p>`;
