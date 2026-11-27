@@ -811,20 +811,6 @@ body.app.ingame .caseedi[open]{display:block!important;position:fixed!important;
 body.app.ingame .caseedi[open]>.caseedibody{display:block!important;position:absolute!important;top:58px!important;right:10px!important;left:10px!important;max-height:68dvh!important;overflow:auto!important;background:#fff!important;border:1px solid #d8d0c4!important;border-radius:12px!important;padding:12px!important;box-shadow:0 8px 30px #0004!important}
 body.app.ingame .slides{padding-bottom:12px!important}
 @media(min-width:701px){body.app.ingame .floatActions{left:auto;right:22px;bottom:18px;width:min(440px,calc(100% - 44px))}body.app.ingame .floatTool{top:16px;right:22px}}
-/* Compact floating controls for the claim review screen. */
-body.app.ingame .floatActions{position:fixed;z-index:90;left:10px;right:10px;bottom:max(10px,env(safe-area-inset-bottom));display:flex;align-items:center;justify-content:space-between;gap:8px;pointer-events:none}
-body.app.ingame .floatActions button{pointer-events:auto;min-height:46px;border:1.5px solid #2b2926;border-radius:13px;padding:0 12px;font:800 13px inherit;font-family:inherit;box-shadow:0 3px 12px #0003;white-space:nowrap}
-body.app.ingame .floatDoc{background:#fff3d6;color:#2b2926;flex:0 0 auto}
-body.app.ingame .floatFinish{background:#1d4ed8;color:#fff;border-color:#1d4ed8!important;flex:1 1 auto;max-width:70%;min-width:0;overflow:hidden;text-overflow:ellipsis}
-body.app.ingame .floatTool{position:fixed;z-index:93;right:10px;top:calc(10px + env(safe-area-inset-top));background:#fff;color:#2b2926;min-height:38px!important;padding:0 11px!important;font-size:12px!important}
-body.app.ingame .policy .pfoot{padding-bottom:66px!important}
-body.app.ingame .policy .pfoot .total{padding-bottom:5px}
-body.app.ingame .caseedi>summary{display:none!important}
-body.app.ingame .caseedi{display:none!important}
-body.app.ingame .caseedi[open]{display:block!important;position:fixed!important;inset:0!important;z-index:91!important;background:#0005!important}
-body.app.ingame .caseedi[open]>.caseedibody{display:block!important;position:absolute!important;top:58px!important;right:10px!important;left:10px!important;max-height:68dvh!important;overflow:auto!important;background:#fff!important;border:1px solid #d8d0c4!important;border-radius:12px!important;padding:12px!important;box-shadow:0 8px 30px #0004!important}
-body.app.ingame .slides{padding-bottom:12px!important}
-@media(min-width:701px){body.app.ingame .floatActions{left:auto;right:22px;bottom:18px;width:min(440px,calc(100% - 44px))}body.app.ingame .floatTool{top:16px;right:22px}}
 </style>
 </head>
 <body>
@@ -2213,7 +2199,7 @@ function tutStart(){const c=tutPrep();st.tut=true;st.callAll=true;st.notice=true
    {sel:'#inf',t:`담보마다 <b>지급 조건</b>이 있어요. 이 조건과 서류 내용을 대조하는 게 심사의 핵심이에요.`,btn:'확인'},
    {sel:()=>!gpop.hidden?gpop:row(t1)(),t:`<b>${N(t1)}</b>: ${c.ans[t1].w}<br>→ 조건을 충족하니 ${isDay(c.covs[t1])?`<b>[▾]</b>를 누르고 위아래로 굴려서 <b>${aDays(c,t1)}${dUnit(c.covs[t1])}</b>을 눌러요.`:'<b>[지급]</b>을 눌러요.'}`,done:()=>gpop.hidden&&decOk(c,t1)},
    {sel:()=>!gpop.hidden?gpop:row(t0)(),t:`<b>${N(t0)}</b>: ${c.ans[t0].w}<br>→ 조건에 안 맞으니 <b>부지급</b>이 맞아요. ${c.pick[t0]===0?'기본값이 부지급이라 그대로 두면 돼요.':isDay(c.covs[t0])?'[▾]를 눌러 <b>0일</b>로 굴려요.':'[부지급]을 눌러요.'}`,done:()=>decOk(c,t0),btn:'알겠어요'},
-   {sel:()=>{const g=document.getElementById('go'),s=document.getElementById('slides');if(g&&s){const r=g.getBoundingClientRect(),R=s.getBoundingClientRect();if(r.left>=R.left-2&&r.right<=R.right+2){if(r.bottom>R.bottom||r.top<R.top)g.scrollIntoView({block:'nearest'});return g}}return document.getElementById('snx')},t:`<b>결정 지급액 합계</b>로 금액을 확인하고, 심사표 <b>화면 아래 고정된 <b>[심사완료]</b>를 눌러요.`,done:()=>st.queue[0].done},
+   {sel:()=>{const g=document.getElementById('go'),s=document.getElementById('slides');if(g&&s){const r=g.getBoundingClientRect(),R=s.getBoundingClientRect();if(r.left>=R.left-2&&r.right<=R.right+2){if(r.bottom>R.bottom||r.top<R.top)g.scrollIntoView({block:'nearest'});return g}}return document.getElementById('snx')},t:`<b>결정 지급액 합계</b>로 금액을 확인하고, 심사표 화면 아래 고정된 <b>[심사완료]</b>를 눌러요.`,done:()=>st.queue[0].done},
    {sel:'.res',t:`도장을 찍으면 담보별 <b>✓ 정답 / ✗ 오답</b>과 판정 사유가 나와요. 틀린 건 여기서 복습해요.`,btn:'다음'},
    {sel:()=>{const sl=document.getElementById('slides');if(!sl)return document.getElementById('back');const btns=[...sl.querySelectorAll('.go')];const v=btns.find(g=>{const r=g.getBoundingClientRect(),R=sl.getBoundingClientRect();return r.width>0&&r.left>=R.left-2&&r.right<=R.right+2});const g=v||document.getElementById('go')||btns[0];if(g){const R=sl.getBoundingClientRect(),r=g.getBoundingClientRect();if(r.bottom>R.bottom||r.top<R.top)g.scrollIntoView({block:'nearest'});return g}return document.getElementById('back')},free:true,t:`다 봤으면 아래 <b>[일정창으로 돌아가기 →]</b> 버튼을 눌러 목록으로 돌아가요.`,done:()=>st.scr==='inbox',
     after:()=>{if(!c.call){c.call=makeCall(c);if(c.call)c.call.state='pending'}if(c.call)c.call.at=st.gm}},
