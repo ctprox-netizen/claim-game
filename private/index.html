@@ -1590,7 +1590,7 @@ const items=()=>[...document.getElementById('store').children];
 const SHORT={'사고사실확인원':'사실확인원','자동차보험 할증 확인서':'할증확인서','통원 진료 확인서':'통원확인서','물리치료 확인서':'물리치료','보험금 청구서':'청구서','보험증권':'증권','응급실 진료기록부':'응급실 기록','입원 확인서':'입원확인서','수술 확인서':'수술확인서','진료비 세부산정내역':'세부내역','진료비 계산서·영수증':'영수증','자동차사고 부상급수 확인서':'부상급수'};
 function tiles(){
   document.getElementById('files').innerHTML=items().map((el,j)=>{const m=el.classList.contains('missing'),sn=st.c.seen.has(j);
-    const pol=el.dataset.k==='pol';return`<button class="file${m?' miss':''}${sn?' seen':''}${pol?' pol':''}" data-f="${j}" ${m?'aria-disabled="true"':''}>${ICON}<span class="fn"><span class="lf">${el.dataset.t}</span><span class="ls">${SHORT[el.dataset.t]||el.dataset.t}</span></span><span class="fs">${m?'미제출':pol?`가입 담보 ${st.c.enr.size}개${sn?' ✓':''}`:sn?'✓ 열람함':'열기'}</span></button>`}).join('');
+    const pol=el.dataset.k==='pol';return`<button class="file${m?' miss':''}${sn?' seen':''}${pol?' pol':''}" data-f="${j}" ${m?'aria-disabled="true"':''}>${ICON}<span class="fn"><span class="lf">${el.dataset.t}</span><span class="ls">${pol?'증권':(SHORT[el.dataset.t]||el.dataset.t)}</span></span><span class="fs">${m?'미제출':pol?`가입 담보 ${st.c.enr.size}개${sn?' ✓':''}`:sn?'✓ 열람함':'열기'}</span></button>`}).join('');
 }
 const avail=()=>items().map((el,j)=>el.classList.contains('missing')?-1:j).filter(j=>j>=0);
 function setCur(j,mark=true){const it=items()[j];if(!it)return;cur=j;{const fb=document.querySelector(`.file[data-f="${j}"]`),fs=fb&&fb.parentElement;if(fs&&fs.scrollWidth>fs.clientWidth)fs.scrollTo({left:Math.max(0,fb.offsetLeft-fs.clientWidth/2+fb.offsetWidth/2),behavior:'smooth'})}if(mark)st.c.seen.add(j);const a=avail(),p=a.indexOf(j);
