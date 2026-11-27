@@ -1362,8 +1362,8 @@ function genOnce(forceSurgery=false){
     const hard=st.lv>=3;if(Math.random()<(hard?.25:.15)){c.owner=c.ben=c.who[0]+pick(OLD)}
     const q=Math.random(),x=hard?.4:.35,y=hard?.067:.056;
     c.holder=c.ben!==c.who?(q<1-x?c.ben:q<1-x/3?c.who:third()):(q<1-y?c.who:third());
-    groups.push(['지급처',['pay']]);
   }
+  groups.push(['지급처',['pay']]);
   const P2=n=>String(n).padStart(2,'0');
   c.birth=`${R(1955,2004)}.${P2(R(1,12))}.${P2(R(1,28))}`;c.sex=pick(['남','여']);c.dr=pick(SN)+pick(GN);c.dr2=pick(SN)+pick(GN);c.lic=R(10000,99999);c.chart=R(1000000,9999999);c.regno=`${TODAY.getFullYear()}-${String(TODAY.getMonth()+1).padStart(2,'0')}${String(TODAY.getDate()).padStart(2,'0')}${R(10000,99999)}`;
   c.addr=pick(['서울특별시','경기도 수원시','인천광역시','대전광역시','부산광역시','광주광역시'])+' ○○구 ○○로 '+R(1,300);
