@@ -1151,6 +1151,49 @@ body.app.ingame .floatActions button{
     font-size:12px!important;
   }
 }
+
+/* Dedicated treatment for the exceptionally long 11대 특정감염병 label:
+   keep the full name readable on its own line; put 가입/info controls below. */
+@media(max-width:700px){
+  body.app.ingame .slide.list .cov[data-cov="infect"] .nm{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    grid-template-rows:auto auto!important;
+    align-items:center!important;
+    justify-content:stretch!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    gap:4px 6px!important;
+    white-space:normal!important;
+    overflow:visible!important;
+  }
+  body.app.ingame .slide.list .cov[data-cov="infect"] .nm .covName{
+    grid-column:1 / -1!important;
+    grid-row:1!important;
+    display:block!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    white-space:normal!important;
+    overflow:visible!important;
+    overflow-wrap:normal!important;
+    word-break:keep-all!important;
+    font-size:14px!important;
+    line-height:1.35!important;
+    letter-spacing:-.2px!important;
+  }
+  body.app.ingame .slide.list .cov[data-cov="infect"] .nm .tg{
+    grid-column:1!important;
+    grid-row:2!important;
+    justify-self:start!important;
+  }
+  body.app.ingame .slide.list .cov[data-cov="infect"] .nm .info{
+    grid-column:2!important;
+    grid-row:2!important;
+    justify-self:end!important;
+  }
+}
 </style>
 </head>
 <body>
@@ -1896,7 +1939,7 @@ function policyHTML(c,res){
   ${(()=>{const RW=c.covs.map((k,i)=>{const gh='',lk=k==='pay'&&!payShown(c,res);if(k==='pay')return '';if(lk&&res)return '';if(k==='sil')return gh+silRow(i);const C=COV[k],L=C.carG?CGL:C.grade?GRL:C.opts||['부지급','','지급'];
     const dn=dGet(c,i),ctl=isDay(k)?`<button class="sel selb dayb" data-dp="${i}" aria-haspopup="dialog" aria-label="${C.n} 보상 ${dUnit(k)}수: ${dn?dn+dUnit(k):'부지급'}" ${res?'disabled':''}><span>${dn?`<b>${dn}${dUnit(k)}</b> · ${won(dn*C.amt)}`:'부지급 (0'+dUnit(k)+')'}</span><i aria-hidden="true">▾</i></button>`:C.grade||C.carG?`<button class="sel selb" data-gp="${i}" aria-haspopup="listbox" aria-label="${C.n} 결정: ${L[c.pick[i]]}" ${res?'disabled':''}><span>${L[c.pick[i]]}</span><i aria-hidden="true">▾</i></button>`
       :`<div class="seg" role="group" aria-label="${C.n} 결정">${L.map((t,v)=>t?`<button data-i="${i}" data-v="${v}" aria-pressed="${c.pick[i]===v}" ${res?'disabled':''}>${t}</button>`:'').join('')}</div>`;
-    return gh+`<div class="cov${k==='pay'?' wide':''}${lk?' locked':''}" data-cg="${c.gi[i]}" style="background:${['#f3f7fb','#f5f7f1','#fbf5ef','#f5f2fa'][Math.abs(c.gi[i])%4]};border-color:${['#d9e5ef','#dfe8d5','#eee0d2','#e5dced'][Math.abs(c.gi[i])%4]}" ${lk?'aria-disabled="true"':''}><div><div class="nm"><span class="covName">${C.n}</span>${tag(k)}${lk?mag(k).replace('<button ','<button disabled tabindex="-1" '):mag(k)}</div></div>${lk?ctl.replace(/<button /g,'<button disabled tabindex="-1" '):ctl}
+    return gh+`<div class="cov${k==='pay'?' wide':''}${lk?' locked':''}" data-cov="${k}" data-cg="${c.gi[i]}" style="background:${['#f3f7fb','#f5f7f1','#fbf5ef','#f5f2fa'][Math.abs(c.gi[i])%4]};border-color:${['#d9e5ef','#dfe8d5','#eee0d2','#e5dced'][Math.abs(c.gi[i])%4]}" ${lk?'aria-disabled="true"':''}><div><div class="nm"><span class="covName">${C.n}</span>${tag(k)}${lk?mag(k).replace('<button ','<button disabled tabindex="-1" '):mag(k)}</div></div>${lk?ctl.replace(/<button /g,'<button disabled tabindex="-1" '):ctl}
     ${res&&(c.flag||c.inv||c.nd||c.xfr||isBig(c))?`<div class="res"><span class="mk">— ${c.inv?'현장조사 의뢰로 심사 생략':c.flag?'조사 의뢰로 심사 생략':c.xfr?'표준부서 이관으로 심사 생략':isBig(c)?'표준부서 이관 대상 · 간편심사 대상 아님':'현장조사 대상 건 · 지급 심사 대상 아님'}</span></div>`:res?(()=>{const a=c.ans[i],ok=okP(c,i),lab=isDay(k)?(a.d?aDays(c,i)+dUnit(k):'부지급'):C.grade||C.carG||C.opts?L[a.d]:['부지급','','지급'][a.d];return`<div class="res"><span class="mk ${ok?'ok':'bad'}">${ok?'✓ 정답':'✗ 오답'}</span><span>정답: <b>${lab}${a.amt&&!C.grade&&!C.carG&&!C.opts?' '+won(a.amt):''}</b> · ${a.w}</span></div>`})():''}
   </div>`});const em=c.groups.filter((g,j)=>g[0]!=='지급처'&&!c.covs.some((k,i)=>c.gi[i]===j)).map(g=>g[0]);
     return`<section class="slide list"><div class="gh">담보별 판단 <small>${c.covs.filter(k=>k!=='pay').length}개 · 각 담보를 확인해 주세요</small></div><details class="caseedi" id="caseEdiPanel" ${caseEdiOpen?'open':''}><summary>🧰 심사 도구 <small>수술·처치 EDI 코드 검색</small></summary><div class="caseedibody"><input id="caseEdiq" class="dexq" type="search" value="${ediEsc(caseEdiQuery)}" placeholder="수가코드·수술명 검색 (예: Q3013, 치핵절제술)" autocomplete="off" aria-label="심사 중 EDI 코드 검색"><p class="dexn" id="caseEdin" aria-live="polite">EDI 코드 목록을 불러오는 중…</p><div class="edil" id="caseEdil"></div><p class="dexsrc">심평원 공개자료 기반 선별 데이터 · 전체 수가마스터 아님 · EDI 코드만으로 약관상 수술 해당 여부를 확정하지 않습니다.</p></div></details>${RW.join('')}${em.length?`<p class="nog">가입 담보가 없는 청구 항목: <b>${em.join(', ')}</b>${res&&st.notice?' (미가입)':''}</p>`:''}</section>`})()}
