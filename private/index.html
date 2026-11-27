@@ -1308,6 +1308,58 @@ body.app.ingame .floatActions button{
     max-height:16px!important;
   }
 }
+
+/* Bottom duplicate controls below the payout total; each button is independently draggable. */
+body.app.ingame .bottomActions{
+  display:flex!important;
+  width:100%!important;
+  gap:7px!important;
+  margin:12px 0 4px!important;
+  align-items:stretch!important;
+}
+body.app.ingame .bottomActions button{
+  position:relative!important;
+  inset:auto!important;
+  flex:1 1 0!important;
+  min-width:0!important;
+  min-height:48px!important;
+  height:auto!important;
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:7px 4px!important;
+  border:1.5px solid #2b2926!important;
+  border-radius:10px!important;
+  background:#fff3d6!important;
+  color:#2b2926!important;
+  font:800 12px/1.2 'Noto Sans KR',sans-serif!important;
+  text-align:center!important;
+  white-space:normal!important;
+  word-break:keep-all!important;
+  box-shadow:0 2px 7px #0002!important;
+  touch-action:none!important;
+  user-select:none!important;
+  -webkit-user-select:none!important;
+  cursor:pointer!important;
+}
+body.app.ingame .bottomActions .bottomFinish{background:#1d4ed8!important;color:#fff!important;border-color:#1d4ed8!important}
+body.app.ingame .bottomActions .bottomTool{background:#fff!important}
+body.app.ingame.floatMoveMode .bottomActions button{
+  background:#ffe08a!important;color:#30220a!important;border-color:#b96b00!important;
+  outline:2px dashed #b96b00!important;outline-offset:2px!important;
+  box-shadow:0 0 0 3px #ffbf3f99,0 4px 14px #0004!important;
+  cursor:grab!important;
+}
+body.app.ingame.floatMoveMode .bottomActions button.dragging{
+  background:#ffad33!important;color:#241500!important;border:2px solid #8a4600!important;
+  transform:scale(1.03)!important;
+}
+@media(max-width:380px){
+  body.app.ingame .bottomActions{gap:5px!important}
+  body.app.ingame .bottomActions button{font-size:11px!important;padding:6px 2px!important}
+}
+
 </style>
 </head>
 <body>
@@ -2061,6 +2113,11 @@ function policyHTML(c,res){
   <div class="pfoot">
 <div class="snav"><button id="sp" aria-label="이전 항목">‹ 이전</button><span id="sn"></span><button id="snx" aria-label="다음 항목">다음 ›</button></div>
   <div class="total"><span>${res?'내 결정 / 정답 지급액':'결정 지급액 합계'}</span><b id="sumV">${f(sum)}원${res?` / ${f(ans)}원`:''}</b></div>
+  <div class="bottomActions" aria-label="하단 심사 도구">
+    <button type="button" class="bottomDoc" id="bottomDvb">📂 서류보기</button>
+    <button type="button" class="bottomFinish" id="bottomGo">${res?'일정창으로 돌아가기':'심사완료'}</button>
+    <button type="button" class="bottomTool" id="bottomToolToggle">🧰 심사도구</button>
+  </div>
   ${st.tut?'':res?(c.inv&&c.nd?`<p class="rqn frd">🔎 <b>현장조사 의뢰 적중!</b> ${c.ndW}</p>`:c.inv?'<p class="rqn bad">⚠ 계약 후 치료 이력인데 현장조사 의뢰 — 지급 지연 민원 (−15점)</p>':c.nd?`<p class="rqn bad">🔎 <b>고지의무 위반 의심 건을 놓쳤어요</b> (−20점) · ${c.ndW}</p>`:'')+(c.flag&&c.fraud?`<p class="rqn frd">🚩 <b>사기 적발!</b> ${c.fraudW||''}</p>`:c.flag?'<p class="rqn bad">⚠ 정상 청구를 조사 의뢰했어요 — 고객 민원 (−20점)</p>':c.fraud?`<p class="rqn bad">🚨 <b>보험사기를 놓쳤어요</b> (−30점) · ${c.fraudW||''}</p>`:'')+(c.xfr&&isBig(c)?`<p class="rqn frd">🏢 <b>표준부서 이관 적중!</b> ${bigTxt(c)} — 모든 담보 지급액 합계가 200만원을 넘으면 간편심사 대상이 아니에요.</p>`:c.xfr?'<p class="rqn bad">⚠ 간편심사로 처리할 건을 이관했어요 — 처리 지연 (−15점)</p>':isBig(c)?`<p class="rqn bad">🏢 <b>이관 대상을 직접 심사했어요</b> (−20점) · ${bigTxt(c)} — 합계 200만원 초과 건은 표준부서로 이관해요.</p>`:'')
     :`<div class="xfw"><button class="flag xfb" id="xfer" aria-expanded="${!!st.xfo}" aria-pressed="${!!(c.flag||c.inv||c.xfr)}"><span>${c.flag?'🚩 사기 조사 의뢰함':c.inv?'🔎 현장조사 의뢰함':c.xfr?'🏢 표준부서 이관함':'📤 의뢰 · 이관'}</span><i aria-hidden="true">${st.xfo?'▴':'▾'}</i></button>${st.xfo?`<div class="xfp" role="menu">
       <button class="xfo" id="flag" role="menuitemradio" aria-checked="${!!c.flag}"><b>🚩 사기 조사 의뢰</b><small>서류가 위조·변조된 것 같을 때 (이름·병원·날짜·진단명 불일치)</small></button>
@@ -2279,7 +2336,7 @@ function pgGo(dir,cb){const RM=matchMedia('(prefers-reduced-motion: reduce)').ma
 function filesHint(){document.querySelectorAll('.files').forEach(e=>{const u=()=>e.classList.toggle('more',e.scrollLeft+e.clientWidth<e.scrollWidth-4);u();if(!e.dataset.fh){e.dataset.fh=1;e.addEventListener('scroll',u,{passive:true})}})}
 addEventListener('resize',()=>filesHint());
 function setupFloatingDrag(){
-  const box=document.querySelector('.floatActions'),ids=['dvb','go','toolToggle'];
+  const box=document.querySelector('.floatActions'),ids=['dvb','go','toolToggle','bottomDvb','bottomGo','bottomToolToggle'];
   if(!box)return;
   let mode=false,active=null,longTimer=0,longFired=false,suppressClick=false,moved=false;
   document.body.classList.toggle('floatLeft',CR.floatSide==='left');
@@ -2370,7 +2427,12 @@ function render(res){if(!inf.hidden)closeInfo(false);closeCalc();closeGp(false);
   const it=st.queue[st.cur];
   app.innerHTML=`<div class="cbar"><span class="cid"><i class="cidl">접수 </i>${it.id}</span><span class="clk2" id="clk2"></span></div><main><section class="folder" aria-label="청구 서류 폴더"><button class="bkb" id="back" aria-label="일정창으로 돌아가기">←<span> 일정<i class="bkd">창</i></span></button><div class="ftitle"><span>청구 서류 · ${c.who}</span><small>눌러서 열람</small></div><div class="files" id="files"></div><div class="dpane" id="dpane" aria-label="서류 보기"></div></section>${policyHTML(c,res)}</main><div id="store" hidden>${c.docsH||(c.docsH=ndDocs(c,fraudDocs(c,bigDocs(c,docsHTML(c)))))}</div><div class="floatActions"><button class="floatDoc" id="dvb">📂 서류<br>보기</button><button class="floatFinish" id="go">${res?'일정창으로 돌아가기':'심사완료'}</button><button class="floatTool" id="toolToggle">🧰 심사<br>도구</button></div>`;
   ediLoad().then(()=>{if(document.getElementById('caseEdiq'))ediRender('caseEdiq','caseEdil','caseEdin')}).catch(()=>{const n=document.getElementById('caseEdin');if(n)n.textContent='EDI 코드 목록을 불러오지 못했어요.'});
-  setupFloatingDrag();tiles();hud();paneInit(c);
+  setupFloatingDrag();
+  [['bottomDvb','dvb'],['bottomGo','go'],['bottomToolToggle','toolToggle']].forEach(([id,target])=>{
+    const proxy=document.getElementById(id),original=document.getElementById(target);
+    if(proxy&&original)proxy.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();original.click()});
+  });
+  tiles();hud();paneInit(c);
   const D=0;if(D){const s0=document.getElementById('slides'),its=items(),ds=document.createElement('div');ds.className='slide dslide';ds.setAttribute('aria-label','청구 서류');
     const ms=its.filter(e=>e.classList.contains('missing')).map(e=>e.dataset.t);
     ds.innerHTML=`<div class="dsh">📂 청구 서류 <small>위·아래 탭으로 넘기기 · 한 번 더 밀면 일정창</small></div>${avail().map(j=>`<section class="dsec" data-j="${j}"><div class="dst">${its[j].dataset.t}</div>${its[j].outerHTML}</section>`).join('')}${ms.length?`<p class="dmiss">미제출: <b>${ms.join(', ')}</b></p>`:''}<p class="dend">— 서류 끝 · 왼쪽으로 밀어 심사표로 —</p>`;
