@@ -803,6 +803,8 @@ body.app .stw{padding:8px 0 2px}
 /* Three independent square floating controls. */
 body.app.ingame .floatActions{position:static!important;display:contents!important}
 body.app.ingame .floatActions button{position:fixed!important;z-index:110!important;width:76px!important;height:76px!important;min-width:76px!important;min-height:76px!important;max-width:76px!important;max-height:76px!important;box-sizing:border-box!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;white-space:normal!important;overflow-wrap:anywhere!important;line-height:1.2!important;padding:6px!important;border:1.5px solid #2b2926!important;border-radius:13px!important;font-family:inherit!important;font-size:12px!important;font-weight:800!important;box-shadow:0 3px 12px #0003!important;touch-action:none!important;user-select:none!important;-webkit-user-select:none!important;cursor:grab}
+body.app.ingame.floatMoveMode .floatActions button{outline:3px dashed #e08a00!important;outline-offset:3px!important;cursor:move!important;box-shadow:0 0 0 5px #e08a0033,0 3px 12px #0003!important}
+body.app.ingame.floatMoveMode:after{content:'버튼 이동 모드 · 원하는 위치로 끌기 · 버튼을 톡 누르면 종료';position:fixed;z-index:120;top:calc(8px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);width:max-content;max-width:calc(100vw - 24px);padding:8px 12px;border:2px solid #1d1a17;border-radius:10px;background:#fff3d6;color:#1d1a17;font:800 12px 'Noto Sans KR',sans-serif;text-align:center;box-shadow:0 3px 10px #0003;pointer-events:none}
 body.app.ingame .floatDoc{left:12px;bottom:calc(104px + env(safe-area-inset-bottom));background:#fff3d6;color:#2b2926}
 body.app.ingame .floatFinish{left:calc(50% - 38px);bottom:calc(12px + env(safe-area-inset-bottom));background:#1d4ed8;color:#fff;border-color:#1d4ed8!important}
 body.app.ingame .floatTool{right:12px;top:calc(72px + env(safe-area-inset-top));background:#fff;color:#2b2926}
@@ -1785,15 +1787,42 @@ function pgGo(dir,cb){const RM=matchMedia('(prefers-reduced-motion: reduce)').ma
 function filesHint(){document.querySelectorAll('.files').forEach(e=>{const u=()=>e.classList.toggle('more',e.scrollLeft+e.clientWidth<e.scrollWidth-4);u();if(!e.dataset.fh){e.dataset.fh=1;e.addEventListener('scroll',u,{passive:true})}})}
 addEventListener('resize',()=>filesHint());
 function setupFloatingDrag(){
-  ['dvb','go','toolToggle'].forEach(id=>{
+  const ids=['dvb','go','toolToggle'];let mode=false;
+  const setMode=v=>{mode=v;document.body.classList.toggle('floatMoveMode',mode)};
+  ids.forEach(id=>{
     const el=document.getElementById(id);if(!el||el.dataset.dragReady)return;el.dataset.dragReady='1';
-    const key='claimFloatPos_'+id;let start=null,moved=false,suppressClick=false;
+    const key='claimFloatPos_'+id;let start=null,longTimer=0,longFired=false,moved=false,suppressClick=false;
     try{const p=JSON.parse(localStorage.getItem(key)||'null');if(p&&Number.isFinite(p.x)&&Number.isFinite(p.y)){el.style.left=Math.max(4,Math.min(innerWidth-el.offsetWidth-4,p.x))+'px';el.style.top=Math.max(4,Math.min(innerHeight-el.offsetHeight-4,p.y))+'px';el.style.right='auto';el.style.bottom='auto'}}catch(e){}
-    el.addEventListener('pointerdown',e=>{if(e.button!==undefined&&e.button!==0)return;start={x:e.clientX,y:e.clientY,left:el.getBoundingClientRect().left,top:el.getBoundingClientRect().top,pid:e.pointerId};moved=false});
-    el.addEventListener('pointermove',e=>{if(!start||e.pointerId!==start.pid)return;const dx=e.clientX-start.x,dy=e.clientY-start.y;if(!moved&&Math.hypot(dx,dy)<7)return;moved=true;const x=Math.max(4,Math.min(innerWidth-el.offsetWidth-4,start.left+dx)),y=Math.max(4,Math.min(innerHeight-el.offsetHeight-4,start.top+dy));el.style.left=x+'px';el.style.top=y+'px';el.style.right='auto';el.style.bottom='auto'});
-    const end=()=>{if(!start)return;if(moved){try{localStorage.setItem(key,JSON.stringify({x:parseFloat(el.style.left),y:parseFloat(el.style.top)}))}catch(e){}suppressClick=true;setTimeout(()=>{suppressClick=false},0)}start=null};
+    const clearLong=()=>{if(longTimer)clearTimeout(longTimer);longTimer=0};
+    el.addEventListener('contextmenu',e=>{if(mode||longFired)e.preventDefault()});
+    el.addEventListener('pointerdown',e=>{
+      if(e.button!==undefined&&e.button!==0)return;
+      clearLong();longFired=false;moved=false;
+      const r=el.getBoundingClientRect();
+      start={x:e.clientX,y:e.clientY,left:r.left,top:r.top,pid:e.pointerId,wasMode:mode};
+      if(!mode)longTimer=setTimeout(()=>{if(!start)return;longFired=true;setMode(true);start.wasMode=true;},500);
+    });
+    el.addEventListener('pointermove',e=>{
+      if(!start||e.pointerId!==start.pid)return;
+      const dx=e.clientX-start.x,dy=e.clientY-start.y;
+      if(!mode&&!start.wasMode)return;
+      if(Math.hypot(dx,dy)<5)return;
+      clearLong();moved=true;
+      const x=Math.max(4,Math.min(innerWidth-el.offsetWidth-4,start.left+dx)),y=Math.max(4,Math.min(innerHeight-el.offsetHeight-4,start.top+dy));
+      el.style.left=x+'px';el.style.top=y+'px';el.style.right='auto';el.style.bottom='auto';
+    });
+    const end=e=>{
+      clearLong();if(!start||e.pointerId!==start.pid)return;
+      if(longFired&&!moved){suppressClick=true;setTimeout(()=>{suppressClick=false},350)}
+      if(moved){try{localStorage.setItem(key,JSON.stringify({x:parseFloat(el.style.left),y:parseFloat(el.style.top)}))}catch(err){}suppressClick=true;setTimeout(()=>{suppressClick=false},350)}
+      start=null;
+    };
     el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end);
-    el.addEventListener('click',e=>{if(suppressClick){e.preventDefault();e.stopImmediatePropagation();suppressClick=false}},true);
+    el.addEventListener('click',e=>{
+      if(suppressClick){e.preventDefault();e.stopImmediatePropagation();suppressClick=false;return}
+      if(mode){e.preventDefault();e.stopImmediatePropagation();setMode(false);return}
+      if(longFired){e.preventDefault();e.stopImmediatePropagation();longFired=false}
+    },true);
   });
 }
 function render(res){if(!inf.hidden)closeInfo(false);closeCalc();closeGp(false);setTimeout(filesHint,0);
@@ -2222,7 +2251,7 @@ function tutStart(){const c=tutPrep();st.tut=true;st.callAll=true;st.notice=true
    {sel:'#cctg',t:`어떤 건 문의인지 <b>[📋 이 건 심사 결과 보기]</b>를 눌러 확인하며 응대해요.`,done:()=>!!st.ccOpen,skip:()=>!c.call},
    {pos:'top',sel:'#copts',t:`고객 말이 끝나면 답변이 나와요. <b>사유·근거·다음 절차</b>를 정확하고 정중하게 안내하는 답을 고르세요.`,done:()=>!st.inCall||!!document.getElementById('cend'),skip:()=>!c.call},
    {sel:'#cend',t:`통화 결과가 나와요. <b>[통화 종료]</b>를 눌러요.`,done:()=>!st.inCall,skip:()=>!c.call},
-   {sel:null,t:`🎉 <b>튜토리얼 끝!</b> 실제 게임에서는<ul><li>시간이 계속 흘러요 (하루 = 실제 15분)</li><li>필요한 서류가 <b>미제출</b>이면 그 담보는 부지급</li><li>지급액이 0원이면 <b>부지급 사유</b> 선택</li><li>실손 포함이면 영수증으로 <b>실손 금액</b> 계산 (🧮 계산기)</li><li>서류끼리 이름·병원이 다르거나 날짜를 고친 흔적이 있으면 <b>🚩 사기 조사 의뢰</b></li><li>연속 정답 <b>🔥콤보</b>, 빠른 처리 <b>⚡보너스</b>, 매일 <b>🎯미션</b>으로 승진하세요!</li></ul>처음엔 <b>매우 쉬움 · 실손 제외</b>로 시작해 보세요. 서류가 어려우면 ⚙️ 설정에서 <b>간편 서류</b>로 바꿀 수 있어요.`,btn:'처음 화면으로',fin:true}];
+   {sel:null,t:`🎉 <b>튜토리얼 끝!</b> 실제 게임에서는<ul><li>시간이 계속 흘러요 (하루 = 실제 15분)</li><li>필요한 서류가 <b>미제출</b>이면 그 담보는 부지급</li><li>지급액이 0원이면 <b>부지급 사유</b> 선택</li><li>실손 포함이면 영수증으로 <b>실손 금액</b> 계산 (🧮 계산기)</li><li>서류끼리 이름·병원이 다르거나 날짜를 고친 흔적이 있으면 <b>🚩 사기 조사 의뢰</b></li><li>연속 정답 <b>🔥콤보</b>, 빠른 처리 <b>⚡보너스</b>, 매일 <b>🎯미션</b>으로 승진하세요!</li></ul>화면의 <b>서류 보기·심사완료·심사도구</b> 버튼은 <b>0.5초 꾹 누르면 이동 모드</b>가 켜져요. 원하는 위치로 끌어 옮긴 뒤 버튼을 <b>한 번 톡 누르면 이동 모드가 종료</b>됩니다. 처음엔 <b>매우 쉬움 · 실손 제외</b>로 시작해 보세요. 서류가 어려우면 ⚙️ 설정에서 <b>간편 서류</b>로 바꿀 수 있어요.`,btn:'처음 화면으로',fin:true}];
   tsI=0;st.lv=0;inbox();window.scrollTo({top:0});startT();coach.hidden=false;tutRender();clearInterval(tsTimer);tsTimer=setInterval(tutPoll,250)}
 function tutEnd(go){clearInterval(tsTimer);tsTimer=null;coach.hidden=true;tspot.hidden=true;if(tsHl)tsHl.classList.remove('chl');tsHl=null;st.tut=false;st.callAll=false;st.ccOpen=false;
   if(go){st.lv=0;st.pick=false;st.newbie=!!CR.nb;st.vol=0}else if(st._keep)Object.assign(st,st._keep);start()}
