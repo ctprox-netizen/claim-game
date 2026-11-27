@@ -1799,7 +1799,7 @@ function render(res){if(!inf.hidden)closeInfo(false);closeCalc();closeGp(false);
   document.body.classList.remove('startm','endm','subm');document.body.classList.add('ingame','app');const c=st.c,os=document.getElementById('slides');if(c.resetSx){c.sx=null;c.resetSx=0}else if(os)c.sx=os.scrollLeft;
   const keep=os&&!c._fresh,sTops=keep?[...os.children].map(e=>e.scrollTop):[],wy=scrollY;const fx=keep&&document.getElementById('files')?document.getElementById('files').scrollLeft:0;c._fresh=false;
   const it=st.queue[st.cur];
-  app.innerHTML=`<div class="cbar"><span class="cid"><i class="cidl">접수 </i>${it.id}</span><span class="clk2" id="clk2"></span></div><main><section class="folder" aria-label="청구 서류 폴더"><button class="bkb" id="back" aria-label="일정창으로 돌아가기">←<span> 일정<i class="bkd">창</i></span></button><div class="ftitle"><span>청구 서류 · ${c.who}</span><small>눌러서 열람</small></div><div class="files" id="files"></div><div class="dpane" id="dpane" aria-label="서류 보기"></div></section>${policyHTML(c,res)}</main><div id="store" hidden>${c.docsH||(c.docsH=ndDocs(c,fraudDocs(c,bigDocs(c,docsHTML(c)))))}</div><div class="floatActions"><button class="floatDoc" id="dvb">📂 서류 보기</button><button class="floatFinish" id="go">${res?'일정창으로 돌아가기':sumPick(c)>0?(c.covs.includes('pay')&&c.pick[c.covs.indexOf('pay')]<0?'수익자 확인 후 지급심사완료':'지급심사완료'):(st.notice&&!c.frP?'부지급 사유 선택 후 심사완료':'심사완료')}</button><button class="floatTool" id="toolToggle">🧰 심사도구</button></div>`;
+  app.innerHTML=`<div class="cbar"><span class="cid"><i class="cidl">접수 </i>${it.id}</span><span class="clk2" id="clk2"></span></div><main><section class="folder" aria-label="청구 서류 폴더"><button class="bkb" id="back" aria-label="일정창으로 돌아가기">←<span> 일정<i class="bkd">창</i></span></button><div class="ftitle"><span>청구 서류 · ${c.who}</span><small>눌러서 열람</small></div><div class="files" id="files"></div><div class="dpane" id="dpane" aria-label="서류 보기"></div></section>${policyHTML(c,res)}</main><div id="store" hidden>${c.docsH||(c.docsH=ndDocs(c,fraudDocs(c,bigDocs(c,docsHTML(c)))))}</div><div class="floatActions"><button class="floatDoc" id="dvb">📂 서류 보기</button><button class="floatFinish" id="go">${res?'일정창으로 돌아가기':sumPick(c)>0?(c.covs.includes('pay')&&c.pick[c.covs.indexOf('pay')]<0?'수익자 확인 후 지급심사완료':c.covs.includes('pay')&&c.pick[c.covs.indexOf('pay')]===1?'지급보류 후 심사완료':'지급심사완료'):(st.notice&&!c.frP?'부지급 사유 선택 후 심사완료':'심사완료')}</button><button class="floatTool" id="toolToggle">🧰 심사도구</button></div>`;
   ediLoad().then(()=>{if(document.getElementById('caseEdiq'))ediRender('caseEdiq','caseEdil','caseEdin')}).catch(()=>{const n=document.getElementById('caseEdin');if(n)n.textContent='EDI 코드 목록을 불러오지 못했어요.'});
   tiles();hud();paneInit(c);
   const D=0;if(D){const s0=document.getElementById('slides'),its=items(),ds=document.createElement('div');ds.className='slide dslide';ds.setAttribute('aria-label','청구 서류');
@@ -2213,7 +2213,7 @@ function tutStart(){const c=tutPrep();st.tut=true;st.callAll=true;st.notice=true
    {sel:'#inf',t:`담보마다 <b>지급 조건</b>이 있어요. 이 조건과 서류 내용을 대조하는 게 심사의 핵심이에요.`,btn:'확인'},
    {sel:()=>!gpop.hidden?gpop:row(t1)(),t:`<b>${N(t1)}</b>: ${c.ans[t1].w}<br>→ 조건을 충족하니 ${isDay(c.covs[t1])?`<b>[▾]</b>를 누르고 위아래로 굴려서 <b>${aDays(c,t1)}${dUnit(c.covs[t1])}</b>을 눌러요.`:'<b>[지급]</b>을 눌러요.'}`,done:()=>gpop.hidden&&decOk(c,t1)},
    {sel:()=>!gpop.hidden?gpop:row(t0)(),t:`<b>${N(t0)}</b>: ${c.ans[t0].w}<br>→ 조건에 안 맞으니 <b>부지급</b>이 맞아요. ${c.pick[t0]===0?'기본값이 부지급이라 그대로 두면 돼요.':isDay(c.covs[t0])?'[▾]를 눌러 <b>0일</b>로 굴려요.':'[부지급]을 눌러요.'}`,done:()=>decOk(c,t0),btn:'알겠어요'},
-   {sel:()=>{const g=document.getElementById('go'),s=document.getElementById('slides');if(g&&s){const r=g.getBoundingClientRect(),R=s.getBoundingClientRect();if(r.left>=R.left-2&&r.right<=R.right+2){if(r.bottom>R.bottom||r.top<R.top)g.scrollIntoView({block:'nearest'});return g}}return document.getElementById('snx')},t:`<b>결정 지급액 합계</b>로 금액을 확인하고, 심사표 <b>맨 아래</b>의 <b>[심사 완료 · 도장 찍기]</b>를 눌러요.`,done:()=>st.queue[0].done},
+   {sel:()=>{const g=document.getElementById('go'),s=document.getElementById('slides');if(g&&s){const r=g.getBoundingClientRect(),R=s.getBoundingClientRect();if(r.left>=R.left-2&&r.right<=R.right+2){if(r.bottom>R.bottom||r.top<R.top)g.scrollIntoView({block:'nearest'});return g}}return document.getElementById('snx')},t:`<b>결정 지급액 합계</b>로 금액을 확인하고, 심사표 <b>화면 아래 고정된 <b>[심사완료]</b>를 눌러요.`,done:()=>st.queue[0].done},
    {sel:'.res',t:`도장을 찍으면 담보별 <b>✓ 정답 / ✗ 오답</b>과 판정 사유가 나와요. 틀린 건 여기서 복습해요.`,btn:'다음'},
    {sel:()=>{const sl=document.getElementById('slides');if(!sl)return document.getElementById('back');const btns=[...sl.querySelectorAll('.go')];const v=btns.find(g=>{const r=g.getBoundingClientRect(),R=sl.getBoundingClientRect();return r.width>0&&r.left>=R.left-2&&r.right<=R.right+2});const g=v||document.getElementById('go')||btns[0];if(g){const R=sl.getBoundingClientRect(),r=g.getBoundingClientRect();if(r.bottom>R.bottom||r.top<R.top)g.scrollIntoView({block:'nearest'});return g}return document.getElementById('back')},free:true,t:`다 봤으면 아래 <b>[일정창으로 돌아가기 →]</b> 버튼을 눌러 목록으로 돌아가요.`,done:()=>st.scr==='inbox',
     after:()=>{if(!c.call){c.call=makeCall(c);if(c.call)c.call.state='pending'}if(c.call)c.call.at=st.gm}},
@@ -2666,7 +2666,7 @@ function lesBeats0(K){const [c1,c2,c3,c4,c5]=K.cs,{inG,dn,D,docEl,nav,openDocs,c
     {sel:'#inf',t:'다 봤으면 이 창을 <b>톡</b> 눌러서 닫아요.',done:()=>inf.hidden},
     {sel:yes(0),t:'코드도 맞고, 계약 후에 진단받았고. 조건이 다 맞으니까 <b>[지급]</b>! 눌러 봐요.',done:()=>decOk(c1,0)},
     {sel:'.total',t:`아래 <b>결정 지급액 합계</b>가 <b>${amt(c1,'stone')}</b>으로 바뀌었죠?`,btn:'네'},
-    {sel:go,t:()=>vis('#go')?'다 정했으면 <b>[심사 완료 · 도장 찍기]</b>를 눌러요. 도장을 찍으면 결정이 확정돼요.':goT,done:dn(c1)},
+    {sel:go,t:()=>vis('#go')?'다 정했으면 화면 아래 고정된 <b>[심사완료]</b>를 눌러요. 도장을 찍으면 결정이 확정돼요.':goT,done:dn(c1)},
     {sel:()=>document.querySelector('.slide.list .res'),t:'도장을 찍으면 바로 채점돼요. <b>✓</b>면 정답! 첫 건 성공이에요. 👏',btn:'야호'},
     back(c1,'다 봤으면 아래 <b>[일정창으로 돌아가기 →]</b> 버튼을 눌러 목록으로 돌아가요.',1)]},
   {when:()=>st.scr==='inbox'&&LS.i===2,steps:()=>[
@@ -2684,7 +2684,7 @@ function lesBeats0(K){const [c1,c2,c3,c4,c5]=K.cs,{inG,dn,D,docEl,nav,openDocs,c
     {sel:row(1),t:`그럼 ${COV.dHosp.n}은? 입원은 했는데… 이름을 잘 봐요. <b>질병</b>입원일당이에요.`,btn:'아…'},
     {sel:row(1),t:'이 건은 사고로 다친 <b>상해</b>죠? 그래서 질병입원일당은 <b>부지급</b>이 맞아요. 부지급은 기본값이라 <b>그대로 두면</b> 돼요.',btn:'그렇구나'},
     {sel:row(1),t:'담보 이름만 보고 질병/상해를 헷갈리는 게 신입 때 제일 흔한 실수예요. 저도 첫 주에 했어요. 😅',btn:'조심할게요'},
-    {sel:go,t:()=>vis('#go')?'다 정했으면 <b>[심사 완료 · 도장 찍기]</b>를 눌러요. 도장을 찍으면 결정이 확정돼요.':goT,done:dn(c2)},
+    {sel:go,t:()=>vis('#go')?'다 정했으면 화면 아래 고정된 <b>[심사완료]</b>를 눌러요. 도장을 찍으면 결정이 확정돼요.':goT,done:dn(c2)},
     {sel:()=>document.querySelector('.slide.list .res'),t:'둘 다 정답! 부지급한 담보도 옆에 <b>사유</b>가 같이 나오죠? 고객한테 안내할 때도 이 사유로 설명해요.',btn:'네'},
     back(c2,'목록으로 돌아가요.',2)]},
   {when:()=>st.scr==='inbox'&&LS.i===4,steps:()=>[
@@ -2916,7 +2916,7 @@ function lesBeats4(K){const [a,b,c,d,e]=K.cs,{inG,doc,nav,openDocs,closeDocs,row
   open(c,'세 번째 건이에요. 이번엔 <b>예금주</b>를 배울 거예요.'),
   {when:inG(c),steps:()=>[
     {sel:K.yes(0),t:`${COV.gout.n}는 통풍(M10) 진단이면 지급이에요. 코드가 <b>${c.s.code}</b>니까 <b>[지급]</b>.`,done:()=>decOk(c,0)},
-    {sel:K.payRow(c),t:'지급액이 생기면 아래에 <b>지급 계좌 예금주 확인</b> 줄이 열려요. 보험금은 증권의 <b>수익자</b>에게 줘야 하거든요.',btn:'네'},
+    {sel:K.payRow(c),t:'지급액이 생기면 화면 아래 <b>[수익자 확인 후 지급심사완료]</b> 버튼을 눌러 예금주가 수익자와 일치하는지 확인해요.',btn:'네'},
     openDocs('청구서 예금주랑 증권 수익자를 비교해 봐요. <b>[📂 서류 보기]</b>.'),
     doc('보험금 청구서',null,`청구서 맨 아래 <b>예금주</b>는 <b>${c.holder}</b>.`),
     nav('보험증권','증권으로 넘겨요. {m}'),
