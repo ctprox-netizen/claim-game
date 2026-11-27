@@ -1273,6 +1273,41 @@ body.app.ingame .floatActions button{
     transform:none!important;
   }
 }
+
+/* Keep the actual-expense coverage magnifier and calculator perfectly round. */
+@media(max-width:700px){
+  body.app.ingame .slide.list .cov.wide .nm > .info,
+  body.app.ingame .slide.list .cov.wide .nm > .info.calcb{
+    display:inline-flex!important;
+    flex:0 0 30px!important;
+    width:30px!important;
+    min-width:30px!important;
+    max-width:30px!important;
+    height:30px!important;
+    min-height:30px!important;
+    max-height:30px!important;
+    aspect-ratio:1 / 1!important;
+    box-sizing:border-box!important;
+    padding:0!important;
+    margin:0 0 0 3px!important;
+    border-width:2px!important;
+    border-radius:50%!important;
+    align-items:center!important;
+    justify-content:center!important;
+    line-height:1!important;
+    transform:none!important;
+  }
+  body.app.ingame .slide.list .cov.wide .nm > .info svg{
+    display:block!important;
+    flex:0 0 16px!important;
+    width:16px!important;
+    min-width:16px!important;
+    max-width:16px!important;
+    height:16px!important;
+    min-height:16px!important;
+    max-height:16px!important;
+  }
+}
 </style>
 </head>
 <body>
