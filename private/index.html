@@ -1005,6 +1005,37 @@ body.app.ingame .floatActions button{
   }
 }
 
+
+/* Keep disease-surgery and actual-expense controls on one horizontal line. */
+@media(max-width:700px){
+  body.app.ingame .slide.list .cov .nm,
+  body.app.ingame .slide.list .cov.wide .nm{
+    display:flex!important;
+    flex-flow:row nowrap!important;
+    align-items:center!important;
+    white-space:nowrap!important;
+    word-break:keep-all!important;
+    overflow-wrap:normal!important;
+    width:max-content!important;
+    min-width:max-content!important;
+    max-width:none!important;
+  }
+  body.app.ingame .slide.list .cov>div:first-child{
+    min-width:0!important;
+    overflow:visible!important;
+  }
+  body.app.ingame .slide.list .cov .seg{
+    display:flex!important;
+    flex-flow:row nowrap!important;
+    white-space:nowrap!important;
+  }
+  body.app.ingame .slide.list .cov .seg button{
+    white-space:nowrap!important;
+    word-break:keep-all!important;
+    flex:1 0 auto!important;
+  }
+}
+
 </style>
 </head>
 <body>
