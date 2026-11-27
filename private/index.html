@@ -1360,6 +1360,26 @@ body.app.ingame.floatMoveMode .bottomActions button.dragging{
   body.app.ingame .bottomActions button{font-size:11px!important;padding:6px 2px!important}
 }
 
+
+/* Detached bottom controls must escape the policy card's clipping context while dragging. */
+body.app.ingame .bottomActions button.bottomDetached,
+body.app.ingame button.bottomDetached{
+  position:fixed!important;z-index:115!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  width:86px!important;min-width:86px!important;max-width:86px!important;
+  min-height:48px!important;height:auto!important;box-sizing:border-box!important;
+  padding:7px 5px!important;border:1.5px solid #2b2926!important;border-radius:10px!important;
+  background:#fff3d6!important;color:#2b2926!important;
+  font:800 12px/1.2 'Noto Sans KR',sans-serif!important;text-align:center!important;
+  white-space:normal!important;word-break:keep-all!important;overflow:visible!important;
+  touch-action:none!important;user-select:none!important;-webkit-user-select:none!important;
+  box-shadow:0 3px 12px #0004!important;
+}
+body.app.ingame.floatMoveMode button.bottomDetached.dragging{
+  background:#ffad33!important;color:#241500!important;border:2px solid #8a4600!important;
+  transform:scale(1.04)!important;opacity:1!important;
+}
+
 </style>
 </head>
 <body>
@@ -2356,6 +2376,10 @@ function setupFloatingDrag(){
     ids.forEach((id,i)=>{
       const el=document.getElementById(id);if(!el)return;
       if(saved[id]&&Number.isFinite(saved[id].x)&&Number.isFinite(saved[id].y)){
+        if(id.startsWith('bottom')&&!el.classList.contains('bottomDetached')){
+          const ph=document.createElement('span');ph.className='bottomDragPlaceholder';ph.style.cssText='display:block;flex:1 1 0;min-width:0;min-height:48px';
+          el.parentNode.insertBefore(ph,el);el.dataset.dragPlaceholder='1';document.body.appendChild(el);el.classList.add('bottomDetached');
+        }
         el.style.setProperty('position','fixed','important');
         el.style.setProperty('left',saved[id].x+'px','important');
         el.style.setProperty('top',saved[id].y+'px','important');
@@ -2379,6 +2403,11 @@ function setupFloatingDrag(){
       if(!mode)longTimer=setTimeout(()=>{
         if(!active)return;
         longFired=true;setMode(true);el.classList.add('dragging');suppressClick=true;
+        if(id.startsWith('bottom')&&!el.classList.contains('bottomDetached')){
+          const ph=document.createElement('span');ph.className='bottomDragPlaceholder';ph.style.cssText='display:block;flex:1 1 0;min-width:0;min-height:48px';
+          el.parentNode.insertBefore(ph,el);el.dataset.dragPlaceholder='1';document.body.appendChild(el);el.classList.add('bottomDetached');
+          try{el.setPointerCapture(e.pointerId)}catch(err){}
+        }
         el.style.setProperty('position','fixed','important');
         el.style.setProperty('left',active.left+'px','important');
         el.style.setProperty('top',active.top+'px','important');
@@ -2422,6 +2451,7 @@ function setupFloatingDrag(){
 }
 
 function render(res){if(!inf.hidden)closeInfo(false);closeCalc();closeGp(false);setTimeout(filesHint,0);
+  document.querySelectorAll('.bottomDetached').forEach(el=>el.remove());
   document.body.classList.remove('startm','endm','subm');document.body.classList.add('ingame','app');const c=st.c,os=document.getElementById('slides');if(c.resetSx){c.sx=null;c.resetSx=0}else if(os)c.sx=os.scrollLeft;
   const keep=os&&!c._fresh,sTops=keep?[...os.children].map(e=>e.scrollTop):[],wy=scrollY;const fx=keep&&document.getElementById('files')?document.getElementById('files').scrollLeft:0;c._fresh=false;
   const it=st.queue[st.cur];
