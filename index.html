@@ -797,6 +797,20 @@ body.app .stw{padding:8px 0 2px}
  body.app .slide.list .cgh{display:none!important}
  body.app .slide.list .cov{margin-top:3px!important;margin-bottom:4px!important;padding:6px 8px!important;border-width:1px!important;border-radius:7px!important;box-shadow:none!important}
 }
+/* Compact floating controls for the claim review screen. */
+body.app.ingame .floatActions{position:fixed;z-index:90;left:10px;right:10px;bottom:max(10px,env(safe-area-inset-bottom));display:flex;align-items:center;justify-content:space-between;gap:8px;pointer-events:none}
+body.app.ingame .floatActions button{pointer-events:auto;min-height:46px;border:1.5px solid #2b2926;border-radius:13px;padding:0 12px;font:800 13px inherit;font-family:inherit;box-shadow:0 3px 12px #0003;white-space:nowrap}
+body.app.ingame .floatDoc{background:#fff3d6;color:#2b2926;flex:0 0 auto}
+body.app.ingame .floatFinish{background:#1d4ed8;color:#fff;border-color:#1d4ed8!important;flex:1 1 auto;max-width:70%;min-width:0;overflow:hidden;text-overflow:ellipsis}
+body.app.ingame .floatTool{position:fixed;z-index:92;right:10px;top:calc(10px + env(safe-area-inset-top));background:#fff;color:#2b2926;min-height:38px!important;padding:0 11px!important;font-size:12px!important}
+body.app.ingame .policy .pfoot{padding-bottom:66px!important}
+body.app.ingame .policy .pfoot .total{padding-bottom:5px}
+body.app.ingame .caseedi>summary{display:none!important}
+body.app.ingame .caseedi{display:none!important}
+body.app.ingame .caseedi[open]{display:block!important;position:fixed!important;inset:0!important;z-index:91!important;background:#0005!important}
+body.app.ingame .caseedi[open]>.caseedibody{display:block!important;position:absolute!important;top:58px!important;right:10px!important;left:10px!important;max-height:68dvh!important;overflow:auto!important;background:#fff!important;border:1px solid #d8d0c4!important;border-radius:12px!important;padding:12px!important;box-shadow:0 8px 30px #0004!important}
+body.app.ingame .slides{padding-bottom:12px!important}
+@media(min-width:701px){body.app.ingame .floatActions{left:auto;right:22px;bottom:18px;width:min(440px,calc(100% - 44px))}body.app.ingame .floatTool{top:16px;right:22px}}
 </style>
 </head>
 <body>
@@ -1539,13 +1553,13 @@ function policyHTML(c,res){
   <div class="meta"><span><i class="lb">이름 </i><b>${c.who}</b></span><span><i class="lb">증권번호 </i><b>${c.no}</b></span></div>
   <p class="hint">청구 항목별로 <b>가입한 담보</b>만 보여요. 가입 조건과 금액은 폴더의 <b>보험증권</b>에서 확인하세요.</p></div>
   <div class="slides" id="slides">
-  ${(()=>{const RW=c.covs.map((k,i)=>{const gh='',lk=k==='pay'&&!payShown(c,res);if(lk&&res)return '';if(k==='sil')return gh+silRow(i);const C=COV[k],L=C.carG?CGL:C.grade?GRL:C.opts||['부지급','','지급'];
+  ${(()=>{const RW=c.covs.map((k,i)=>{const gh='',lk=k==='pay'&&!payShown(c,res);if(k==='pay')return '';if(lk&&res)return '';if(k==='sil')return gh+silRow(i);const C=COV[k],L=C.carG?CGL:C.grade?GRL:C.opts||['부지급','','지급'];
     const dn=dGet(c,i),ctl=isDay(k)?`<button class="sel selb dayb" data-dp="${i}" aria-haspopup="dialog" aria-label="${C.n} 보상 ${dUnit(k)}수: ${dn?dn+dUnit(k):'부지급'}" ${res?'disabled':''}><span>${dn?`<b>${dn}${dUnit(k)}</b> · ${won(dn*C.amt)}`:'부지급 (0'+dUnit(k)+')'}</span><i aria-hidden="true">▾</i></button>`:C.grade||C.carG?`<button class="sel selb" data-gp="${i}" aria-haspopup="listbox" aria-label="${C.n} 결정: ${L[c.pick[i]]}" ${res?'disabled':''}><span>${L[c.pick[i]]}</span><i aria-hidden="true">▾</i></button>`
       :`<div class="seg" role="group" aria-label="${C.n} 결정">${L.map((t,v)=>t?`<button data-i="${i}" data-v="${v}" aria-pressed="${c.pick[i]===v}" ${res?'disabled':''}>${t}</button>`:'').join('')}</div>`;
     return gh+`<div class="cov${k==='pay'?' wide':''}${lk?' locked':''}" data-cg="${c.gi[i]}" style="background:${['#f3f7fb','#f5f7f1','#fbf5ef','#f5f2fa'][Math.abs(c.gi[i])%4]};border-color:${['#d9e5ef','#dfe8d5','#eee0d2','#e5dced'][Math.abs(c.gi[i])%4]}" ${lk?'aria-disabled="true"':''}><div><div class="nm">${C.n}${tag(k)}${lk?mag(k).replace('<button ','<button disabled tabindex="-1" '):mag(k)}</div></div>${lk?ctl.replace(/<button /g,'<button disabled tabindex="-1" '):ctl}
     ${res&&(c.flag||c.inv||c.nd||c.xfr||isBig(c))?`<div class="res"><span class="mk">— ${c.inv?'현장조사 의뢰로 심사 생략':c.flag?'조사 의뢰로 심사 생략':c.xfr?'표준부서 이관으로 심사 생략':isBig(c)?'표준부서 이관 대상 · 간편심사 대상 아님':'현장조사 대상 건 · 지급 심사 대상 아님'}</span></div>`:res?(()=>{const a=c.ans[i],ok=okP(c,i),lab=isDay(k)?(a.d?aDays(c,i)+dUnit(k):'부지급'):C.grade||C.carG||C.opts?L[a.d]:['부지급','','지급'][a.d];return`<div class="res"><span class="mk ${ok?'ok':'bad'}">${ok?'✓ 정답':'✗ 오답'}</span><span>정답: <b>${lab}${a.amt&&!C.grade&&!C.carG&&!C.opts?' '+won(a.amt):''}</b> · ${a.w}</span></div>`})():''}
-  </div>`});const em=c.groups.filter((g,j)=>!c.covs.some((k,i)=>c.gi[i]===j)).map(g=>g[0]);
-    return`<section class="slide list"><div class="gh">담보별 판단 <small>${c.covs.filter(k=>k!=='pay').length}개 · 각 담보를 확인해 주세요</small></div><details class="caseedi" id="caseEdiPanel" ${caseEdiOpen?'open':''}><summary>🧰 심사 도구 <small>수술·처치 EDI 코드 검색</small></summary><div class="caseedibody"><input id="caseEdiq" class="dexq" type="search" value="${ediEsc(caseEdiQuery)}" placeholder="수가코드·수술명 검색 (예: Q3013, 치핵절제술)" autocomplete="off" aria-label="심사 중 EDI 코드 검색"><p class="dexn" id="caseEdin" aria-live="polite">EDI 코드 목록을 불러오는 중…</p><div class="edil" id="caseEdil"></div><p class="dexsrc">심평원 공개자료 기반 선별 데이터 · 전체 수가마스터 아님 · EDI 코드만으로 약관상 수술 해당 여부를 확정하지 않습니다.</p></div></details>${RW.join('')}${em.length?`<p class="nog">가입 담보가 없는 청구 항목: <b>${em.join(', ')}</b>${res&&st.notice?' (미가입)':''}</p>`:''}${st.notice&&!(res&&(c.nd||c.flag||c.inv||c.xfr||isBig(c)))&&(res?(c.fr||sumPick(c)===0):sumPick(c)===0)?`<div class="frin">${noticeHTML(c,res)}</div>`:''}<div class="dvw"><button class="dvb" id="dvb">📂 서류 보기 <small>좌우로 넘기기 · 톡 누르면 닫기</small></button></div></section>`})()}
+  </div>`});const em=c.groups.filter((g,j)=>g[0]!=='지급처'&&!c.covs.some((k,i)=>c.gi[i]===j)).map(g=>g[0]);
+    return`<section class="slide list"><div class="gh">담보별 판단 <small>${c.covs.filter(k=>k!=='pay').length}개 · 각 담보를 확인해 주세요</small></div><details class="caseedi" id="caseEdiPanel" ${caseEdiOpen?'open':''}><summary>🧰 심사 도구 <small>수술·처치 EDI 코드 검색</small></summary><div class="caseedibody"><input id="caseEdiq" class="dexq" type="search" value="${ediEsc(caseEdiQuery)}" placeholder="수가코드·수술명 검색 (예: Q3013, 치핵절제술)" autocomplete="off" aria-label="심사 중 EDI 코드 검색"><p class="dexn" id="caseEdin" aria-live="polite">EDI 코드 목록을 불러오는 중…</p><div class="edil" id="caseEdil"></div><p class="dexsrc">심평원 공개자료 기반 선별 데이터 · 전체 수가마스터 아님 · EDI 코드만으로 약관상 수술 해당 여부를 확정하지 않습니다.</p></div></details>${RW.join('')}${em.length?`<p class="nog">가입 담보가 없는 청구 항목: <b>${em.join(', ')}</b>${res&&st.notice?' (미가입)':''}</p>`:''}</section>`})()}
   </div>
   <div class="pfoot">
 <div class="snav"><button id="sp" aria-label="이전 항목">‹ 이전</button><span id="sn"></span><button id="snx" aria-label="다음 항목">다음 ›</button></div>
@@ -1714,9 +1728,11 @@ function dpClose(){const i=gpop._dp;if(i==null)return;const W=document.getElemen
 function openFr(btn){closeCalc();closeInfo(false);closeDoc(false);gpFrom=btn;const c=st.c;gpop.className='pop gpop frp';
   gpop.innerHTML=`<div class="ph"><b>부지급 사유</b><button id="gpx" aria-label="닫기">✕</button></div><div class="gpl">${Object.entries(RS).filter(([k])=>k!=='reduce').map(([k,t])=>`<button role="option" data-frv="${k}" aria-selected="${c.frP===k}">${t}</button>`).join('')}</div>`;
   gpop.hidden=false;btn.setAttribute('aria-expanded','true');place(btn,gpop);const s=gpop.querySelector('[aria-selected="true"]');s&&s.focus({preventScroll:true})}
+function openPay(btn){closeCalc();closeInfo(false);closeDoc(false);gpFrom=btn;const c=st.c,i=c.covs.indexOf('pay');if(i<0)return;gpop.className='pop gpop frp';gpop.innerHTML=`<div class="ph"><b>수익자 계좌 확인</b><button id="gpx" aria-label="닫기">✕</button></div><div class="gpl"><button role="option" data-pv="0" aria-selected="${c.pick[i]===0}">✓ 예금주 일치 · 지급 진행</button><button role="option" data-pv="1" aria-selected="${c.pick[i]===1}">! 예금주 불일치 · 지급 보류</button></div>`;gpop.hidden=false;btn.setAttribute('aria-expanded','true');place(btn,gpop);const s=gpop.querySelector('[aria-selected="true"]');s&&s.focus({preventScroll:true})}
 function closeGp(focus){if(gpop.hidden)return;if(gpop._dp!=null){const i=gpop._dp,W=document.getElementById('whl');gpop._dp=null;if(W&&!st.done)dSet(st.c,i,Math.max(0,Math.round(W.scrollTop/44)));gpop.hidden=true;gpFrom&&gpFrom.setAttribute('aria-expanded','false');render(false);return}gpop.hidden=true;gpFrom&&gpFrom.setAttribute('aria-expanded','false');focus&&gpFrom&&gpFrom.focus({preventScroll:true})}
 gpop.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.id==='dpok')return dpClose();if(b.id==='gpx')return closeGp(true);
-  if(b.dataset.frv!==undefined&&!st.done){st.c.frP=b.dataset.frv;closeGp(false);render(false);const t=document.querySelector('[data-frp]');t&&t.focus({preventScroll:true});return}
+  if(b.dataset.frv!==undefined&&!st.done){st.c.frP=b.dataset.frv;closeGp(false);render(false);document.getElementById('go')?.focus({preventScroll:true});return}
+  if(b.dataset.pv!==undefined&&!st.done){const i=st.c.covs.indexOf('pay');if(i>=0)st.c.pick[i]=+b.dataset.pv;closeGp(false);render(false);document.getElementById('go')?.focus({preventScroll:true});return}
   if(b.dataset.gv!==undefined&&!st.done){const i=+b.dataset.gi;st.c.pick[i]=+b.dataset.gv;closeGp(false);render(false);const t=document.querySelector(`[data-gp="${i}"]`);t&&t.focus({preventScroll:true})}});
 document.addEventListener('click',e=>{if(!gpop.hidden&&!gpop.contains(e.target)&&!e.target.closest('[data-gp],[data-frp],[data-dp]'))closeGp(false)});
 document.addEventListener('keydown',e=>{if(!gpop.hidden&&e.key==='Escape')closeGp(true)});
@@ -1769,7 +1785,7 @@ function render(res){if(!inf.hidden)closeInfo(false);closeCalc();closeGp(false);
   document.body.classList.remove('startm','endm','subm');document.body.classList.add('ingame','app');const c=st.c,os=document.getElementById('slides');if(c.resetSx){c.sx=null;c.resetSx=0}else if(os)c.sx=os.scrollLeft;
   const keep=os&&!c._fresh,sTops=keep?[...os.children].map(e=>e.scrollTop):[],wy=scrollY;const fx=keep&&document.getElementById('files')?document.getElementById('files').scrollLeft:0;c._fresh=false;
   const it=st.queue[st.cur];
-  app.innerHTML=`<div class="cbar"><span class="cid"><i class="cidl">접수 </i>${it.id}</span><span class="clk2" id="clk2"></span></div><main><section class="folder" aria-label="청구 서류 폴더"><button class="bkb" id="back" aria-label="일정창으로 돌아가기">←<span> 일정<i class="bkd">창</i></span></button><div class="ftitle"><span>청구 서류 · ${c.who}</span><small>눌러서 열람</small></div><div class="files" id="files"></div><div class="dpane" id="dpane" aria-label="서류 보기"></div></section>${policyHTML(c,res)}</main><div id="store" hidden>${c.docsH||(c.docsH=ndDocs(c,fraudDocs(c,bigDocs(c,docsHTML(c)))))}</div>`;
+  app.innerHTML=`<div class="cbar"><span class="cid"><i class="cidl">접수 </i>${it.id}</span><span class="clk2" id="clk2"></span></div><main><section class="folder" aria-label="청구 서류 폴더"><button class="bkb" id="back" aria-label="일정창으로 돌아가기">←<span> 일정<i class="bkd">창</i></span></button><div class="ftitle"><span>청구 서류 · ${c.who}</span><small>눌러서 열람</small></div><div class="files" id="files"></div><div class="dpane" id="dpane" aria-label="서류 보기"></div></section>${policyHTML(c,res)}</main><div id="store" hidden>${c.docsH||(c.docsH=ndDocs(c,fraudDocs(c,bigDocs(c,docsHTML(c)))))}</div><div class="floatActions"><button class="floatDoc" id="dvb">📂 서류 보기</button><button class="floatFinish" id="go">${res?'일정창으로 돌아가기':sumPick(c)>0?(c.covs.includes('pay')&&c.pick[c.covs.indexOf('pay')]<0?'수익자 확인 후 지급심사완료':'지급심사완료'):(st.notice&&!c.frP?'부지급 사유 선택 후 심사완료':'심사완료')}</button><button class="floatTool" id="toolToggle">🧰 심사도구</button></div>`;
   ediLoad().then(()=>{if(document.getElementById('caseEdiq'))ediRender('caseEdiq','caseEdil','caseEdin')}).catch(()=>{const n=document.getElementById('caseEdin');if(n)n.textContent='EDI 코드 목록을 불러오지 못했어요.'});
   tiles();hud();paneInit(c);
   const D=0;if(D){const s0=document.getElementById('slides'),its=items(),ds=document.createElement('div');ds.className='slide dslide';ds.setAttribute('aria-label','청구 서류');
@@ -1779,8 +1795,7 @@ function render(res){if(!inf.hidden)closeInfo(false);closeCalc();closeGp(false);
     let tp=null;ds.addEventListener('pointerdown',e=>{tp=e.isPrimary?{x:e.clientX,y:e.clientY,t:Date.now(),st:ds.scrollTop}:null});ds.addEventListener('pointercancel',()=>{tp=null});
     ds.addEventListener('pointerup',e=>{const s=tp;tp=null;if(!s||st.tut&&false)return;if(Date.now()-s.t>300||Math.hypot(e.clientX-s.x,e.clientY-s.y)>10||Math.abs(ds.scrollTop-s.st)>4)return;
       const r=ds.getBoundingClientRect(),y=(e.clientY-r.top)/r.height;if(y<.35)dsStep(ds,-1);else if(y>.65)dsStep(ds,1)})}
-  {const s1=document.getElementById('slides'),sls=[...s1.children].filter(x=>!x.classList.contains('dslide')),last=sls[sls.length-1];if(res)sls.slice(0,-1).forEach(x=>x.insertAdjacentHTML('beforeend','<div class="stw"><button class="go" data-goin="1">일정창으로 돌아가기 →</button></div>'));
-    const pB=!res&&payBlock(c);if(last)last.insertAdjacentHTML('beforeend',`<div class="stw">${pB?'<p class="pbh">💳 지급 계좌 예금주 확인을 먼저 선택하세요</p>':''}<button class="go${pB?' blk':''}" id="go" ${pB?'aria-disabled="true"':''}>${res?'일정창으로 돌아가기 →':'심사 완료 · 도장 찍기'}</button></div>`)}
+  
   {const s2=document.getElementById('slides');if(MOBQ()&&s2){let t0=null;s2.addEventListener('touchstart',e=>{const t=e.touches[0];t0=s2.scrollLeft<=2&&e.touches.length===1&&!st.tut?{x:t.clientX,y:t.clientY,lk:0}:null},{passive:true});
     s2.addEventListener('touchmove',e=>{if(!t0)return;const t=e.touches[0],dx=t.clientX-t0.x,dy=t.clientY-t0.y;if(!t0.lk&&(Math.abs(dx)>10||Math.abs(dy)>10))t0.lk=dx>0&&Math.abs(dx)>Math.abs(dy)*1.3?1:-1;if(t0.lk===1)pgDrag(dx)},{passive:true});
     s2.addEventListener('touchend',e=>{if(!t0)return;const t=e.changedTouches[0],dx=t.clientX-t0.x,lk=t0.lk;t0=null;if(lk!==1)return;if(dx>80&&s2.scrollLeft<=2)pgGo(1,()=>{closeInfo(false);inbox()});else pgBack()},{passive:true});s2.addEventListener('touchcancel',()=>{if(t0&&t0.lk===1)pgBack();t0=null},{passive:true})}}
@@ -2084,7 +2099,8 @@ app.addEventListener('click',e=>{
   if(b.id==='sp'||b.id==='snx'){const sl=document.getElementById('slides');sl.scrollBy({left:(b.id==='sp'?-1:1)*(sl.clientWidth+12),behavior:'smooth'});return}
   if(b.id==='go'&&b.dataset.next==='1'){const sl=document.getElementById('slides');sl.scrollBy({left:sl.clientWidth+12,behavior:'smooth'});return}
   if(b.dataset.goin){inbox();return}
-  if(b.id==='go'){if(b.disabled)return;if(!st.done&&payBlock(st.c)){toast('💳 지급 계좌 예금주 확인을 먼저 선택하세요');sfx('bad');const r=document.querySelector('[data-info="pay"]');const row=r&&r.closest('.cov');if(row){const sl=document.getElementById('slides');sl.scrollTo({left:(sl.clientWidth+12)*0,behavior:'smooth'});row.scrollIntoView({block:'center',behavior:'smooth'});row.classList.remove('flash');void row.offsetWidth;row.classList.add('flash')}return}if(!st.done)submit();else inbox();return}
+  if(b.id==='go'){if(b.disabled)return;if(st.done){inbox();return}const c=st.c,total=sumPick(c),pi=c.covs.indexOf('pay');if(total>0&&pi>=0&&c.pick[pi]<0){openPay(b);return}if(total<=0&&st.notice&&!c.frP){openFr(b);return}submit();return}
+  if(b.id==='toolToggle'){const p=document.getElementById('caseEdiPanel');if(p){p.open=!p.open;if(p.open)ediLoad().then(()=>ediRender('caseEdiq','caseEdil','caseEdin')).catch(()=>{});}return}
   if(b.id==='tutopen'){tutStart();return}
   if(b.id==='back'||b.id==='back2'){inbox();window.scrollTo({top:0});return}
   if(b.dataset.q!==undefined){openQ(+b.dataset.q);return}
@@ -2589,14 +2605,14 @@ function lesKit(){const K={},D=DESKQ();K.D=D;K.cs=LS.cs;
   K.wheel=(c,i,tx)=>({sel:K.dp(i),t:tx,done:()=>gpop.hidden&&decOk(c,i)});
   K.miss=()=>{const e=document.querySelector('.file.miss');if(e)e.scrollIntoView({block:'nearest',inline:'nearest'});return e};
   K.missName=c=>{const e=items().find(a=>a.classList.contains('missing'));return e?e.dataset.t:'서류'};
-  K.go=()=>{const g=document.getElementById('go'),s=document.getElementById('slides');if(g&&s){const r=g.getBoundingClientRect(),R=s.getBoundingClientRect();if(r.left>=R.left-2&&r.right<=R.right+2){if(r.bottom>R.bottom||r.top<R.top)g.scrollIntoView({block:'nearest'});return g}}return document.getElementById('snx')};
-  K.goT='다 정했으면 <b>다음 ›</b>으로 심사표로 넘어가서 맨 아래 <b>[심사 완료 · 도장 찍기]</b>를 눌러요.';
-  K.stamp=c=>({sel:K.go,t:()=>vis('#go')?'다 정했으면 <b>[심사 완료 · 도장 찍기]</b>를 눌러요. 도장을 찍으면 결정이 확정돼요.':K.goT,done:K.dn(c)});
+  K.go=()=>document.getElementById('go')||document.getElementById('snx');
+  K.goT='다 정했으면 화면 아래 고정된 <b>[심사완료]</b> 버튼을 눌러요.';
+  K.stamp=c=>({sel:K.go,t:()=>vis('#go')?'화면 아래 고정된 <b>[심사완료]</b> 버튼을 눌러요.':K.goT,done:K.dn(c)});
   K.res=tx=>({sel:()=>document.querySelector('.slide.list .res'),t:tx,btn:'네'});
   K.allOk=c=>{const it=K.itOf(c);return!!it&&it.right===it.items};
-  K.payI=c=>c.covs.indexOf('pay');K.payRow=c=>sgRow(c.covs.indexOf('pay'));
-  K.payStep=(c,tx)=>({sel:()=>{const i=K.payI(c),r=sgRow(i)();return r&&r.querySelector(`[data-i="${i}"][data-v="${c.ans[i].d}"]`)},t:tx,done:()=>decOk(c,K.payI(c)),ok:()=>sumPick(c)>0});
-  K.fr=(c,tx)=>({sel:()=>{if(!gpop.hidden)return gpop;const e=document.querySelector('.frb');if(e){const sl=document.getElementById('slides'),s=e.closest('.slide');if(sl&&s&&Math.abs(sl.scrollLeft-s.offsetLeft)>4)sl.scrollLeft=s.offsetLeft;e.scrollIntoView({block:'nearest'})}return e},t:tx,done:()=>c.frP===c.fr&&gpop.hidden});
+  K.payI=c=>c.covs.indexOf('pay');K.payRow=c=>document.getElementById('go');
+  K.payStep=(c,tx)=>({sel:()=>document.getElementById('go'),t:tx,done:()=>decOk(c,K.payI(c)),ok:()=>sumPick(c)>0});
+  K.fr=(c,tx)=>({sel:()=>!gpop.hidden?gpop:document.getElementById('go'),t:tx,done:()=>c.frP===c.fr&&gpop.hidden});
   K.calcB=i=>()=>!calc.hidden?calc:document.querySelector(`.slide.list [data-calc="${i}"]`);
   K.gp=(c,i,tx)=>({sel:()=>!gpop.hidden?gpop:document.querySelector(`.slide.list [data-gp="${i}"]`),t:tx,done:()=>gpop.hidden&&decOk(c,i)});
   const xfS=id=>()=>{const e=document.getElementById(id);return e&&e.getClientRects().length?e:document.getElementById('xfer')};K.flagS=(c,tx)=>({sel:xfS('flag'),t:tx+'<br><small>(📤 <b>의뢰 · 이관</b> 버튼을 열면 있어요)</small>',done:()=>!!c.flag});K.invS=(c,tx)=>({sel:xfS('inv'),t:tx+'<br><small>(📤 <b>의뢰 · 이관</b> 버튼을 열면 있어요)</small>',done:()=>!!c.inv});
