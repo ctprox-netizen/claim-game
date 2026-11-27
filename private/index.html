@@ -2507,7 +2507,7 @@ function hud(){const q=st.queue,dn=q.filter(x=>x.done&&x.by!=='ai').length;
   set('prog',`${dn} / ${q.length}`);set('score',st.score+(st.g&&st.g.combo>=2?' 🔥'+st.g.combo:''));set('best',best?best.score:'-');
   const bw=Math.floor(st.gm/540*200)/2+'%',bi=document.getElementById('barI');if(bi.style.width!==bw)bi.style.width=bw;
   const k=document.getElementById('clk2');if(k){const w=q.filter(x=>!x.done).length,v=`<i class="clki">🕘 </i>${hm(st.gm)} · 대기 <b>${w}</b>건`;if(k.innerHTML!==v)k.innerHTML=v}}
-function inbox(keep){st.scr='inbox';document.body.classList.add('app');document.body.classList.remove('ingame','startm','endm','subm');if(!keep){closeDoc(false);closeInfo(false)}
+function inbox(keep){st.scr='inbox';document.querySelectorAll('.bottomDetached').forEach(el=>el.remove());document.querySelectorAll('.bottomDragPlaceholder').forEach(el=>el.remove());document.body.classList.remove('floatMoveMode');document.body.classList.add('app');document.body.classList.remove('ingame','startm','endm','subm');if(!keep){closeDoc(false);closeInfo(false)}
   const q=st.queue,wait=q.filter(x=>!x.done),done=q.filter(x=>x.done),left=540-st.gm;
   const row=it=>{const c=it.c,[cl,tx]=qst(it),stt=`<span class="qs ${cl}" id="qs${q.indexOf(it)}">${tx}</span>`;
     return`<button class="qi${it.done?' dn':''}" data-q="${q.indexOf(it)}"><span class="qn">${it.id}</span><span class="qc">${it.urg&&!it.done?`<b class="urgb${it.urg.fail?' late':''}">⚡빠른지급 ${it.urg.fail?'기한 초과':'~'+hm(it.urg.dl)}</b> `:''}${it.reas?'<b class="reab">🔁담당 변경</b> ':''}${c.boss?'<b class="bossb">👑 주간 보스</b> ':''}${c.who} · ${c.groups.map(g=>g[0]).filter(n=>n!=='지급처').join('·')}</span><span class="qt">접수 ${hm(it.at)}</span>${stt}</button>`};
