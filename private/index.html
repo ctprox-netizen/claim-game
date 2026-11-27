@@ -919,6 +919,25 @@ body.app.ingame.floatMoveMode .floatActions button.dragging{z-index:130!importan
 @media(max-width:700px){
  body.app.ingame:not(.floatLeft) .slide.list .cov:not(.wide) .seg{transform:translateX(-64px)!important}
 }
+
+/* Keep all right-side decision content clear of independently movable edge tabs. */
+@media(max-width:700px){
+  body.app.ingame:not(.floatLeft) .slide.list .cov.wide .silin{
+    box-sizing:border-box!important;
+    padding-right:104px!important;
+    max-width:100%!important;
+  }
+  body.app.ingame:not(.floatLeft) .slide.list .pfoot .total{
+    box-sizing:border-box!important;
+    padding-right:104px!important;
+    min-width:0!important;
+  }
+  body.app.ingame:not(.floatLeft) .slide.list .pfoot .total b{
+    max-width:100%!important;
+    overflow-wrap:anywhere!important;
+  }
+}
+
 </style>
 </head>
 <body>
