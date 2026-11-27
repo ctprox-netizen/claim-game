@@ -176,7 +176,7 @@ main{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:24px;p
 .pop{position:absolute;z-index:40;width:min(320px,calc(100vw - 24px));background:#fffdf7;color:#1d1a17;border:2px solid #1d1a17;border-radius:10px;box-shadow:0 14px 30px -10px #000a;animation:pop .14s ease-out}
 .pop[hidden]{display:none}
 .calc{width:min(272px,calc(100vw - 24px))}
-.gpop{width:min(240px,calc(100vw - 24px))}.calc .ph,.gpop .ph{cursor:move;touch-action:none;user-select:none}.calc .ph b::after{content:'  ⠿ 끌어서 이동';font-weight:500;font-size:11px;opacity:.6}.gpop.many{width:min(320px,calc(100vw - 24px))}
+.gpop{position:fixed!important;z-index:200!important;width:min(240px,calc(100vw - 24px))}.calc .ph,.gpop .ph{cursor:move;touch-action:none;user-select:none}.calc .ph b::after{content:'  ⠿ 끌어서 이동';font-weight:500;font-size:11px;opacity:.6}.gpop.many{width:min(320px,calc(100vw - 24px))}
 .gpl{display:grid;grid-template-columns:1fr;gap:5px;padding:8px;max-height:min(60vh,420px);overflow:auto}.gpop.many .gpl{grid-template-columns:repeat(3,1fr)}
 .gpl button{min-height:38px;border:1.5px solid #1d1a17;border-radius:8px;background:#fff;color:#1d1a17;font-weight:700;font-size:14px;padding:0 6px;white-space:nowrap}
 .gpl button[aria-selected="true"]{background:#1d4ed8;border-color:#1d4ed8;color:#fff}.gpl button[aria-selected="true"]::before{content:'✓ '}
