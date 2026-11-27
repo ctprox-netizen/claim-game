@@ -871,6 +871,24 @@ body.app.ingame.floatLeft .floatActions button{
   left:env(safe-area-inset-left,0px)!important;right:auto!important;
  }
 }
+
+/* Clear visual feedback while reordering floating tabs. */
+body.app.ingame.floatMoveMode .floatActions button{
+  background:#ffe08a!important;
+  color:#30220a!important;
+  border-color:#b96b00!important;
+  outline:2px dashed #b96b00!important;
+  outline-offset:2px!important;
+  box-shadow:0 0 0 3px #ffbf3f99,0 4px 14px #0004!important;
+}
+body.app.ingame.floatMoveMode .floatActions button.dragging{
+  background:#ffad33!important;
+  color:#241500!important;
+  border:2px solid #8a4600!important;
+  opacity:1!important;
+  transform:scale(1.06)!important;
+  box-shadow:0 0 0 4px #ffad3380,0 6px 18px #0005!important;
+}
 </style>
 </head>
 <body>
