@@ -384,8 +384,8 @@ nav.tabs{background:#263d31!important}
 
 <!-- BUILD-INFO: 2026-11-27-03 -->
 <footer class="build-info" aria-label="사이트 빌드 정보">
- <div><strong>빌드 버전</strong> v2026.11.27-11</div>
- <div><strong>최종 수정일</strong> 2026.11.27</div>
+ <div><strong>빌드 버전</strong> v2026.11.28-01</div>
+ <div><strong>최종 수정일</strong> 2026.11.28</div>
 </footer>
 <script>
 /* ===== 게임(간편심사)에서 가져온 콩벌레 엔진: 종 데이터 · 3D 도트 모델 · 사육통 단면 ===== */
@@ -627,6 +627,7 @@ function ageTxt(d){if(!d)return'';const b=new Date(d),n=new Date();let m=(n.getF
 const fmtD=d=>{if(!d)return'';const x=new Date(d+'T00:00');return isNaN(x)?esc(d):`${x.getFullYear()}.${x.getMonth()+1}.${x.getDate()}`};
 const buyOf=id=>{try{const m=D.memo&&D.memo['b:'+id];return m&&m.body?JSON.parse(m.body):{}}catch(e){return{}}};
 const nmKey=id=>(String(id).length+2<=8?'n:'+id:'r'+String(id).slice(1));
+const baseTubName=id=>id==='12'?'데어리카우 성체':id==='12b'?'데어리카우 새끼':(spOf(id)?.n||'');
 const nmOv=id=>{const m=D.memo&&(D.memo['n:'+id]||D.memo[nmKey(id)]);return m&&m.body?m.body.trim():''};
 const tubNm=id=>nmOv(id)||(id==='12'?'데어리카우 성체':id==='12b'?'데어리카우 새끼':spOf(id).n);
 const famOf=id=>{if(XSP[id])return XSP[id].fam;const sp=parseInt(id),g=IGRP.find(x=>x[2].includes(sp));return g?`${g[0]} · ${g[1]}`:''};
@@ -733,17 +734,19 @@ function openAnimalManager(){
 }
 function renameTubName(id){
  if(!needEdit())return;
- const current=tubNm(id),currentOverride=nmOv(id);
+ const current=tubNm(id);
  sheet(`<h3 style="margin:0 0 12px">✏️ 사육통 이름 변경</h3><label>새 이름</label><input id="renameTubInput" class="input" maxlength="40" value="${esc(current)}" placeholder="사육통 이름"><p class="mut" style="font-size:12px;margin:8px 0">이름만 변경되며 사진과 기록, 선반 위치는 그대로 유지돼요.</p><div class="sbb"><button class="btn" data-x>취소</button><button class="btn pri" id="renameTubSave">저장</button></div>`,sh=>{
   const input=sh.querySelector('#renameTubInput');input.focus();input.select();
   sh.querySelector('#renameTubSave').onclick=async()=>{
    if(!needEdit())return;const nm=input.value.trim();if(!nm){toast('이름을 입력해 주세요');return}
    const b=sh.querySelector('#renameTubSave');b.disabled=true;b.textContent='저장 중…';
    try{
-    const baseName=spOf(id)?.n||current,key=nmKey(id),value=nm===baseName?'':' '+nm;
-    if(nm!==current){await rpc('iso_memo_set',{t:key,b:nm===baseName?'':nm});D.memo[key]={body:nm===baseName?'':nm,who:D.ed,upd:new Date().toISOString()};}
-    save();closeSheet();toast('사육통 이름을 변경했어요');refreshDetail();
-   }catch(e){b.disabled=false;b.textContent='저장';toast('⚠ 이름을 저장하지 못했어요. 연결 상태를 확인해 주세요')}
+    const base=baseTubName(id),key=nmKey(id),body=nm===base?'':nm;
+    await rpc('iso_memo_set',{t:key,b:body});
+    D.memo[key]={body,who:D.ed,upd:new Date().toISOString()};
+    D.msince=null;await syncMemo();save();await flushIDB();
+    closeSheet();toast('사육통 이름을 변경했어요');refreshDetail();
+   }catch(e){b.disabled=false;b.textContent='저장';toast('⚠ 이름 변경 실패: '+String(e.message||e).slice(0,90))}
   };
  });
 }
@@ -760,10 +763,9 @@ function editManagedAnimal(id){
     if(!nm){toast('상자 이름을 입력해 주세요');return}
     const b=sh.querySelector('#managedSave');b.disabled=true;b.textContent='저장 중…';
     try{
-     const baseName=spOf(id)?.n||name,rename=nm!==(currentName||name),key=nmKey(id);
-     if(rename)await rpc('iso_memo_set',{t:key,b:nm===baseName?'':nm});
-     if(rename)D.memo[key]={body:nm===baseName?'':nm,who:D.ed,upd:new Date().toISOString()};
-     save();toast('상자 정보를 저장했어요');openAnimalManager();
+     const base=baseTubName(id),rename=nm!==(currentName||name),key=nmKey(id),body=nm===base?'':nm;
+     if(rename){await rpc('iso_memo_set',{t:key,b:body});D.memo[key]={body,who:D.ed,upd:new Date().toISOString()};D.msince=null;await syncMemo();save();await flushIDB()}
+     toast('상자 이름을 변경했어요');openAnimalManager();
     }catch(e){b.disabled=false;b.textContent='저장';toast('⚠ 저장하지 못했어요. 연결 상태를 확인해 주세요')}
    };
    sh.querySelector('#managedDelete').onclick=()=>deleteManagedAnimal(id);
